@@ -1,6 +1,6 @@
 <?php
 
-namespace UikitThemeBuilder\Widgets;
+namespace UikitThemeBuilder\InfoCenterWidgets;
 
 use KLXM\InfoCenter\AbstractWidget;
 use UikitThemeBuilder\DomainContext;
@@ -8,16 +8,18 @@ use UikitThemeBuilder\LiveThemeState;
 use UikitThemeBuilder\UikitThemeBuilderManager;
 
 /**
- * Info-Center-Widget: schwebendes Overlay im Frontend, mit dem eingeloggte Redakteure
- * Grundfarben/Schriftgrößen des aktuellen Domain-Themes live testen können (SSE-Vorschau,
- * siehe LiveThemeState). Persistenz/Compile läuft weiterhin über die bestehende
- * UikitThemeBuilderManager-Pipeline - dieses Widget ist nur die Vorschau-Schicht davor.
+ * Info-Center-Widget: lässt eingeloggte Redakteure Grundfarben/Schriftgrößen/Abstände des
+ * aktuellen Domain-Themes live im Frontend testen (SSE-Vorschau, siehe LiveThemeState).
+ * Rendert als normaler Info-Center-Eintrag (wrapContent()), kein eigenes Floating-Overlay.
+ * Persistenz/Compile läuft weiterhin über die bestehende UikitThemeBuilderManager-Pipeline.
  */
 class LiveThemeEditorWidget extends AbstractWidget
 {
-    public function getTitle(): string
+    public function __construct()
     {
-        return 'Live Theme Editor';
+        parent::__construct();
+        $this->title = 'Live Theme Editor';
+        $this->priority = 3;
     }
 
     public function supportsLazyLoading(): bool
@@ -45,10 +47,12 @@ class LiveThemeEditorWidget extends AbstractWidget
         $themeRecord = $manager->loadTheme($theme);
         $colors = $themeRecord['data']['colors'] ?? [];
         $typography = $themeRecord['data']['typography'] ?? [];
+        $spacing = $themeRecord['data']['spacing'] ?? [];
+        $groups = ['colors' => $colors, 'typography' => $typography, 'spacing' => $spacing];
 
         $currentValues = [];
         foreach (LiveThemeState::FIELDS as $key => $field) {
-            $source = 'colors' === $field['group'] ? $colors : $typography;
+            $source = $groups[$field['group']] ?? [];
             if (isset($source[$field['less']])) {
                 $currentValues[$key] = $source[$field['less']];
             }
@@ -74,11 +78,15 @@ class LiveThemeEditorWidget extends AbstractWidget
 
         $configJson = htmlspecialchars(json_encode($config), ENT_QUOTES, 'UTF-8');
 
-        return <<<HTML
+        $content = <<<HTML
 <link rel="stylesheet" href="{$editorCss}">
-<div id="tb-live-editor-root" data-tb-live-config="{$configJson}"></div>
+<div id="tb-live-editor-root" class="tb-live-body" data-tb-live-config="{$configJson}">
+    <p class="tb-live-loading">Lade …</p>
+</div>
 <script src="{$editorJs}"></script>
 HTML;
+
+        return $this->wrapContent($content);
     }
 
     /**

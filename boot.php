@@ -282,6 +282,18 @@ if (rex::isFrontend()) {
     });
 }
 
+// Live Theme Editor Widget im Info Center registrieren - dem in info_center/README.md
+// dokumentierten Muster folgend: Registrierung vom konsumierenden Addon aus, verzögert bis
+// PACKAGES_INCLUDED (rex_extension::LATE), damit alle Addons inkl. info_center sicher
+// fertig gebootet sind. info_center selbst muss dafür NICHT verändert werden.
+if (rex_addon::get('info_center')->isAvailable()) {
+    rex_extension::register('PACKAGES_INCLUDED', function () {
+        $infoCenter = \KLXM\InfoCenter\InfoCenter::getInstance();
+        $widget = new UikitThemeBuilder\InfoCenterWidgets\LiveThemeEditorWidget();
+        $infoCenter->registerWidget($widget);
+    }, rex_extension::LATE);
+}
+
 // Template Manager Integration - installiere verfügbare Templates beim Boot
 if (rex::isBackend() && rex::getUser()) {
     // Optionale automatische Installation: Nur einmalig triggern

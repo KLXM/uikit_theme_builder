@@ -1,5 +1,5 @@
 /**
- * Live Theme Editor - Overlay-UI für den eingeloggten Redakteur (siehe
+ * Live Theme Editor - Inhalt des gleichnamigen Info-Center-Widgets (siehe
  * LiveThemeEditorWidget::render()). Änderungen werden sofort lokal als CSS-Custom-Property
  * gesetzt (Wirkung über live-theme-editor-bridge.css) und gedebounced an den Draft-Endpoint
  * gepusht. Ein eigener SSE-Stream hält die eigenen weiteren Tabs/Geräte synchron.
@@ -18,6 +18,9 @@
     return { min: min, max: Math.round(max * 100) / 100, step: step };
   }
 
+  var COLOR_FIELDS = ["primary", "secondary", "background", "color", "link"];
+  var SIZE_FIELDS = ["font_size", "h1_size", "h2_size", "h3_size", "margin", "gutter"];
+
   var LABELS = {
     primary: "Primary",
     secondary: "Secondary",
@@ -27,7 +30,9 @@
     font_size: "Basis-Schriftgröße",
     h1_size: "H1-Größe",
     h2_size: "H2-Größe",
-    h3_size: "H3-Größe"
+    h3_size: "H3-Größe",
+    margin: "Standard-Abstand",
+    gutter: "Container-Padding"
   };
 
   function ready(fn) {
@@ -81,29 +86,18 @@
 
     var state = Object.assign({}, config.values || {});
 
-    // --- DOM aufbauen ---------------------------------------------------
-    var wrap = document.createElement("div");
-    wrap.id = "tb-live-editor";
+    // --- DOM aufbauen (direkt in den Info-Center-Widget-Content) --------
+    root.innerHTML = "";
 
-    var toggle = document.createElement("button");
-    toggle.type = "button";
-    toggle.className = "tb-live-toggle";
-    toggle.setAttribute("aria-label", "Live Theme Editor öffnen");
-    toggle.textContent = "🎨";
-    wrap.appendChild(toggle);
-
-    var panel = document.createElement("div");
-    panel.className = "tb-live-panel";
-    wrap.appendChild(panel);
-
-    var heading = document.createElement("h4");
-    heading.textContent = "Live Theme: " + config.theme;
-    panel.appendChild(heading);
+    var themeLabel = document.createElement("div");
+    themeLabel.className = "tb-live-row";
+    themeLabel.innerHTML = '<label style="opacity:.6;font-size:11px;">Theme: ' + config.theme + "</label>";
+    root.appendChild(themeLabel);
 
     var colorInputs = {};
     var sizeInputs = {};
 
-    ["primary", "secondary", "background", "color", "link"].forEach(function (key) {
+    COLOR_FIELDS.forEach(function (key) {
       var field = config.fields[key];
       if (!field) {
         return;
@@ -121,7 +115,7 @@
       colorInput.value = toHexColor(state[key]);
       row.appendChild(colorInput);
 
-      panel.appendChild(row);
+      root.appendChild(row);
       colorInputs[key] = colorInput;
 
       colorInput.addEventListener("input", function () {
@@ -131,7 +125,7 @@
       });
     });
 
-    ["font_size", "h1_size", "h2_size", "h3_size"].forEach(function (key) {
+    SIZE_FIELDS.forEach(function (key) {
       var field = config.fields[key];
       if (!field) {
         return;
@@ -159,7 +153,7 @@
       valueLabel.textContent = parsed.number + parsed.unit;
       row.appendChild(valueLabel);
 
-      panel.appendChild(row);
+      root.appendChild(row);
       sizeInputs[key] = { input: input, valueLabel: valueLabel, unit: parsed.unit };
 
       input.addEventListener("input", function () {
@@ -173,12 +167,12 @@
 
     var actions = document.createElement("div");
     actions.className = "tb-live-actions";
-    panel.appendChild(actions);
+    root.appendChild(actions);
 
     var status = document.createElement("div");
     status.className = "tb-live-status";
     status.textContent = "Nur du siehst diese Änderungen.";
-    panel.appendChild(status);
+    root.appendChild(status);
 
     var discardBtn = makeButton("Verwerfen", "tb-live-btn", function () {
       callApi(config.discardUrl, {}).then(function () {
@@ -225,12 +219,6 @@
       if (btn) {
         actions.appendChild(btn);
       }
-    });
-
-    document.body.appendChild(wrap);
-
-    toggle.addEventListener("click", function () {
-      wrap.classList.toggle("tb-live-open");
     });
 
     // --- Hilfsfunktionen --------------------------------------------------

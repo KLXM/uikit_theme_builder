@@ -18,6 +18,8 @@
   --tb-live-h1-size: unset;
   --tb-live-h2-size: unset;
   --tb-live-h3-size: unset;
+  --tb-live-margin: unset;
+  --tb-live-gutter: unset;
 }
 
 html,
@@ -66,4 +68,17 @@ h2,
 h3,
 .uk-h3 {
   font-size: var(--tb-live-h3-size, inherit) !important;
+}
+
+/* Entspricht UIkits eigener Spacing-Rhythmik (siehe "* + figure { margin-top: ... }" etc.
+   in components/base.less) - deckt die typischen aufeinanderfolgenden Block-Elemente ab. */
+* + h1, * + h2, * + h3, * + h4, * + h5, * + h6,
+* + p, * + ul, * + ol, * + dl, * + pre, * + blockquote, * + figure, * + hr,
+* + .uk-margin {
+  margin-top: var(--tb-live-margin, inherit) !important;
+}
+
+.uk-container {
+  padding-left: var(--tb-live-gutter, inherit) !important;
+  padding-right: var(--tb-live-gutter, inherit) !important;
 }
