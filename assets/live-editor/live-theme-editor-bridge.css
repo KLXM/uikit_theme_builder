@@ -40,6 +40,7 @@
   --tb-live-h4-size: unset;
   --tb-live-margin: unset;
   --tb-live-gutter: unset;
+  --tb-live-container-width: unset;
   --tb-live-font-family: unset;
   --tb-live-heading-font-family: unset;
 }
@@ -171,4 +172,5 @@ h4,
 .uk-container {
   padding-left: var(--tb-live-gutter, inherit) !important;
   padding-right: var(--tb-live-gutter, inherit) !important;
+  max-width: var(--tb-live-container-width, inherit) !important;
 }

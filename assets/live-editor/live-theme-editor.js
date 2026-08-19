@@ -39,7 +39,8 @@
     h3_size: "H3-Größe",
     h4_size: "H4-Größe",
     margin: "Standard-Abstand",
-    gutter: "Container-Padding"
+    gutter: "Container-Padding",
+    container_width: "Container-Breite"
   };
 
   // A11y-Untergrenze: Basis-Schriftgröße darf laut gängigen Empfehlungen nie unter 16px
