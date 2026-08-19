@@ -14,13 +14,6 @@
   font-size: 13px !important;
 }
 
-/* Pickr hängt sein Popup (.pcr-app) direkt in <body>, nicht ins Panel, und bringt selbst
-   nur z-index:10000 mit (siehe pickr.min.css) - das würde unser Panel darüber verdecken.
-   Muss also höher liegen als #tb-live-editor selbst. */
-.pcr-app {
-  z-index: 2147483001 !important;
-}
-
 #tb-live-editor * {
   box-sizing: border-box !important;
 }
@@ -80,13 +73,15 @@
   color: #333;
 }
 
-#tb-live-editor .tb-live-swatch {
-  width: 28px;
+#tb-live-editor input[type="color"] {
+  width: 32px;
   height: 28px;
-  border-radius: 4px;
+  padding: 0;
   border: 1px solid #ddd;
+  border-radius: 4px;
   cursor: pointer;
   flex-shrink: 0;
+  background: none;
 }
 
 #tb-live-editor input[type="range"] {

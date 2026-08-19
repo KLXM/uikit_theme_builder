@@ -69,18 +69,14 @@ class LiveThemeEditorWidget extends AbstractWidget
             'isAdmin' => $user->isAdmin(),
         ];
 
-        $pickrCss = $addon->getAssetsUrl('pickr/pickr.min.css');
-        $pickrJs = $addon->getAssetsUrl('pickr/pickr.min.js');
         $editorCss = $addon->getAssetsUrl('live-editor/live-theme-editor.css');
         $editorJs = $addon->getAssetsUrl('live-editor/live-theme-editor.js');
 
         $configJson = htmlspecialchars(json_encode($config), ENT_QUOTES, 'UTF-8');
 
         return <<<HTML
-<link rel="stylesheet" href="{$pickrCss}">
 <link rel="stylesheet" href="{$editorCss}">
 <div id="tb-live-editor-root" data-tb-live-config="{$configJson}"></div>
-<script src="{$pickrJs}"></script>
 <script src="{$editorJs}"></script>
 HTML;
     }

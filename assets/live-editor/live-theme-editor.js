@@ -38,6 +38,15 @@
     }
   }
 
+  // input[type=color] akzeptiert nur exakt #rrggbb - andere Formate (rgba(), 8-stelliges Hex
+  // mit Alpha, ...) würden vom Browser stillschweigend auf schwarz zurückgesetzt.
+  function toHexColor(value) {
+    if (/^#[0-9a-fA-F]{6}$/.test(value || "")) {
+      return value;
+    }
+    return "#000000";
+  }
+
   function parseSize(value) {
     var match = /^(\d+(?:\.\d+)?)(px|rem|em|%)$/.exec(value || "");
     if (!match) {
@@ -107,17 +116,17 @@
       label.textContent = LABELS[key] || key;
       row.appendChild(label);
 
-      var swatch = document.createElement("div");
-      swatch.className = "tb-live-swatch";
-      swatch.style.backgroundColor = state[key] || "#cccccc";
-      row.appendChild(swatch);
+      var colorInput = document.createElement("input");
+      colorInput.type = "color";
+      colorInput.value = toHexColor(state[key]);
+      row.appendChild(colorInput);
 
       panel.appendChild(row);
-      colorInputs[key] = swatch;
+      colorInputs[key] = colorInput;
 
-      initPickr(swatch, state[key] || "#cccccc", function (color) {
-        state[key] = color;
-        applyLocal(key, color);
+      colorInput.addEventListener("input", function () {
+        state[key] = colorInput.value;
+        applyLocal(key, colorInput.value);
         scheduleSync();
       });
     });
@@ -235,39 +244,6 @@
       return btn;
     }
 
-    function initPickr(el, defaultColor, onChange) {
-      function start() {
-        if (typeof Pickr === "undefined") {
-          setTimeout(start, 100);
-          return;
-        }
-
-        var pickr = Pickr.create({
-          el: el,
-          theme: "classic",
-          default: defaultColor,
-          defaultRepresentation: "HEXA",
-          components: {
-            preview: true,
-            opacity: false,
-            hue: true,
-            interaction: { hex: true, rgba: false, hsla: false, input: true, save: true }
-          }
-        });
-
-        pickr.on("change", function (color) {
-          var hex = color.toHEXA().toString().slice(0, 7);
-          el.style.backgroundColor = hex;
-          onChange(hex);
-        });
-        pickr.on("save", function () {
-          pickr.hide();
-        });
-      }
-
-      start();
-    }
-
     function applyLocal(key, value) {
       var field = config.fields[key];
       if (field) {
@@ -320,7 +296,7 @@
             state[key] = values[key];
             applyLocal(key, values[key]);
             if (colorInputs[key]) {
-              colorInputs[key].style.backgroundColor = values[key];
+              colorInputs[key].value = toHexColor(values[key]);
             }
             if (sizeInputs[key]) {
               var parsed = parseSize(values[key]);
