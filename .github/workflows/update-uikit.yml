@@ -1,0 +1,181 @@
+name: Update UIKit (Compatible Version Only)
+
+on:
+  # Manuell auslösbar
+  workflow_dispatch:
+  
+  # Wöchentlich prüfen (Sonntags um 2 Uhr) - derzeit deaktiviert wegen Version-Lock
+  # schedule:
+  #   - cron: '0 2 * * 0'
+
+jobs:
+  update-uikit:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 8
+        
+    - name: Get current UIKit version
+      id: current_version
+      run: |
+        if [ -f "assets/uikit/package.json" ]; then
+          CURRENT=$(grep '"version":' assets/uikit/package.json | sed 's/.*"version": "\(.*\)".*/\1/')
+          echo "version=$CURRENT" >> $GITHUB_OUTPUT
+        else
+          echo "version=none" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Check LESS.php compatibility
+      id: compatibility_check
+      run: |
+        # Derzeit unterstützte Version wegen LESS.php Limitierung
+        SUPPORTED_VERSION="3.23.12"
+        CURRENT="${{ steps.current_version.outputs.version }}"
+        
+        echo "Current version: $CURRENT"
+        echo "Supported version: $SUPPORTED_VERSION"
+        
+        if [ "$CURRENT" != "$SUPPORTED_VERSION" ]; then
+          echo "update_needed=true" >> $GITHUB_OUTPUT
+          echo "target_version=$SUPPORTED_VERSION" >> $GITHUB_OUTPUT
+          echo "⚠️  Update needed to compatible version: $CURRENT → $SUPPORTED_VERSION"
+        else
+          echo "update_needed=false" >> $GITHUB_OUTPUT
+          echo "target_version=$SUPPORTED_VERSION" >> $GITHUB_OUTPUT
+          echo "✅ Already using compatible version: $CURRENT"
+        fi
+        
+    - name: Check if newer versions are available
+      id: check_newer
+      run: |
+        LATEST=$(curl -s https://api.github.com/repos/uikit/uikit/releases/latest | jq -r .tag_name | sed 's/v//')
+        SUPPORTED="3.23.12"
+        
+        echo "Latest UIKit version: $LATEST"
+        echo "Supported version: $SUPPORTED"
+        
+        if [ "$LATEST" != "$SUPPORTED" ]; then
+          echo "newer_available=true" >> $GITHUB_OUTPUT
+          echo "latest_version=$LATEST" >> $GITHUB_OUTPUT
+          echo "⚠️  Newer version available but not supported: $LATEST"
+          echo "⚠️  Waiting for LESS.php modern selector support"
+        else
+          echo "newer_available=false" >> $GITHUB_OUTPUT
+          echo "latest_version=$LATEST" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Update UIKit to compatible version
+      if: steps.compatibility_check.outputs.update_needed == 'true'
+      run: |
+        echo "🔄 Updating UIKit to compatible version ${{ steps.compatibility_check.outputs.target_version }}"
+        ./update-uikit.sh ${{ steps.compatibility_check.outputs.target_version }}
+        
+    - name: Commit changes
+      if: steps.compatibility_check.outputs.update_needed == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        if git diff --quiet; then
+          echo "No changes to commit"
+          exit 0
+        fi
+        
+        git add .
+        git commit -m "Update UIKit to compatible version ${{ steps.compatibility_check.outputs.target_version }}"
+        git push
+        
+    - name: Create Pull Request
+      if: steps.compatibility_check.outputs.update_needed == 'true'
+      uses: peter-evans/create-pull-request@v6
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "Update UIKit to compatible version ${{ steps.compatibility_check.outputs.target_version }}"
+        title: "🔄 Update UIKit to compatible version ${{ steps.compatibility_check.outputs.target_version }}"
+        body: |
+          ## 🚀 UIKit Update (Compatible Version)
+          
+          **Previous version:** `${{ steps.current_version.outputs.version }}`
+          **New version:** `${{ steps.compatibility_check.outputs.target_version }}`
+          
+          ### ⚠️ Version Lock Information:
+          This AddOn is currently limited to UIKit v3.23.12 due to LESS.php compatibility issues.
+          Newer UIKit versions use modern CSS selectors (`:is()`, `:where()`) that are not yet 
+          supported by the PHP LESS compiler.
+          
+          ### ✅ What was updated:
+          - UIKit source files to v${{ steps.compatibility_check.outputs.target_version }}
+          - Dependencies via pnpm
+          - Compiled UIKit assets
+          
+          ### 🔄 Custom files preserved:
+          - `custom/` directory
+          - `wellings.less`
+          - `themes.json`
+          
+          ### 🧪 Testing needed:
+          - [ ] Test UIKit Theme Builder functionality
+          - [ ] Verify custom themes still work
+          - [ ] Check compiled assets
+          - [ ] Ensure LESS.php compilation works
+          
+          **Changelog:** https://github.com/uikit/uikit/releases/tag/v${{ steps.compatibility_check.outputs.target_version }}
+        branch: "feature/update-uikit-${{ steps.compatibility_check.outputs.target_version }}"
+        delete-branch: true
+        
+    - name: Create notification about newer versions
+      if: steps.check_newer.outputs.newer_available == 'true'
+      uses: peter-evans/create-pull-request@v6
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "Notification: UIKit ${{ steps.check_newer.outputs.latest_version }} available but not compatible"
+        title: "📢 Newer UIKit version available: ${{ steps.check_newer.outputs.latest_version }}"
+        body: |
+          ## 📢 Newer UIKit Version Available
+          
+          **Current supported version:** `3.23.12`
+          **Latest UIKit version:** `${{ steps.check_newer.outputs.latest_version }}`
+          
+          ### ⚠️ Compatibility Issue
+          UIKit v${{ steps.check_newer.outputs.latest_version }} contains modern CSS selectors like `:is()` and `:where()` 
+          that are not yet supported by wikimedia/less.php.
+          
+          ### 🔄 Next Steps
+          1. **Monitor LESS.php updates** for modern selector support
+          2. **Check our LESS.php fork** for compatibility improvements
+          3. **Update when compatible** - this will be automated
+          
+          ### 🛠️ Development Options
+          - **Option 1**: Wait for LESS.php modern selector support
+          - **Option 2**: Implement modern selector support in our LESS.php fork
+          - **Option 3**: Switch to Node.js build process (not server-friendly)
+          
+          **New version changelog:** https://github.com/uikit/uikit/releases/tag/v${{ steps.check_newer.outputs.latest_version }}
+        branch: "notification/newer-uikit-${{ steps.check_newer.outputs.latest_version }}"
+        delete-branch: true
+        
+    - name: Report status
+      run: |
+        if [ "${{ steps.compatibility_check.outputs.update_needed }}" == "true" ]; then
+          echo "🎉 UIKit updated to compatible version ${{ steps.compatibility_check.outputs.target_version }}"
+        else
+          echo "✅ UIKit is already at compatible version (${{ steps.current_version.outputs.version }})"
+        fi
+        
+        if [ "${{ steps.check_newer.outputs.newer_available }}" == "true" ]; then
+          echo "⚠️  Newer UIKit version ${{ steps.check_newer.outputs.latest_version }} available but not compatible"
+          echo "⚠️  Waiting for LESS.php modern selector support"
+        fi

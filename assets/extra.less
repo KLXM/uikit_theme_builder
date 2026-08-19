@@ -1,0 +1,59 @@
+//
+// Extra Utilities - Automatisch kompiliert vom UIKit Theme Builder
+//
+
+//
+// Shadow Remove Utility
+// Entfernt Box-Shadow, lässt aber Hover-Effekte intakt
+//
+.uk-shadow-remove {
+    box-shadow: none !important;
+}
+
+// Wichtig: Hover-Effekte bleiben erhalten
+.uk-shadow-remove.uk-box-shadow-hover-small:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+}
+
+.uk-shadow-remove.uk-box-shadow-hover-medium:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08) !important;
+}
+
+.uk-shadow-remove.uk-box-shadow-hover-large:hover {
+    box-shadow: 0 14px 25px rgba(0,0,0,0.16) !important;
+}
+
+.uk-shadow-remove.uk-box-shadow-hover-xlarge:hover {
+    box-shadow: 0 28px 50px rgba(0,0,0,0.16) !important;
+}
+
+//
+// Mobile Navigation with Separate Toggle Button
+//
+.uk-nav-default {
+    a {
+        max-width: 85%;
+    }
+}
+
+// Toggle Button Styling
+.nav-toggle-btn {
+    padding: 5px;
+    float: right;
+    cursor: pointer;
+    clear: right;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    -ms-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+}
+
+// Rotate icon when parent is open (45deg rotation animation)
+li.level-0.uk-parent.uk-open:not(.level-1) > .nav-toggle-btn,
+li.level-1.uk-parent.uk-open:not(.level-2) > .nav-toggle-btn, 
+li.level-2.uk-parent.uk-open:not(.level-3) > .nav-toggle-btn,  
+li.level-3.uk-parent.uk-open:not(.level-4) > .nav-toggle-btn {
+    transform: rotate(45deg);
+    color: #fff;
+}

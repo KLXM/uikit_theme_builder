@@ -1,0 +1,315 @@
+/**
+ * UIKit Icon Picker Widget
+ * Universeller Icon Picker für Backend (jQuery) und Frontend (Vanilla JS)
+ * Unterstützt UIkit Standard + Custom Icons
+ * 
+ * Verwendung:
+ * 1. PHP Widget (bestehend): IconPickerWidget::create()
+ * 2. CSS-Klasse: <input type="text" class="uk-iconpicker" />
+ */
+
+(function() {
+    'use strict';
+    
+    // Icons werden dynamisch von PHP bereitgestellt
+    window.uikitAvailableIcons = window.uikitAvailableIcons || [];
+    
+    /**
+     * Icon-Kategorien aus verfügbaren Icons generieren
+     */
+    function getIconCategories() {
+        const categories = {};
+        
+        window.uikitAvailableIcons.forEach(icon => {
+            const cat = icon.category || 'other';
+            if (!categories[cat]) {
+                categories[cat] = [];
+            }
+            categories[cat].push(icon.name);
+        });
+        
+        return categories;
+    }
+    
+    /**
+     * Alle Icon-Namen extrahieren
+     */
+    function getAllIconNames() {
+        return window.uikitAvailableIcons.map(icon => icon.name);
+    }
+    
+    /**
+     * Icon Picker Modal HTML generieren
+     */
+    function createIconPickerModal(inputElement) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'uikit-icon-picker-wrapper';
+        wrapper.style.position = 'relative';
+        
+        // Input und Button Wrapper
+        const inputWrapper = document.createElement('div');
+        inputWrapper.className = 'uk-inline uk-width-1-1';
+        
+        // Preview Button
+        const previewBtn = document.createElement('a');
+        previewBtn.className = 'uk-form-icon uk-form-icon-flip';
+        previewBtn.setAttribute('data-action', 'open-picker');
+        previewBtn.href = '#';
+        
+        const previewSpan = document.createElement('span');
+        previewSpan.className = 'uikit-icon-preview';
+        if (inputElement.value) {
+            previewSpan.innerHTML = '<span uk-icon="icon: ' + inputElement.value + '; ratio: 0.8"></span>';
+        }
+        previewBtn.appendChild(previewSpan);
+        
+        // Input klonen und Klasse hinzufügen
+        const newInput = inputElement.cloneNode(true);
+        newInput.setAttribute('data-toggle', 'uikit-icon-picker');
+        newInput.classList.remove('uk-iconpicker');
+        newInput.classList.add('uk-input');
+        
+        inputWrapper.appendChild(previewBtn);
+        inputWrapper.appendChild(newInput);
+        
+        // Buttons (Clear + Open)
+        const buttonsDiv = document.createElement('div');
+        buttonsDiv.className = 'uk-margin-small-top';
+        
+        const openBtn = document.createElement('button');
+        openBtn.type = 'button';
+        openBtn.className = 'uk-button uk-button-primary uk-button-small';
+        openBtn.setAttribute('data-action', 'open-picker');
+        openBtn.innerHTML = '<span uk-icon="grid"></span> Icon wählen';
+        
+        const clearBtn = document.createElement('button');
+        clearBtn.type = 'button';
+        clearBtn.className = 'uk-button uk-button-default uk-button-small uk-margin-small-left';
+        clearBtn.setAttribute('data-action', 'clear-icon');
+        clearBtn.innerHTML = '<span uk-icon="close"></span> Entfernen';
+        
+        buttonsDiv.appendChild(openBtn);
+        buttonsDiv.appendChild(clearBtn);
+        
+        // Modal
+        const modal = document.createElement('div');
+        modal.className = 'uikit-icon-picker-modal';
+        modal.style.display = 'none';
+        modal.innerHTML = generateModalHTML();
+        
+        // Zusammenbauen
+        wrapper.appendChild(inputWrapper);
+        wrapper.appendChild(buttonsDiv);
+        wrapper.appendChild(modal);
+        
+        // Original Input ersetzen
+        inputElement.parentNode.replaceChild(wrapper, inputElement);
+        
+        return wrapper;
+    }
+    
+    /**
+     * Modal HTML generieren
+     */
+    function generateModalHTML() {
+        const iconCategories = getIconCategories();
+        const allIcons = getAllIconNames();
+        
+        let iconsHtml = '';
+        allIcons.forEach(iconName => {
+            const iconData = window.uikitAvailableIcons.find(i => i.name === iconName);
+            const cats = iconData ? iconData.category : 'other';
+            const source = iconData ? iconData.source : 'uikit';
+            const badge = source === 'custom' ? '<span class="uk-badge uk-badge-success uk-position-top-right">Custom</span>' : '';
+            
+            iconsHtml += '<div class="uikit-icon-item" data-icon="' + iconName + '" data-categories="' + cats + '" data-source="' + source + '">' +
+                         badge +
+                         '<span uk-icon="icon: ' + iconName + '; ratio: 1.5"></span>' +
+                         '<div class="icon-name">' + iconName + '</div>' +
+                         '</div>';
+        });
+        
+        // Kategorie-Buttons generieren
+        let categoryButtons = '<button type="button" class="uk-button uk-button-small uk-button-primary" data-category="all">Alle</button>';
+        Object.keys(iconCategories).sort().forEach(category => {
+            const label = category.charAt(0).toUpperCase() + category.slice(1);
+            categoryButtons += '<button type="button" class="uk-button uk-button-small uk-button-default" data-category="' + category + '">' + label + '</button>';
+        });
+        
+        return '<div class="uikit-icon-picker-overlay"></div>' +
+               '<div class="uikit-icon-picker-content">' +
+               '<div class="uikit-icon-picker-header">' +
+               '<h3>Icon auswählen (' + allIcons.length + ' verfügbar)</h3>' +
+               '<button type="button" class="uk-modal-close-default" data-action="close-picker" uk-close></button>' +
+               '</div>' +
+               '<div class="uikit-icon-picker-search">' +
+               '<input type="text" class="uk-input" placeholder="Icon suchen..." data-search="icons">' +
+               '</div>' +
+               '<div class="uikit-icon-picker-categories uk-margin-small">' +
+               categoryButtons +
+               '</div>' +
+               '<div class="uikit-icon-picker-grid">' + iconsHtml + '</div>' +
+               '</div>';
+    }
+    
+    /**
+     * Event Handlers initialisieren
+     */
+    function initEventHandlers(wrapper) {
+        const input = wrapper.querySelector('input[data-toggle="uikit-icon-picker"]');
+        const modal = wrapper.querySelector('.uikit-icon-picker-modal');
+        const preview = wrapper.querySelector('.uikit-icon-preview');
+        
+        // Picker öffnen - alle Buttons
+        wrapper.querySelectorAll('[data-action="open-picker"]').forEach(btn => {
+            // Event Listener entfernen falls vorhanden
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+            
+            newBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                modal.style.display = 'block';
+                
+                // Aktuell ausgewähltes Icon markieren
+                wrapper.querySelectorAll('.uikit-icon-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                if (input.value) {
+                    const selected = wrapper.querySelector('.uikit-icon-item[data-icon="' + input.value + '"]');
+                    if (selected) selected.classList.add('selected');
+                }
+            });
+        });
+        
+        // Picker schließen
+        const closeElements = wrapper.querySelectorAll('[data-action="close-picker"], .uikit-icon-picker-overlay');
+        closeElements.forEach(el => {
+            el.addEventListener('click', function(e) {
+                e.preventDefault();
+                modal.style.display = 'none';
+            });
+        });
+        
+        // Icon auswählen
+        wrapper.querySelectorAll('.uikit-icon-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const iconName = this.getAttribute('data-icon');
+                
+                input.value = iconName;
+                preview.innerHTML = '<span uk-icon="icon: ' + iconName + '; ratio: 0.8"></span>';
+                
+                modal.style.display = 'none';
+                
+                wrapper.querySelectorAll('.uikit-icon-item').forEach(i => i.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                // UIKit Icons neu initialisieren
+                if (window.UIkit) UIkit.update();
+            });
+        });
+        
+        // Icon entfernen
+        const clearBtn = wrapper.querySelector('[data-action="clear-icon"]');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                input.value = '';
+                preview.innerHTML = '';
+                
+                wrapper.querySelectorAll('.uikit-icon-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+            });
+        }
+        
+        // Suche
+        const searchInput = wrapper.querySelector('[data-search="icons"]');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const term = this.value.toLowerCase();
+                wrapper.querySelectorAll('.uikit-icon-item').forEach(item => {
+                    const iconName = item.getAttribute('data-icon').toLowerCase();
+                    item.style.display = iconName.indexOf(term) >= 0 ? '' : 'none';
+                });
+            });
+        }
+        
+        // Kategorie-Filter
+        wrapper.querySelectorAll('[data-category]').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const category = this.getAttribute('data-category');
+                
+                wrapper.querySelectorAll('[data-category]').forEach(b => {
+                    b.classList.remove('uk-button-primary');
+                    b.classList.add('uk-button-default');
+                });
+                this.classList.remove('uk-button-default');
+                this.classList.add('uk-button-primary');
+                
+                if (category === 'all') {
+                    wrapper.querySelectorAll('.uikit-icon-item').forEach(item => {
+                        item.style.display = '';
+                    });
+                } else {
+                    wrapper.querySelectorAll('.uikit-icon-item').forEach(item => {
+                        const cats = item.getAttribute('data-categories') || '';
+                        item.style.display = cats.indexOf(category) >= 0 ? '' : 'none';
+                    });
+                }
+            });
+        });
+    }
+    
+    /**
+     * Automatische Initialisierung für .uk-iconpicker Inputs
+     */
+    function autoInitIconPickers() {
+        document.querySelectorAll('input.uk-iconpicker:not([data-iconpicker-initialized])').forEach(input => {
+            input.setAttribute('data-iconpicker-initialized', 'true');
+            const wrapper = createIconPickerModal(input);
+            initEventHandlers(wrapper);
+        });
+        
+        // Auch für PHP-Widgets die noch nicht initialisiert sind
+        document.querySelectorAll('.uikit-icon-picker-wrapper:not([data-iconpicker-initialized])').forEach(wrapper => {
+            wrapper.setAttribute('data-iconpicker-initialized', 'true');
+            initEventHandlers(wrapper);
+        });
+    }
+    
+    /**
+     * Initialisierung
+     */
+    function init() {
+        // UIKit Icons laden
+        if (window.UIkit && window.UIkitIcons) {
+            UIkit.use(UIkitIcons);
+        }
+        
+        // Auto-Init
+        autoInitIconPickers();
+    }
+    
+    // Backend: jQuery rex:ready
+    if (typeof jQuery !== 'undefined' && jQuery.fn) {
+        jQuery(document).on('rex:ready', function() {
+            init();
+        });
+    }
+    
+    // Frontend: DOMContentLoaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+    
+    // Export für manuellen Aufruf
+    window.UikitIconPicker = {
+        init: autoInitIconPickers
+    };
+    
+})();

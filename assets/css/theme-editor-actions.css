@@ -1,0 +1,152 @@
+/* Builder-Aktionsleiste bewusst vom REDAXO-Standard absetzen */
+.utb-editor-actions {
+    border-top: 1px solid #d7dee8;
+    background: linear-gradient(180deg, #f6f9fc 0%, #eef4fb 100%);
+}
+
+.utb-editor-actions .utb-action-group .uk-button {
+    border-radius: 10px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.utb-editor-actions .utb-btn-save {
+    background: linear-gradient(135deg, #0f8d74 0%, #0a6e8f 100%);
+    border: 1px solid #0a6e8f;
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(10, 110, 143, 0.25);
+}
+
+.utb-editor-actions .utb-btn-save:hover,
+.utb-editor-actions .utb-btn-save:focus {
+    background: linear-gradient(135deg, #117f69 0%, #0c6380 100%);
+    color: #fff;
+}
+
+.utb-editor-actions .utb-btn-cancel {
+    border-color: #d14f4f;
+    color: #a93434;
+    background: #fff;
+}
+
+.utb-editor-actions .utb-btn-cancel:hover,
+.utb-editor-actions .utb-btn-cancel:focus {
+    border-color: #b73a3a;
+    color: #8e2323;
+    background: #fff5f5;
+}
+
+.utb-editor-actions .utb-save-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.utb-editor-actions .utb-save-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #32d296;
+    box-shadow: 0 0 0 3px rgba(50, 210, 150, 0.2);
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.utb-editor-actions.is-dirty .utb-save-dot {
+    background: #f5a623;
+    box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.2);
+}
+
+.utb-editor-actions.is-saving .utb-save-dot {
+    background: #1e87f0;
+    box-shadow: 0 0 0 3px rgba(30, 135, 240, 0.2);
+}
+
+body.rex-theme-dark .utb-editor-actions {
+    background: linear-gradient(180deg, #2d3d4d 0%, #273340 100%);
+    border-top-color: #1f2a35;
+}
+
+body.rex-theme-dark .utb-editor-actions .utb-btn-save {
+    background: linear-gradient(135deg, #1fa889 0%, #1a7fa5 100%);
+    border-color: #1a7fa5;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(26, 127, 165, 0.35);
+}
+
+body.rex-theme-dark .utb-editor-actions .utb-btn-save:hover,
+body.rex-theme-dark .utb-editor-actions .utb-btn-save:focus {
+    background: linear-gradient(135deg, #1a9579 0%, #147a93 100%);
+    color: #fff;
+}
+
+body.rex-theme-dark .utb-editor-actions .utb-btn-cancel {
+    border-color: #c75555;
+    color: #ff8b8b;
+    background: #1a1a1a;
+}
+
+body.rex-theme-dark .utb-editor-actions .utb-btn-cancel:hover,
+body.rex-theme-dark .utb-editor-actions .utb-btn-cancel:focus {
+    border-color: #d66b6b;
+    color: #ffa3a3;
+    background: #2a1a1a;
+}
+
+body.rex-theme-dark .utb-editor-actions .utb-save-status {
+    color: #c0cdd4;
+}
+
+@media (prefers-color-scheme: dark) {
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions {
+        background: linear-gradient(180deg, #2d3d4d 0%, #273340 100%);
+        border-top-color: #1f2a35;
+    }
+
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions .utb-btn-save {
+        background: linear-gradient(135deg, #1fa889 0%, #1a7fa5 100%);
+        border-color: #1a7fa5;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(26, 127, 165, 0.35);
+    }
+
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions .utb-btn-save:hover,
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions .utb-btn-save:focus {
+        background: linear-gradient(135deg, #1a9579 0%, #147a93 100%);
+        color: #fff;
+    }
+
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions .utb-btn-cancel {
+        border-color: #c75555;
+        color: #ff8b8b;
+        background: #1a1a1a;
+    }
+
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions .utb-btn-cancel:hover,
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions .utb-btn-cancel:focus {
+        border-color: #d66b6b;
+        color: #ffa3a3;
+        background: #2a1a1a;
+    }
+
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions .utb-save-status {
+        color: #c0cdd4;
+    }
+}
+
+@media (max-width: 959px) {
+    .utb-editor-actions .uk-grid {
+        gap: 12px;
+    }
+
+    .utb-editor-actions .utb-action-group {
+        display: grid;
+        grid-template-columns: 1fr;
+        width: 100%;
+    }
+
+    .utb-editor-actions .utb-action-group .uk-button,
+    .utb-editor-actions .utb-action-group .uk-button + .uk-button {
+        margin-left: 0;
+    }
+}

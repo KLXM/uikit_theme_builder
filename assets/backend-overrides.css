@@ -1,0 +1,28 @@
+/**
+ * Backend-Overrides für individuelle Backend-Themes.
+ *
+ * Ein eigenes Theme fürs REDAXO-Backend übernimmt zwangsläufig auch UIkit-Basisstile,
+ * die eigentlich Teil des REDAXO-Kerndesigns sind (u.a. Code-Auszeichnungen,
+ * Body-/Grundhintergrund). Diese Datei setzt genau diese Basisstile wieder zurück und wird
+ * deshalb nach dem kompilierten Theme geladen (boot.php), damit sie in der Kaskade gewinnt.
+ *
+ * html: background: none (statt hartem #fff) lässt REDAXOs eigene uikit.styles.css
+ * bzw. den Browser-Standard durchscheinen, statt selbst eine Farbe zu erzwingen –
+ * im Live-Test bestätigt als ausreichend.
+ */
+html {
+  background: none;
+}
+
+pre {
+  color: #000000;
+  background: #fff;
+  border: 1px solid #d7d8d7;
+}
+
+:not(pre) > code,
+:not(pre) > kbd,
+:not(pre) > samp {
+  color: #f0506e;
+  background: #fbfbfb;
+}

@@ -1,0 +1,36 @@
+# UIKit Theme Builder - .gitignore
+
+# Alle Assets werden versioniert (UIKit-Quellen sind im Repo)
+# assets/uikit/                # Bleibt im Repo
+# assets/compiled_uikit/       # Bleibt im Repo  
+# assets/extra.less            # Bleibt im Repo
+
+# Backup Directories
+backup/
+
+# Data Directories (Runtime - User-Generated)
+var/data/themes/saved/
+var/data/themes/compiled/
+var/cache/
+
+# Temporary Files
+*.tmp
+*.temp
+
+# IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Log Files
+*.log
+
+# OS Generated Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

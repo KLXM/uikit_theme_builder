@@ -1,0 +1,89 @@
+package: uikit_theme_builder
+version: '2.0.0'
+author: KLXM Crossmedia GmbH
+license: MIT
+supportpage: https://github.com/klxm/
+autoload:
+    classes:
+        UikitThemeBuilder\: lib/
+    files:
+        - lib/rex_api_uikit_theme_builder_fonts.php
+
+page:
+    title: translate:uikit_theme_builder_title
+    perm: uikit_theme_builder[]
+    icon: rex-icon fa-paint-brush
+    subpages:
+        themes:
+            title: 'Themes'
+            perm: uikit_theme_builder[themes]
+            icon: rex-icon fa-palette
+        templates:
+            title: 'Templates'
+            perm: uikit_theme_builder[templates]
+            icon: rex-icon fa-file-code
+        editor:
+            title: 'Theme Editor'
+            perm: uikit_theme_builder[editor] 
+            icon: rex-icon fa-edit
+            hidden: true
+        extra_styles:
+            title: 'Extra Styles'
+            perm: uikit_theme_builder[extra_styles]
+            icon: rex-icon fa-code
+        domains:
+            title: translate:uikit_theme_builder_domains_title
+            perm: uikit_theme_builder[domains]
+            icon: rex-icon fa-globe
+        fonts:
+            title: 'Google Fonts'
+            perm: uikit_theme_builder[fonts]
+            icon: rex-icon fa-font
+        icons:
+            title: 'Custom Icons'
+            perm: uikit_theme_builder[icons]
+            icon: rex-icon fa-star
+        custom-widgets:
+            title: 'Custom Widgets'
+            perm: uikit_theme_builder[custom-widgets]
+            icon: rex-icon fa-puzzle-piece
+        settings:
+            title: 'Einstellungen'
+            perm: uikit_theme_builder[settings]
+            icon: rex-icon fa-cog
+        debug:
+            title: 'Debug'
+            perm: uikit_theme_builder[debug]
+            icon: rex-icon fa-bug
+        help:
+            title: translate:uikit_theme_builder_help_title
+            subPath: README.md
+            icon: rex-icon fa-question-circle
+            itemClass: pull-right
+            perm: uikit_theme_builder[]
+
+requires:
+    redaxo: '^5.20.0'
+    php:
+        version: '^8.0'
+
+default_config:
+    google_fonts_api_key: ''
+    backend_theme: ''
+
+permissions:
+    uikit_theme_builder[]: translate:perm_uikit_theme_builder
+    uikit_theme_builder[themes]: translate:perm_uikit_theme_builder_themes
+    uikit_theme_builder[templates]: translate:perm_uikit_theme_builder_templates
+    uikit_theme_builder[editor]: translate:perm_uikit_theme_builder_editor
+    uikit_theme_builder[extra_styles]: translate:perm_uikit_theme_builder_extra_styles
+    uikit_theme_builder[domains]: translate:perm_uikit_theme_builder_domains
+    uikit_theme_builder[fonts]: translate:perm_uikit_theme_builder_fonts
+    uikit_theme_builder[icons]: translate:perm_uikit_theme_builder_icons
+    uikit_theme_builder[custom-widgets]: translate:perm_uikit_theme_builder_custom_widgets
+    uikit_theme_builder[settings]: translate:perm_uikit_theme_builder_settings
+    uikit_theme_builder[debug]: translate:perm_uikit_theme_builder_debug
+
+conflicts:
+    versions:
+        uikit: '*'

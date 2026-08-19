@@ -1,0 +1,205 @@
+/**
+ * UIKit Theme Builder - Templates CSS
+ * Erweiterte Stile für flexible Navbar-Designs
+ */
+
+/* Navigation Stile */
+.uk-navbar-container {
+    transition: all 0.3s ease;
+}
+
+.uk-navbar-container.uk-navbar-sticky {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Navbar Align - Standardlayout */
+.uk-navbar-right .uk-navbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Desktop Navigation mit verschiedenen Stilen */
+@media (min-width: 768px) {
+    /* Centered Navigation */
+    .uk-navbar-center {
+        flex: 1;
+        display: flex !important;
+        justify-content: center;
+    }
+    
+    .uk-navbar-center .uk-navbar-nav {
+        gap: 1rem;
+    }
+    
+    /* Right Navigation */
+    .uk-navbar-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex: auto;
+        justify-content: flex-end;
+    }
+}
+
+/* Suchfeld Stile */
+.uk-search-navbar {
+    width: 200px;
+    transition: width 0.3s ease;
+}
+
+.uk-search-navbar:focus-within {
+    width: 300px;
+}
+
+.uk-search-navbar .uk-search-input {
+    padding: 8px 4px 8px 28px;
+    font-size: 0.875rem;
+    border: none;
+    background: transparent;
+}
+
+.uk-search-navbar .uk-search-icon-flip {
+    position: absolute;
+    right: auto;
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Mobile Offcanvas Stile */
+.uk-offcanvas-bar {
+    padding: 1.5rem;
+}
+
+.uk-offcanvas-bar nav {
+    margin-top: 1.5rem;
+}
+
+.uk-nav-default > li > a {
+    padding: 0.75rem 0;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.uk-nav-default > li > a:hover {
+    color: var(--global-primary-background, #1e87f0);
+}
+
+.uk-nav-default > li.uk-active > a {
+    color: var(--global-primary-background, #1e87f0);
+    font-weight: 600;
+}
+
+/* Mobile Navigation Toggle Button */
+.nav-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    margin-right: 0.5rem;
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.nav-toggle-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+/* Mobile Suchfeld */
+.uk-search-default {
+    display: block;
+    position: relative;
+}
+
+.uk-search-default .uk-search-input {
+    padding-left: 1.5rem;
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.uk-search-default .uk-search-icon {
+    position: absolute;
+    left: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.6;
+}
+
+/* Breadcrumb Stile */
+.uk-breadcrumb {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.uk-breadcrumb li {
+    display: flex;
+    align-items: center;
+}
+
+.uk-breadcrumb li:not(:last-child)::after {
+    content: '/';
+    margin: 0 0.5rem;
+    opacity: 0.5;
+}
+
+.uk-breadcrumb a {
+    color: var(--global-primary-background, #1e87f0);
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.uk-breadcrumb a:hover {
+    opacity: 0.7;
+    text-decoration: underline;
+}
+
+.uk-breadcrumb li.uk-disabled {
+    opacity: 0.7;
+}
+
+/* Barrierefreiheit */
+a:focus-visible,
+button:focus-visible {
+    outline: 2px solid var(--global-primary-background, #1e87f0);
+    outline-offset: 2px;
+}
+
+/* Skip to Main Content Link */
+a[href="#main-content"] {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10000;
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 767px) {
+    .uk-navbar-container {
+        padding: 0.5rem 0;
+    }
+    
+    .uk-navbar-left {
+        flex: 1;
+    }
+    
+    .uk-search-navbar {
+        width: 150px;
+    }
+    
+    .uk-button-small {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+    }
+}

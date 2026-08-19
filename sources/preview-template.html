@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UIKit Theme Preview - {{THEME_NAME}}</title>
+    
+    <!-- Google Fonts (falls vorhanden) -->
+    {{GOOGLE_FONTS}}
+    
+    <!-- UIKit CSS + Theme CSS -->
+    <link rel="stylesheet" href="{{THEME_CSS_URL}}">
+    
+    <style>
+        /* Nur minimal erforderliche Struktur-Styles */
+        .preview-content {
+            min-height: 100vh;
+        }
+        
+        /* Accessibility - Versteckte Labels für Screenreader */
+        .uk-hidden-visually {
+            position: absolute !important;
+            width: 1px !important;
+            height: 1px !important;
+            padding: 0 !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            white-space: nowrap !important;
+            border: 0 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky">
+        <nav class="uk-navbar-container" uk-navbar>
+            <div class="uk-navbar-left">
+                <a class="uk-navbar-item uk-logo uk-padding-remove-right uk-margin-left" href="#">
+                    <span uk-icon="icon: paint-bucket; ratio: 1.5" class="uk-margin-small-right"></span>
+                    <span class="uk-text-bold">UIKit Preview</span>
+                </a>
+            </div>
+            
+            <div class="uk-navbar-center uk-visible@m">
+                <ul class="uk-navbar-nav">
+                    <li class="uk-parent">
+                        <a class="uk-margin-small-left" href="#components">
+                            Components
+                            <span uk-navbar-parent-icon></span>
+                        </a>
+                        <div tabindex="0" class="uk-navbar-dropdown uk-navbar-dropdown-width-4 uk-border-rounded uk-background-default uk-margin-remove uk-padding-small">
+                            <ul class="uk-grid-divider uk-grid-small uk-nav uk-navbar-dropdown-nav uk-child-width-1-2" uk-grid="masonry: true">
+                                <li>
+                                    <a class="uk-text-bolder uk-text-default" href="#buttons">Buttons</a>
+                                </li>
+                                <li>
+                                    <a class="uk-text-bolder uk-text-default" href="#cards">Cards</a>
+                                </li>
+                                <li>
+                                    <a class="uk-text-bolder uk-text-default" href="#forms">Forms</a>
+                                    <div tabindex="0" class="uk-default">
+                                        <ul>
+                                            <li><a class="uk-margin-small-left" href="#inputs">Input Elements</a></li>
+                                            <li><a class="uk-margin-small-left" href="#validation">Validation</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                                <li>
+                                    <a class="uk-text-bolder uk-text-default" href="#navigation">Navigation</a>
+                                    <div tabindex="0" class="uk-default">
+                                        <ul>
+                                            <li><a class="uk-margin-small-left" href="#navbar">Navbar</a></li>
+                                            <li><a class="uk-margin-small-left" href="#tabs">Tabs</a></li>
+                                            <li><a class="uk-margin-small-left" href="#accordion">Accordion</a></li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a class="uk-margin-small-left" href="#layout">Layout</a>
+                    </li>
+                    <li class="uk-parent">
+                        <a class="uk-margin-small-left" href="#elements">
+                            Elements
+                            <span uk-navbar-parent-icon></span>
+                        </a>
+                        <div tabindex="0" class="uk-navbar-dropdown uk-navbar-dropdown-width-4 uk-border-rounded uk-background-default uk-margin-remove uk-padding-small">
+                            <ul class="uk-grid-divider uk-grid-small uk-nav uk-navbar-dropdown-nav uk-child-width-1-2" uk-grid="masonry: true">
+                                <li>
+                                    <a class="uk-text-bolder uk-text-default" href="#alerts">Alerts</a>
+                                </li>
+                                <li>
+                                    <a class="uk-text-bolder uk-text-default" href="#badges">Badges & Labels</a>
+                                </li>
+                                <li>
+                                    <a class="uk-text-bolder uk-text-default" href="#progress">Progress</a>
+                                </li>
+                                <li>
+                                    <a class="uk-text-bolder uk-text-default" href="#modals">Modals</a>
+                                </li>
+                                <li>
+                                    <a class="uk-text-bolder uk-text-default" href="#icons">Icons</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a class="uk-margin-small-left" href="#typography">Typography</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="uk-navbar-right">
+                <button class="uk-navbar-toggle uk-hidden@m" uk-icon="icon: menu; ratio: 1.4" type="button" uk-toggle="target: #sidebar-navi">
+                    <span class="uk-hidden-visually">Mobile Navigation einblenden</span>
+                </button>
+                
+                <div aria-hidden="true" id="sidebar-navi" uk-offcanvas="mode: slide; overlay: true; flip: true;">
+                    <div class="uk-offcanvas-bar">
+                        <button class="uk-offcanvas-close" type="button" uk-close></button>
+
+                        <div class="uk-margin">
+                            <form action="#" class="uk-search uk-search-default">
+                                <span uk-search-icon></span>
+                                <label class="uk-hidden-visually" for="site-search-mobile">Suche:</label>
+                                <input class="uk-search-input" id="site-search-mobile" type="search" placeholder="Suche...">
+                            </form>
+                        </div>
+
+                        <ul class="uk-nav-default" uk-nav>
+                            <li class="uk-parent">
+                                <a href="#">Components <span uk-nav-parent-icon></span></a>
+                                <ul class="uk-nav-sub">
+                                    <li><a href="#buttons">Buttons</a></li>
+                                    <li><a href="#cards">Cards</a></li>
+                                    <li><a href="#forms">Forms</a></li>
+                                    <li><a href="#navigation">Navigation</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#layout">Layout</a></li>
+                            <li class="uk-parent">
+                                <a href="#">Elements <span uk-nav-parent-icon></span></a>
+                                <ul class="uk-nav-sub">
+                                    <li><a href="#alerts">Alerts</a></li>
+                                    <li><a href="#badges">Badges & Labels</a></li>
+                                    <li><a href="#progress">Progress</a></li>
+                                    <li><a href="#modals">Modals</a></li>
+                                    <li><a href="#icons">Icons</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#typography">Typography</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="preview-content">
+        <div class="uk-container uk-container-large">
+            
+            <!-- Hero Section -->
+            <section id="components" class="uk-section uk-section-large">
+                <div class="uk-text-center">
+                    <h1 class="uk-heading-xlarge uk-text-primary">UIKit Theme Preview</h1>
+                    <p class="uk-text-lead uk-text-muted">Eine umfassende Vorschau aller Theme-Komponenten</p>
+                    <div class="uk-margin-top">
+                        <button class="uk-button uk-button-primary uk-button-large uk-margin-right" uk-toggle="target: #modal-example">Modal öffnen</button>
+                        <button class="uk-button uk-button-default uk-button-large">Mehr erfahren</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Typography Section -->
+            <section id="typography" class="uk-section">
+                <div class="uk-container">
+                    <h2 class="uk-heading-line uk-text-center"><span>Typography</span></h2>
+                    
+                    <!-- Standard HTML Headings -->
+                    <div class="uk-margin-large-bottom">
+                        <div class="uk-card uk-card-default uk-card-body">
+                            <h3 class="uk-card-title">Standard HTML Headings (H1-H6)</h3>
+                            <p class="uk-text-meta">Diese Überschriften zeigen die individuellen Farben, die im Theme Builder konfiguriert wurden</p>
+                            
+                            <div class="uk-margin">
+                                <h1>H1 Heading - Hauptüberschrift</h1>
+                                <p class="uk-text-meta">Standard h1 Tag ohne UIKit-Klassen</p>
+                            </div>
+                            
+                            <div class="uk-margin">
+                                <h2>H2 Heading - Unterüberschrift</h2>
+                                <p class="uk-text-meta">Standard h2 Tag ohne UIKit-Klassen</p>
+                            </div>
+                            
+                            <div class="uk-margin">
+                                <h3>H3 Heading - Abschnittsüberschrift</h3>
+                                <p class="uk-text-meta">Standard h3 Tag ohne UIKit-Klassen</p>
+                            </div>
+                            
+                            <div class="uk-margin">
+                                <h4>H4 Heading - Kleinere Überschrift</h4>
+                                <p class="uk-text-meta">Standard h4 Tag ohne UIKit-Klassen</p>
+                            </div>
+                            
+                            <div class="uk-margin">
+                                <h5>H5 Heading - Noch kleinere Überschrift</h5>
+                                <p class="uk-text-meta">Standard h5 Tag ohne UIKit-Klassen</p>
+                            </div>
+                            
+                            <div class="uk-margin">
+                                <h6>H6 Heading - Kleinste Überschrift</h6>
+                                <p class="uk-text-meta">Standard h6 Tag ohne UIKit-Klassen</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="uk-grid-match" uk-grid>
+                        <div class="uk-width-1-2@m">
+                            <div class="uk-card uk-card-default uk-card-body">
+                                <h3 class="uk-card-title">UIKit Heading Classes</h3>
+                                <p class="uk-text-meta">Spezielle UIKit Überschriften-Klassen</p>
+                                <h1 class="uk-heading-small">Heading Small</h1>
+                                <h2 class="uk-heading-medium">Heading Medium</h2>
+                                <h3 class="uk-heading-large">Heading Large</h3>
+                                <h4 class="uk-text-lead">Text Lead</h4>
+                                <p class="uk-text-meta">Text Meta</p>
+                            </div>
+                        </div>
+                        
+                        <div class="uk-width-1-2@m">
+                            <div class="uk-card uk-card-default uk-card-body">
+                                <h3 class="uk-card-title">Text Styles</h3>
+                                <p>This is a <strong>bold text</strong> example.</p>
+                                <p>This is an <em>italic text</em> example.</p>
+                                <p>This is a <span class="uk-text-primary">primary colored</span> text.</p>
+                                <p>This is a <span class="uk-text-success">success colored</span> text.</p>
+                                <p>This is a <span class="uk-text-warning">warning colored</span> text.</p>
+                                <p>This is a <span class="uk-text-danger">danger colored</span> text.</p>
+                                
+                                <h4 class="uk-margin-medium-top">Dropcap</h4>
+                                <p class="uk-dropcap">Überall dieselbe alte Leier. Das Layout ist fertig, der Text lässt auf sich warten. Damit das Layout nun nicht nackt im Raume steht und sich klein und leer vorkommt, springe ich ein: der Blindtext. Genau zu diesem Zwecke erschaffen, immer im Schatten meines großen Bruders »Lorem Ipsum«, freue ich mich jedes Mal, wenn Sie ein paar Zeilen lesen.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Heading Color Comparison -->
+                    <div class="uk-margin-large-top">
+                        <div class="uk-card uk-card-primary uk-card-body uk-light">
+                            <h3 class="uk-card-title">Headings auf farbigem Hintergrund</h3>
+                            <p class="uk-text-meta">Test wie die Heading-Farben auf dunklem Hintergrund wirken</p>
+                            
+                            <h1>H1 auf Primary Background</h1>
+                            <h2>H2 auf Primary Background</h2>
+                            <h3>H3 auf Primary Background</h3>
+                            <h4>H4 auf Primary Background</h4>
+                            <h5>H5 auf Primary Background</h5>
+                            <h6>H6 auf Primary Background</h6>
+                        </div>
+                    </div>
+                    
+                    <!-- Heading Variants -->
+                    <div class="uk-margin-large-top">
+                        <div class="uk-card uk-card-default uk-card-body">
+                            <h3 class="uk-card-title">Heading-Varianten</h3>
+                            <p class="uk-text-meta">Spezielle UIKit Heading-Stile</p>
+                            
+                            <h2 class="uk-heading-divider">Heading Divider</h2>
+                            <p>Überschrift mit Trennlinie darunter</p>
+                            
+                            <h2 class="uk-heading-bullet">Heading Bullet</h2>
+                            <p>Überschrift mit vertikalem Balken davor</p>
+                            
+                            <h2 class="uk-heading-line"><span>Heading Line</span></h2>
+                            <p>Überschrift mit Linien auf beiden Seiten</p>
+                            
+                            <hr class="uk-divider-icon uk-margin-medium">
+                            <p class="uk-text-center uk-text-meta">Divider Icon (konfigurierbar)</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Blockquote -->
+                    <div class="uk-margin-large-top">
+                        <div class="uk-card uk-card-default uk-card-body">
+                            <h3 class="uk-card-title">Blockquote</h3>
+                            <p class="uk-text-meta">Zitate mit individueller Schriftart, -größe und -stil</p>
+                            
+                            <blockquote cite="#">
+                                <p class="uk-margin-small-bottom">Webstandards sind das Regelwerk, auf dem Webseiten aufbauen. So gibt es Regeln für HTML, CSS, JavaScript oder auch XML. Diese Standards sorgen dafür, dass alle Beteiligten aus einer Webseite den größten Nutzen ziehen.</p>
+                                <footer>— Max Mustermann in <cite><a href="#">Eine Quelle</a></cite></footer>
+                            </blockquote>
+                            
+                            <blockquote class="uk-margin-medium-top" cite="#">
+                                <p class="uk-margin-small-bottom">The blockquote element represents content that is quoted from another source, optionally with a citation which must be within a footer or cite element.</p>
+                                <footer>— Someone famous in <cite>Source Title</cite></footer>
+                            </blockquote>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Buttons Section -->
+            <section id="buttons" class="uk-section">
+                <div class="uk-container">
+                    <h2 class="uk-heading-line uk-text-center"><span>Buttons</span></h2>
+                    
+                    <div class="uk-grid-match" uk-grid>
+                        <div class="uk-width-1-2@m">
+                            <div class="uk-card uk-card-default uk-card-body">
+                                <h3 class="uk-card-title">Button Styles</h3>
+                                <p class="uk-margin">
+                                    <button class="uk-button uk-button-default uk-margin-small-right">Default</button>
+                                    <button class="uk-button uk-button-primary uk-margin-small-right">Primary</button>
+                                    <button class="uk-button uk-button-secondary uk-margin-small-right">Secondary</button>
+                                </p>
+                                <p class="uk-margin">
+                                    <button class="uk-button uk-button-danger uk-margin-small-right">Danger</button>
+                                    <button class="uk-button uk-button-text uk-margin-small-right">Text</button>
+                                    <button class="uk-button uk-button-link">Link</button>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="uk-width-1-2@m">
+                            <div class="uk-card uk-card-default uk-card-body">
+                                <h3 class="uk-card-title">Button Sizes</h3>
+                                <p class="uk-margin">
+                                    <button class="uk-button uk-button-primary uk-button-small uk-margin-small-right">Small</button>
+                                    <button class="uk-button uk-button-primary uk-margin-small-right">Default</button>
+                                    <button class="uk-button uk-button-primary uk-button-large">Large</button>
+                                </p>
+                                <p class="uk-margin">
+                                    <button class="uk-button uk-button-secondary uk-width-1-1">Full Width</button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cards Section -->
+            <section id="cards" class="uk-section">
+                <div class="uk-container">
+                    <h2 class="uk-heading-line uk-text-center"><span>Cards</span></h2>
+                    
+                    <div class="uk-grid-match" uk-grid>
+                        <div class="uk-width-1-3@m">
+                            <div class="uk-card uk-card-default uk-card-hover uk-card-body">
+                                <h3 class="uk-card-title">Default Card</h3>
+                                <p>Das Layout ist fertig, der Text lässt auf sich warten. Damit das Layout nun nicht nackt im Raume steht, springe ich ein.</p>
+                                <p><a class="uk-button uk-button-text" href="#">Read more</a></p>
+                            </div>
+                        </div>
+                        
+                        <div class="uk-width-1-3@m">
+                            <div class="uk-card uk-card-primary uk-card-hover uk-card-body uk-light">
+                                <h3 class="uk-card-title">Primary Card</h3>
+                                <p>Webstandards sind das Regelwerk, auf dem Webseiten aufbauen. So gibt es Regeln für HTML, CSS und JavaScript.</p>
+                                <p><a class="uk-button uk-button-text uk-text-white" href="#">Read more</a></p>
+                            </div>
+                        </div>
+                        
+                        <div class="uk-width-1-3@m">
+                            <div class="uk-card uk-card-secondary uk-card-hover uk-card-body uk-light">
+                                <h3 class="uk-card-title">Secondary Card</h3>
+                                <p>Standards sparen Zeit bei den Entwicklungskosten und sorgen dafür, dass sich Webseiten später leichter pflegen lassen.</p>
+                                <p><a class="uk-button uk-button-text uk-text-white" href="#">Read more</a></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Transparent Card Section -->
+                    <div class="uk-margin-large-top">
+                        <h3 class="uk-heading-line"><span>Transparent Card (Core Utility)</span></h3>
+                        <p class="uk-text-meta uk-text-center">Glasmorphism-Effekt ohne Shadow und ohne horizontales Padding</p>
+                        
+                        <div class="uk-grid-match uk-grid-small" uk-grid>
+                            <!-- Transparent Card auf Default Background -->
+                            <div class="uk-width-1-3@m">
+                                <div class="uk-card uk-card-transparent uk-card-hover uk-card-body">
+                                    <h3 class="uk-card-title">Transparent Card</h3>
+                                    <p>Glasmorphism-Effekt mit Backdrop-Filter. Kein horizontales Padding in Title, Body und Footer.</p>
+                                    <p><a class="uk-button uk-button-primary uk-button-small" href="#">Mehr erfahren</a></p>
+                                </div>
+                            </div>
+                            
+                            <!-- Transparent Card auf Bild -->
+                            <div class="uk-width-1-3@m">
+                                <div class="uk-position-relative uk-border-rounded uk-overflow-hidden" style="min-height: 400px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <div class="uk-position-center uk-width-4-5">
+                                        <div class="uk-card uk-card-transparent uk-card-hover uk-card-body uk-light">
+                                            <h3 class="uk-card-title">Auf Gradient</h3>
+                                            <p>Transparent Card wirkt besonders gut auf farbigen Hintergründen oder Bildern.</p>
+                                            <p><a class="uk-button uk-button-default uk-button-small" href="#">Details</a></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Transparent Card auf Primary Section -->
+                            <div class="uk-width-1-3@m">
+                                <div class="uk-section uk-section-primary uk-light uk-padding uk-border-rounded">
+                                    <div class="uk-card uk-card-transparent uk-card-hover uk-card-body">
+                                        <h3 class="uk-card-title">Auf Primary</h3>
+                                        <p>Automatische Anpassung an dunkle Hintergründe mit .uk-light Kontext.</p>
+                                        <p><a class="uk-button uk-button-default uk-button-small" href="#">Ansehen</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="uk-alert-primary uk-margin-top" uk-alert>
+                            <p><strong>uk-card-transparent:</strong> Immer in jedem Theme kompiliert • Kein Drop-Shadow • Kein horizontales Padding in Title/Body/Footer • Glasmorphism mit Backdrop-Filter</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Modal & Offcanvas Trigger Buttons -->
+                    <div id="modals" class="uk-margin-large-top">
+                        <div class="uk-card uk-card-default uk-card-body">
+                            <h3 class="uk-card-title">Modal & Offcanvas Komponenten</h3>
+                            <p class="uk-text-meta">Teste die konfigurierbaren Modal- und Offcanvas-Einstellungen</p>
+                            
+                            <p class="uk-margin">
+                                <button class="uk-button uk-button-primary uk-margin-small-right" type="button" uk-toggle="target: #modal-example">Modal öffnen</button>
+                                <button class="uk-button uk-button-secondary" type="button" uk-toggle="target: #offcanvas-example">Offcanvas öffnen</button>
+                            </p>
+                            
+                            <div class="uk-alert-primary uk-margin-top" uk-alert>
+                                <p><strong>Modal:</strong> Hintergrund, Border-Radius, Header/Footer-Farbe, Titel-Größe konfigurierbar</p>
+                                <p><strong>Offcanvas:</strong> Breite (Standard & Small), Hintergrundfarbe, Textfarbe konfigurierbar</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Forms Section -->
+            <section id="forms" class="uk-section">
+                <div class="uk-container">
+                    <h2 class="uk-heading-line uk-text-center"><span>Forms</span></h2>
+                    
+                    <div class="uk-grid-match" uk-grid>
+                        <div class="uk-width-1-2@m">
+                            <div class="uk-card uk-card-default uk-card-body">
+                                <h3 class="uk-card-title">Basic Form</h3>
+                                <form>
+                                    <fieldset class="uk-fieldset">
+                                        <div class="uk-margin">
+                                            <label class="uk-form-label">Name</label>
+                                            <input class="uk-input" type="text" placeholder="Your name">
+                                        </div>
+                                        
+                                        <div class="uk-margin">
+                                            <label class="uk-form-label">Email</label>
+                                            <input class="uk-input" type="email" placeholder="your@email.com">
+                                        </div>
+                                        
+                                        <div class="uk-margin">
+                                            <label class="uk-form-label">Message</label>
+                                            <textarea class="uk-textarea" rows="4" placeholder="Your message"></textarea>
+                                        </div>
+                                        
+                                        <div class="uk-margin">
+                                            <label><input class="uk-checkbox" type="checkbox"> I agree to the terms</label>
+                                        </div>
+                                        
+                                        <div class="uk-margin">
+                                            <button class="uk-button uk-button-primary">Submit</button>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <div class="uk-width-1-2@m">
+                            <div class="uk-card uk-card-default uk-card-body">
+                                <h3 class="uk-card-title">Form Controls</h3>
+                                <form>
+                                    <fieldset class="uk-fieldset">
+                                        <div class="uk-margin">
+                                            <label class="uk-form-label">Select</label>
+                                            <select class="uk-select">
+                                                <option>Option 1</option>
+                                                <option>Option 2</option>
+                                                <option>Option 3</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="uk-margin">
+                                            <label class="uk-form-label">Radio Buttons</label>
+                                            <div class="uk-form-controls">
+                                                <label><input class="uk-radio" type="radio" name="radio" checked> Option A</label><br>
+                                                <label><input class="uk-radio" type="radio" name="radio"> Option B</label>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="uk-margin">
+                                            <label class="uk-form-label">Range</label>
+                                            <input class="uk-range" type="range" min="0" max="100" value="50">
+                                        </div>
+                                        
+                                        <div class="uk-margin">
+                                            <button class="uk-button uk-button-secondary" type="button">Button</button>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Alerts & Notifications Section -->
+            <section id="alerts" class="uk-section">
+                <div class="uk-container">
+                    <h2 class="uk-heading-line uk-text-center"><span>Alerts & Notifications</span></h2>
+                    
+                    <div class="uk-grid-match" uk-grid>
+                        <div class="uk-width-1-2@m">
+                            <div class="uk-card uk-card-default uk-card-body">
+                                <h3 class="uk-card-title">Standard Alerts</h3>
+                                
+                                <div class="uk-margin">
+                                    <div class="uk-alert-primary" uk-alert>
+                                        <a href class="uk-alert-close" uk-close></a>
+                                        <p><strong>Primary!</strong> This is a primary alert.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="uk-margin">
+                                    <div class="uk-alert-success" uk-alert>
+                                        <a href class="uk-alert-close" uk-close></a>
+                                        <p><strong>Success!</strong> This is a success alert.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="uk-margin">
+                                    <div class="uk-alert-warning" uk-alert>
+                                        <a href class="uk-alert-close" uk-close></a>
+                                        <p><strong>Warning!</strong> This is a warning alert.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="uk-margin">
+                                    <div class="uk-alert-danger" uk-alert>
+                                        <a href class="uk-alert-close" uk-close></a>
+                                        <p><strong>Danger!</strong> This is a danger alert.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="uk-width-1-2@m">
+                            <div class="uk-card uk-card-default uk-card-body">
+                                <h3 class="uk-card-title" id="badges">Badges & Labels</h3>
+                                <div class="uk-margin">
+                                    <span class="uk-badge">Badge</span>
+                                    <span class="uk-badge uk-margin-small-left">100</span>
+                                    <span class="uk-label uk-margin-small-left">Label</span>
+                                    <span class="uk-label uk-label-success uk-margin-small-left">Success</span>
+                                    <span class="uk-label uk-label-warning uk-margin-small-left">Warning</span>
+                                    <span class="uk-label uk-label-danger uk-margin-small-left">Danger</span>
+                                </div>
+                                
+                                <h4 id="progress" class="uk-margin-top">Progress Bars</h4>
+                                <div class="uk-margin">
+                                    <progress class="uk-progress" value="30" max="100"></progress>
+                                    <progress class="uk-progress uk-margin-small-top" value="60" max="100"></progress>
+                                    <progress class="uk-progress uk-margin-small-top" value="90" max="100"></progress>
+                                </div>
+                                
+                                <h4 class="uk-margin-top">Notifications</h4>
+                                <div class="uk-margin">
+                                    <button class="uk-button uk-button-primary uk-margin-small-right" onclick="UIkit.notification({message: 'Success notification!', status: 'success'})">Success</button>
+                                    <button class="uk-button uk-button-secondary uk-margin-small-right" onclick="UIkit.notification({message: 'Warning notification!', status: 'warning'})">Warning</button>
+                                    <button class="uk-button uk-button-danger" onclick="UIkit.notification({message: 'Danger notification!', status: 'danger'})">Danger</button>
+                                </div>
+                                
+                                <h4>UIKit Box Shadows</h4>
+                                <div class="uk-margin">
+                                    <div class="uk-card uk-card-default uk-card-body uk-box-shadow-small uk-margin-bottom">
+                                        <p class="uk-margin-remove">Small Shadow</p>
+                                        <code>uk-box-shadow-small</code>
+                                    </div>
+                                    
+                                    <div class="uk-card uk-card-default uk-card-body uk-box-shadow-medium uk-margin-bottom">
+                                        <p class="uk-margin-remove">Medium Shadow</p>
+                                        <code>uk-box-shadow-medium</code>
+                                    </div>
+                                    
+                                    <div class="uk-card uk-card-default uk-card-body uk-box-shadow-large">
+                                        <p class="uk-margin-remove">Large Shadow</p>
+                                        <code>uk-box-shadow-large</code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Navigation Components Section -->
+            <section id="navigation" class="uk-section">
+                <div class="uk-container">
+                    <h2 class="uk-heading-line uk-text-center"><span>Navigation Components</span></h2>
+                    
+                    <div class="uk-grid-match" uk-grid>
+                        <div class="uk-width-1-2@m">
+                            <div class="uk-card uk-card-default uk-card-body">
+                                <h3 class="uk-card-title">Tabs</h3>
+                                
+                                <ul class="uk-tab uk-margin-bottom" uk-tab>
+                                    <li class="uk-active"><a href="#">Active</a></li>
+                                    <li><a href="#">Item</a></li>
+                                    <li><a href="#">Item</a></li>
+                                </ul>
+                                
+                                <ul class="uk-switcher uk-margin">
+                                    <li>Sehen Sie, Webstandards sind das Regelwerk, auf dem Webseiten aufbauen.</li>
+                                    <li>This is tab item content. Consectetur adipiscing elit.</li>
+                                    <li>This is another tab content. Sed do eiusmod tempor.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="uk-width-1-2@m">
+                            <div class="uk-card uk-card-default uk-card-body">
+                                <h3 class="uk-card-title">Accordion</h3>
+                                
+                                <ul uk-accordion>
+                                    <li class="uk-open">
+                                        <a class="uk-accordion-title" href="#">Item 1</a>
+                                        <div class="uk-accordion-content">
+                                            <p>Im Gegensatz zu früheren Webseiten müssen wir nicht mehr zwei verschiedene Webseiten für den Internet Explorer und einen anderen Browser programmieren. Was für eine Erleichterung.</p>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <a class="uk-accordion-title" href="#">Item 2</a>
+                                        <div class="uk-accordion-content">
+                                            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <a class="uk-accordion-title" href="#">Item 3</a>
+                                        <div class="uk-accordion-content">
+                                            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slider Section -->
+            <section class="uk-section">
+                <div class="uk-container">
+                    <h2 class="uk-heading-line uk-text-center"><span>Slider Components</span></h2>
+                    
+                    <div class="uk-margin-large">
+                        <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slider>
+                            <ul class="uk-slider-items uk-child-width-1-3@s uk-grid">
+                                <li>
+                                    <div class="uk-card uk-card-default uk-card-body">
+                                        <h3 class="uk-card-title">Slide 1</h3>
+                                        <p>Fordern Sie von Ihren Designern und Programmieren einfach standardkonforme Webseiten. Ihr Budget wird es Ihnen auf Dauer danken.</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="uk-card uk-card-primary uk-card-body uk-light">
+                                        <h3 class="uk-card-title">Slide 2</h3>
+                                        <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="uk-card uk-card-secondary uk-card-body uk-light">
+                                        <h3 class="uk-card-title">Slide 3</h3>
+                                        <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="uk-card uk-card-default uk-card-body">
+                                        <h3 class="uk-card-title">Slide 4</h3>
+                                        <p>Excepteur sint occaecat cupidatat non proident.</p>
+                                    </div>
+                                </li>
+                            </ul>
+                            
+                            <a class="uk-position-center-left uk-position-small uk-hidden-hover" href uk-slidenav-previous uk-slider-item="previous"></a>
+                            <a class="uk-position-center-right uk-position-small uk-hidden-hover" href uk-slidenav-next uk-slider-item="next"></a>
+                        </div>
+                        
+                        <ul class="uk-slider-nav uk-dotnav uk-flex-center uk-margin"></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Layout Section -->
+            <section id="layout" class="uk-section">
+                <div class="uk-container">
+                    <h2 class="uk-heading-line uk-text-center"><span>Layout & Grid</span></h2>
+                    
+                    <div class="uk-margin-large">
+                        <h3>Grid System</h3>
+                        <div class="uk-grid-small uk-child-width-1-3@m" uk-grid>
+                            <div>
+                                <div class="uk-card uk-card-default uk-card-body uk-text-center">
+                                    <div class="uk-badge uk-badge-success">1/3</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="uk-card uk-card-default uk-card-body uk-text-center">
+                                    <div class="uk-badge uk-badge-warning">1/3</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="uk-card uk-card-default uk-card-body uk-text-center">
+                                    <div class="uk-badge uk-badge-danger">1/3</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="uk-margin-large">
+                        <h3>Breakpoints</h3>
+                        <div class="uk-overflow-auto">
+                            <table class="uk-table uk-table-hover uk-table-divider">
+                                <thead>
+                                    <tr>
+                                        <th>Breakpoint</th>
+                                        <th>Suffix</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>Small</code></td>
+                                        <td><code>@s</code></td>
+                                        <td>Affects device widths of 640px and larger</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Medium</code></td>
+                                        <td><code>@m</code></td>
+                                        <td>Affects device widths of 960px and larger</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Large</code></td>
+                                        <td><code>@l</code></td>
+                                        <td>Affects device widths of 1200px and larger</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>XLarge</code></td>
+                                        <td><code>@xl</code></td>
+                                        <td>Affects device widths of 1600px and larger</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Utilities Section -->
+            <section class="uk-section">
+                <div class="uk-container">
+                    <h2 class="uk-heading-line uk-text-center"><span>Utilities & Components</span></h2>
+                    
+                    <div class="uk-grid-match" uk-grid>
+                        <div class="uk-width-1-2@m">
+                            <div class="uk-card uk-card-default uk-card-body">
+                                <h3 class="uk-card-title">Badges & Labels</h3>
+                                <p>
+                                    <span class="uk-badge">Default</span>
+                                    <span class="uk-badge uk-badge-success">Success</span>
+                                    <span class="uk-badge uk-badge-warning">Warning</span>
+                                    <span class="uk-badge uk-badge-danger">Danger</span>
+                                </p>
+                                
+                                <h4>Labels</h4>
+                                <p>
+                                    <span class="uk-label">Default</span>
+                                    <span class="uk-label uk-label-success">Success</span>
+                                    <span class="uk-label uk-label-warning">Warning</span>
+                                    <span class="uk-label uk-label-danger">Danger</span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="uk-width-1-2@m">
+                            <div class="uk-card uk-card-default uk-card-body">
+                                <h3 class="uk-card-title">Progress & Loading</h3>
+                                <div class="uk-margin">
+                                    <progress class="uk-progress" value="75" max="100"></progress>
+                                </div>
+                                
+                                <div class="uk-margin">
+                                    <progress class="uk-progress uk-progress-success" value="60" max="100"></progress>
+                                </div>
+                                
+                                <div class="uk-margin">
+                                    <div uk-spinner="ratio: 2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Icons Section -->
+            <section id="icons" class="uk-section">
+                <div class="uk-container">
+                    <h2 class="uk-heading-line uk-text-center"><span>Icons Showcase</span></h2>
+                    
+                    <div class="uk-grid-match" uk-grid>
+                        <div class="uk-width-1-2@m">
+                            <div class="uk-card uk-card-default uk-card-body">
+                                <h3 class="uk-card-title">UIKit Standard Icons</h3>
+                                <div class="uk-grid-small uk-child-width-auto uk-text-center" uk-grid>
+                                    <div>
+                                        <div class="uk-margin-small">
+                                            <span uk-icon="icon: home; ratio: 2" class="uk-text-primary"></span>
+                                            <div class="uk-text-meta uk-text-small">home</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="uk-margin-small">
+                                            <span uk-icon="icon: heart; ratio: 2" class="uk-text-danger"></span>
+                                            <div class="uk-text-meta uk-text-small">heart</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="uk-margin-small">
+                                            <span uk-icon="icon: star; ratio: 2" class="uk-text-warning"></span>
+                                            <div class="uk-text-meta uk-text-small">star</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="uk-margin-small">
+                                            <span uk-icon="icon: user; ratio: 2" class="uk-text-success"></span>
+                                            <div class="uk-text-meta uk-text-small">user</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="uk-margin-small">
+                                            <span uk-icon="icon: mail; ratio: 2" class="uk-text-primary"></span>
+                                            <div class="uk-text-meta uk-text-small">mail</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="uk-margin-small">
+                                            <span uk-icon="icon: phone; ratio: 2" class="uk-text-secondary"></span>
+                                            <div class="uk-text-meta uk-text-small">phone</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="uk-margin-small">
+                                            <span uk-icon="icon: location; ratio: 2" class="uk-text-danger"></span>
+                                            <div class="uk-text-meta uk-text-small">location</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="uk-margin-small">
+                                            <span uk-icon="icon: calendar; ratio: 2" class="uk-text-primary"></span>
+                                            <div class="uk-text-meta uk-text-small">calendar</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="uk-margin-small">
+                                            <span uk-icon="icon: clock; ratio: 2" class="uk-text-muted"></span>
+                                            <div class="uk-text-meta uk-text-small">clock</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="uk-margin-small">
+                                            <span uk-icon="icon: search; ratio: 2" class="uk-text-primary"></span>
+                                            <div class="uk-text-meta uk-text-small">search</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="uk-margin-large-top">
+                        <div class="uk-card uk-card-default uk-card-body">
+                            <h3 class="uk-card-title">Icons in Buttons</h3>
+                            <p class="uk-margin">
+                                <button class="uk-button uk-button-primary uk-margin-small-right">
+                                    <span uk-icon="icon: home"></span> Home
+                                </button>
+                                <button class="uk-button uk-button-secondary uk-margin-small-right">
+                                    <span uk-icon="icon: heart"></span> Favoriten
+                                </button>
+                                <button class="uk-button uk-button-default uk-margin-small-right">
+                                    <span uk-icon="icon: search"></span> Suchen
+                                </button>
+                                <button class="uk-button uk-button-danger uk-margin-small-right">
+                                    <span uk-icon="icon: trash"></span> Löschen
+                                </button>
+                            </p>
+                            
+                            <h4>Icons mit Ratio</h4>
+                            <p class="uk-margin">
+                                <span uk-icon="icon: star; ratio: 1"></span>
+                                <span uk-icon="icon: star; ratio: 1.5" class="uk-text-primary"></span>
+                                <span uk-icon="icon: star; ratio: 2" class="uk-text-warning"></span>
+                                <span uk-icon="icon: star; ratio: 2.5" class="uk-text-danger"></span>
+                                <span uk-icon="icon: star; ratio: 3" class="uk-text-success"></span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="uk-margin-large-top">
+                        <h2 class="uk-heading-line uk-text-center"><span>Icons auf verschiedenen Hintergründen</span></h2>
+                        
+                        <div class="uk-grid-match uk-grid-small" uk-grid>
+                            <!-- Default Background -->
+                            <div class="uk-width-1-3@m">
+                                <div class="uk-card uk-card-default uk-card-body uk-text-center">
+                                    <h4 class="uk-card-title uk-text-small">Default Background</h4>
+                                    <div class="uk-margin">
+                                        <span uk-icon="icon: home; ratio: 2" class="uk-margin-small-right"></span>
+                                        <span uk-icon="icon: heart; ratio: 2" class="uk-text-danger uk-margin-small-right"></span>
+                                        <span uk-icon="icon: star; ratio: 2" class="uk-text-warning uk-margin-small-right"></span>
+                                        <span uk-icon="icon: check; ratio: 2" class="uk-text-success"></span>
+                                    </div>
+                                    <p class="uk-text-meta uk-text-small">Standard Icons mit verschiedenen Farben</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Primary Background -->
+                            <div class="uk-width-1-3@m">
+                                <div class="uk-card uk-card-primary uk-card-body uk-text-center uk-light">
+                                    <h4 class="uk-card-title uk-text-small">Primary Background</h4>
+                                    <div class="uk-margin">
+                                        <span uk-icon="icon: home; ratio: 2" class="uk-margin-small-right"></span>
+                                        <span uk-icon="icon: heart; ratio: 2" class="uk-margin-small-right"></span>
+                                        <span uk-icon="icon: star; ratio: 2" class="uk-margin-small-right"></span>
+                                        <span uk-icon="icon: check; ratio: 2"></span>
+                                    </div>
+                                    <p class="uk-text-meta uk-text-small">Weiße Icons auf Primary</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Secondary Background -->
+                            <div class="uk-width-1-3@m">
+                                <div class="uk-card uk-card-secondary uk-card-body uk-text-center uk-light">
+                                    <h4 class="uk-card-title uk-text-small">Secondary Background</h4>
+                                    <div class="uk-margin">
+                                        <span uk-icon="icon: home; ratio: 2" class="uk-margin-small-right"></span>
+                                        <span uk-icon="icon: heart; ratio: 2" class="uk-margin-small-right"></span>
+                                        <span uk-icon="icon: star; ratio: 2" class="uk-margin-small-right"></span>
+                                        <span uk-icon="icon: check; ratio: 2"></span>
+                                    </div>
+                                    <p class="uk-text-meta uk-text-small">Weiße Icons auf Secondary</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Muted Background -->
+                            <div class="uk-width-1-3@m">
+                                <div class="uk-card uk-card-body uk-text-center" style="background: #f8f8f8;">
+                                    <h4 class="uk-card-title uk-text-small">Muted Background</h4>
+                                    <div class="uk-margin">
+                                        <span uk-icon="icon: home; ratio: 2" class="uk-margin-small-right"></span>
+                                        <span uk-icon="icon: heart; ratio: 2" class="uk-text-danger uk-margin-small-right"></span>
+                                        <span uk-icon="icon: star; ratio: 2" class="uk-text-warning uk-margin-small-right"></span>
+                                        <span uk-icon="icon: check; ratio: 2" class="uk-text-success"></span>
+                                    </div>
+                                    <p class="uk-text-meta uk-text-small">Dunkle Icons auf hellem Grau</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Dark Background -->
+                            <div class="uk-width-1-3@m">
+                                <div class="uk-card uk-card-body uk-text-center uk-light" style="background: #222;">
+                                    <h4 class="uk-card-title uk-text-small">Dark Background</h4>
+                                    <div class="uk-margin">
+                                        <span uk-icon="icon: home; ratio: 2" class="uk-margin-small-right"></span>
+                                        <span uk-icon="icon: heart; ratio: 2" style="color: #ff6b6b;" class="uk-margin-small-right"></span>
+                                        <span uk-icon="icon: star; ratio: 2" style="color: #ffd93d;" class="uk-margin-small-right"></span>
+                                        <span uk-icon="icon: check; ratio: 2" style="color: #6bcf7f;"></span>
+                                    </div>
+                                    <p class="uk-text-meta uk-text-small">Helle/bunte Icons auf Dunkel</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Transparent Background -->
+                            <div class="uk-width-1-3@m">
+                                <div class="uk-card uk-card-body uk-text-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <h4 class="uk-card-title uk-text-small uk-light">Gradient Background</h4>
+                                    <div class="uk-margin uk-light">
+                                        <span uk-icon="icon: home; ratio: 2" class="uk-margin-small-right"></span>
+                                        <span uk-icon="icon: heart; ratio: 2" class="uk-margin-small-right"></span>
+                                        <span uk-icon="icon: star; ratio: 2" class="uk-margin-small-right"></span>
+                                        <span uk-icon="icon: check; ratio: 2"></span>
+                                    </div>
+                                    <p class="uk-text-meta uk-text-small uk-light">Weiße Icons auf Gradient</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="uk-margin-large-top">
+                        <h2 class="uk-heading-line uk-text-center"><span>Icon Farben im Detail</span></h2>
+                        
+                        <div class="uk-overflow-auto">
+                            <table class="uk-table uk-table-divider uk-table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Farbe</th>
+                                        <th>CSS Klasse</th>
+                                        <th class="uk-text-center">Beispiel Icons</th>
+                                        <th>Anwendungsfall</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="uk-badge">Standard</span></td>
+                                        <td><code>-</code></td>
+                                        <td class="uk-text-center">
+                                            <span uk-icon="icon: home; ratio: 1.5" class="uk-margin-small-right"></span>
+                                            <span uk-icon="icon: user; ratio: 1.5" class="uk-margin-small-right"></span>
+                                            <span uk-icon="icon: mail; ratio: 1.5"></span>
+                                        </td>
+                                        <td>Neutrale Navigation, Standard-Aktionen</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="uk-badge uk-label-primary">Primary</span></td>
+                                        <td><code>.uk-text-primary</code></td>
+                                        <td class="uk-text-center">
+                                            <span uk-icon="icon: home; ratio: 1.5" class="uk-text-primary uk-margin-small-right"></span>
+                                            <span uk-icon="icon: user; ratio: 1.5" class="uk-text-primary uk-margin-small-right"></span>
+                                            <span uk-icon="icon: mail; ratio: 1.5" class="uk-text-primary"></span>
+                                        </td>
+                                        <td>Hauptaktionen, wichtige Features</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="uk-badge uk-label-success">Success</span></td>
+                                        <td><code>.uk-text-success</code></td>
+                                        <td class="uk-text-center">
+                                            <span uk-icon="icon: check; ratio: 1.5" class="uk-text-success uk-margin-small-right"></span>
+                                            <span uk-icon="icon: happy; ratio: 1.5" class="uk-text-success uk-margin-small-right"></span>
+                                            <span uk-icon="icon: push; ratio: 1.5" class="uk-text-success"></span>
+                                        </td>
+                                        <td>Erfolg, Bestätigung, positive Aktionen</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="uk-badge uk-label-warning">Warning</span></td>
+                                        <td><code>.uk-text-warning</code></td>
+                                        <td class="uk-text-center">
+                                            <span uk-icon="icon: warning; ratio: 1.5" class="uk-text-warning uk-margin-small-right"></span>
+                                            <span uk-icon="icon: info; ratio: 1.5" class="uk-text-warning uk-margin-small-right"></span>
+                                            <span uk-icon="icon: bell; ratio: 1.5" class="uk-text-warning"></span>
+                                        </td>
+                                        <td>Warnungen, wichtige Hinweise</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="uk-badge uk-label-danger">Danger</span></td>
+                                        <td><code>.uk-text-danger</code></td>
+                                        <td class="uk-text-center">
+                                            <span uk-icon="icon: close; ratio: 1.5" class="uk-text-danger uk-margin-small-right"></span>
+                                            <span uk-icon="icon: trash; ratio: 1.5" class="uk-text-danger uk-margin-small-right"></span>
+                                            <span uk-icon="icon: ban; ratio: 1.5" class="uk-text-danger"></span>
+                                        </td>
+                                        <td>Fehler, Löschen, gefährliche Aktionen</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="uk-badge">Muted</span></td>
+                                        <td><code>.uk-text-muted</code></td>
+                                        <td class="uk-text-center">
+                                            <span uk-icon="icon: lock; ratio: 1.5" class="uk-text-muted uk-margin-small-right"></span>
+                                            <span uk-icon="icon: question; ratio: 1.5" class="uk-text-muted uk-margin-small-right"></span>
+                                            <span uk-icon="icon: more; ratio: 1.5" class="uk-text-muted"></span>
+                                        </td>
+                                        <td>Deaktiviert, sekundäre Informationen</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="uk-section uk-section-secondary">
+                <div class="uk-container">
+                    <div class="uk-grid-match" uk-grid>
+                        <div class="uk-width-1-3@m">
+                            <h3>About</h3>
+                            <p>This is a comprehensive preview of your UIKit theme showing all major components and styling.</p>
+                        </div>
+                        <div class="uk-width-1-3@m">
+                            <h3>Links</h3>
+                            <ul class="uk-list">
+                                <li><a href="#">Home</a></li>
+                                <li><a href="#">About</a></li>
+                                <li><a href="#">Services</a></li>
+                                <li><a href="#">Contact</a></li>
+                            </ul>
+                        </div>
+                        <div class="uk-width-1-3@m">
+                            <h3>Contact</h3>
+                            <p>
+                                <span uk-icon="mail"></span> info@example.com<br>
+                                <span uk-icon="phone"></span> +49 123 456 789
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <hr class="uk-margin-large">
+                    
+                    <div class="uk-text-center uk-text-muted">
+                        <p>&copy; 2024 UIKit Theme Preview. All rights reserved.</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal-example" uk-modal>
+        <div class="uk-modal-dialog">
+            <button class="uk-modal-close-default" type="button" uk-close></button>
+            
+            <div class="uk-modal-header">
+                <h2 class="uk-modal-title">Modal Beispiel</h2>
+            </div>
+            
+            <div class="uk-modal-body">
+                <p>Dieses Modal zeigt die konfigurierbaren Einstellungen: Hintergrundfarbe, Border-Radius, Header-/Footer-Hintergrund und Titel-Schriftgröße.</p>
+                
+                <div class="uk-margin">
+                    <label class="uk-form-label" for="modal-input">Beispiel-Eingabe</label>
+                    <input id="modal-input" class="uk-input" type="text" placeholder="Text eingeben">
+                </div>
+                
+                <div class="uk-margin">
+                    <label class="uk-form-label" for="modal-select">Auswahl</label>
+                    <select id="modal-select" class="uk-select">
+                        <option>Option 1</option>
+                        <option>Option 2</option>
+                        <option>Option 3</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="uk-modal-footer uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close uk-margin-small-right" type="button">Abbrechen</button>
+                <button class="uk-button uk-button-primary" type="button">Speichern</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Offcanvas -->
+    <div id="offcanvas-example" uk-offcanvas="overlay: true">
+        <div class="uk-offcanvas-bar">
+            <button class="uk-offcanvas-close" type="button" uk-close></button>
+            
+            <h3>Offcanvas Beispiel</h3>
+            <p>Dieses Offcanvas zeigt die konfigurierbaren Einstellungen: Breite (Standard & Small), Hintergrundfarbe und Textfarbe.</p>
+            
+            <div class="uk-margin">
+                <label class="uk-form-label" for="offcanvas-input">Beispiel-Eingabe</label>
+                <input id="offcanvas-input" class="uk-input" type="text" placeholder="Text eingeben">
+            </div>
+            
+            <div class="uk-margin">
+                <label class="uk-form-label" for="offcanvas-select">Auswahl</label>
+                <select id="offcanvas-select" class="uk-select">
+                    <option>Option 1</option>
+                    <option>Option 2</option>
+                    <option>Option 3</option>
+                </select>
+            </div>
+            
+            <div class="uk-margin-top">
+                <button class="uk-button uk-button-primary uk-width-1-1">Aktion ausführen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- UIKit JavaScript -->
+    <script src="/assets/addons/uikit_theme_builder/compiled_uikit/js/uikit.min.js"></script>
+    <script src="{{UIKIT_ICONS_URL}}"></script>
+    
+    <script>
+        // Demo: Add some interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth scrolling to anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

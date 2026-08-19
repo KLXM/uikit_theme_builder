@@ -1,0 +1,103 @@
+# Haupttitel und Menü
+uikit_theme_builder_title = UIKit Theme Builder
+uikit_theme_builder_domains_title = YRewrite-Domains
+uikit_theme_builder_help_title = Hilfe
+
+# Permissions
+perm_uikit_theme_builder = UIKit Theme Builder
+perm_uikit_theme_builder_themes = Themes verwalten
+perm_uikit_theme_builder_templates = Templates verwalten
+perm_uikit_theme_builder_editor = Theme Editor
+perm_uikit_theme_builder_extra_styles = Extra Styles
+perm_uikit_theme_builder_domains = YRewrite-Domains
+perm_uikit_theme_builder_fonts = Google Fonts
+perm_uikit_theme_builder_icons = Custom Icons
+perm_uikit_theme_builder_custom_widgets = Custom Widgets
+perm_uikit_theme_builder_settings = Einstellungen
+perm_uikit_theme_builder_debug = Debug
+
+# Extra Styles
+extra_styles_caption = Extra Styles
+extra_styles_add = Extra Style hinzufügen
+extra_styles_edit_title = Extra Style bearbeiten
+extra_styles_add_title = Extra Style hinzufügen
+extra_styles_deleted = Extra Style gelöscht
+extra_styles_copied = Extra Style kopiert
+extra_styles_no_rows = Keine Extra Styles vorhanden
+extra_styles_name = Name
+extra_styles_slug = Slug
+extra_styles_type = Typ
+extra_styles_type_card = Card/Karte
+extra_styles_type_section = Section/Bereich
+extra_styles_type_background = Background/Hintergrund
+extra_styles_type_border = Border/Rahmen
+extra_styles_color = Hintergrundfarbe
+extra_styles_backdrop_blur = Backdrop Blur
+extra_styles_text_color = Textfarbe
+extra_styles_link_color = Linkfarbe
+extra_styles_border_color = Rahmenfarbe
+extra_styles_border_width = Rahmenstärke
+extra_styles_border_radius = Rahmen-Rundung
+extra_styles_is_light = Helles Theme
+extra_styles_priority = Priorität
+extra_styles_status = Status
+extra_styles_active = Aktiv
+extra_styles_inactive = Inaktiv
+extra_styles_description = Beschreibung
+extra_styles_module = Modul/Verwendung
+extra_styles_css_styles = Generierte CSS
+extra_styles_compile_themes = In Themes kompilieren
+extra_styles_preview = Vorschau
+extra_styles_functions = Funktionen
+extra_styles_edit = Bearbeiten
+extra_styles_copy = Kopieren
+extra_styles_delete = Löschen
+extra_styles_confirm_delete = Wirklich löschen?
+
+# Domain-Theme-Zuordnung Übersetzungen
+domains_page_title = YRewrite-Domains
+domains_domain = Domain
+domains_url = URL
+domains_theme = Theme
+domains_utilities = Utility-Stile
+domains_no_theme = Kein Theme
+domains_save = Speichern
+domains_settings_saved = Domain-Theme-Zuordnungen erfolgreich gespeichert
+domains_settings_error = Fehler beim Speichern der Zuordnungen
+domains_yrewrite_not_available = Das YRewrite-Addon ist nicht installiert oder nicht verfügbar. Die Domain-Theme-Zuordnung benötigt YRewrite.
+domains_info_title = Domain-basierte Themes
+domains_info_text = Ordne jedem YRewrite-Domain ein eigenes Theme zu. Module können dann automatisch die passenden Farben und Stile verwenden.
+domains_info_module = Module verwenden: <code>DomainContext::getCardStyleOptions()</code>
+domains_info_css = Automatische CSS-Einbindung im Frontend
+domains_info_colors = Farben aus Theme-Definitionen werden gecacht
+
+# Utility-Stile Übersetzungen
+domains_utility_transparent = Transparent/None
+domains_utility_transparent_desc = Aktiviert uk-card-transparent und uk-card-none Stile
+domains_utility_lightdark = Light/Dark
+domains_utility_lightdark_desc = Aktiviert uk-light und uk-dark Text-Stile
+domains_utility_bgutil = Background-Utilities
+domains_utility_bgutil_desc = Aktiviert uk-background-transparent und uk-background-white Stile
+domains_utility_help = Strg/Cmd-Klick für Mehrfachauswahl
+
+# Template Management
+templates_management = Template Verwaltung
+available_templates = Verfügbare Templates
+template_name = Template-Name
+description = Beschreibung
+actions = Aktionen
+install = Installieren
+install_template = Template installieren
+no_templates_available = Keine Templates verfügbar
+template_installed_successfully = Template erfolgreich installiert
+template_installation_failed = Template-Installation fehlgeschlagen
+confirm_install = Wirklich installieren?
+no_description = Keine Beschreibung
+template_key = Template Schlüssel (Dateiname)
+template_key_help = Der Name der Template-Datei in redaxo/templates/
+template_display_name = Anzeigename
+template_display_name_help = Der Name, der in REDAXO angezeigt wird
+cancel = Abbrechen
+template_manager_integration = Template Manager Integration
+template_manager_integration_help = Installierte Templates können jetzt im Template Manager konfiguriert werden.
+configure_templates = Zu den Template-Einstellungen
