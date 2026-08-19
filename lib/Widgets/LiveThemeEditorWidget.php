@@ -60,12 +60,12 @@ class LiveThemeEditorWidget extends AbstractWidget
             'theme' => $theme,
             'values' => $currentValues,
             'fields' => LiveThemeState::FIELDS,
-            'streamUrl' => \rex_url::frontendController(['theme_live_stream' => 'draft', 'theme' => $theme], false),
-            'pushUrl' => \rex_url::frontendController(['rex-api-call' => 'uikit_theme_live_push'], false),
-            'goLiveUrl' => \rex_url::frontendController(['rex-api-call' => 'uikit_theme_live_golive'], false),
-            'stopUrl' => \rex_url::frontendController(['rex-api-call' => 'uikit_theme_live_stop'], false),
-            'discardUrl' => \rex_url::frontendController(['rex-api-call' => 'uikit_theme_live_discard'], false),
-            'saveUrl' => \rex_url::frontendController(['rex-api-call' => 'uikit_theme_live_save'], false),
+            'streamUrl' => self::rootUrl(['theme_live_stream' => 'draft', 'theme' => $theme]),
+            'pushUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_push']),
+            'goLiveUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_golive']),
+            'stopUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_stop']),
+            'discardUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_discard']),
+            'saveUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_save']),
             'isAdmin' => $user->isAdmin(),
         ];
 
@@ -83,5 +83,18 @@ class LiveThemeEditorWidget extends AbstractWidget
 <script src="{$pickrJs}"></script>
 <script src="{$editorJs}"></script>
 HTML;
+    }
+
+    /**
+     * Baut eine "nackte" Root-relative URL (/?key=value) statt rex_url::frontendController()
+     * (.../index.php?...). Unter aktivem YRewrite behandelt der Path-Resolver "index.php" als
+     * zu suchenden Artikel-Pfad und antwortet mit 404, BEVOR der rex-api-call überhaupt
+     * verarbeitet wird - ein leerer Pfad ("/") landet dagegen korrekt bei der Startseite und
+     * lässt REDAXO die Query-Params normal auswerten. Gleiches Muster wie boot.php's
+     * bestehende previewtheme-Route ("/?previewtheme=...").
+     */
+    private static function rootUrl(array $params): string
+    {
+        return '/?' . http_build_query($params);
     }
 }

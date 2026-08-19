@@ -271,7 +271,9 @@ if (rex::isFrontend()) {
 
         $theme = UikitThemeBuilder\DomainContext::getCurrentTheme();
         if ($theme && file_exists(UikitThemeBuilder\LiveThemeState::flagPath($theme))) {
-            $streamUrl = rex_url::frontendController(['theme_live_stream' => 'public', 'theme' => $theme], false);
+            // Bewusst keine rex_url::frontendController() (=.../index.php?...) - unter YRewrite
+            // würde "index.php" als Artikel-Pfad gesucht und 404en, bevor der Stream startet.
+            $streamUrl = '/?' . http_build_query(['theme_live_stream' => 'public', 'theme' => $theme]);
             $listenerTag = '<script src="' . $addon->getAssetsUrl('live-editor/live-theme-public-listener.js') . '" data-stream-url="' . rex_escape($streamUrl) . '"></script></body>';
             $content = str_ireplace('</body>', $listenerTag, $content);
         }
