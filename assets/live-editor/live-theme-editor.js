@@ -7,13 +7,29 @@
 (function () {
   "use strict";
 
+  // A11y-Untergrenze: Basis-Schriftgröße darf laut gängigen Empfehlungen nie unter 16px
+  // (bzw. dem äquivalenten rem/em/%-Wert bei unverändertem Root-Font-Size) fallen, sonst
+  // leidet die Lesbarkeit. Überschriften dürfen nicht kleiner als die Basisschrift werden,
+  // sonst bricht die visuelle Hierarchie - daher ebenfalls mit (etwas höherer) Untergrenze.
+  var A11Y_MIN_PX = { font_size: 16, h3_size: 18, h2_size: 20, h1_size: 24 };
+
+  function unitAwareFloor(unit, pxFloor) {
+    if ("rem" === unit || "em" === unit) {
+      return Math.round((pxFloor / 16) * 100) / 100;
+    }
+    if ("%" === unit) {
+      return Math.round((pxFloor / 16) * 100);
+    }
+    return pxFloor;
+  }
+
   // Feste px-Bereiche passen nicht, sobald ein Theme rem/em statt px verwendet (z.B. 2.625rem
   // liegt weit unter einem für px sinnvollen Minimum von 20 - der Slider-Thumb würde am linken
   // Rand hängen bleiben, obwohl der Wert korrekt ist). Bereich daher relativ zum tatsächlichen
-  // Startwert berechnen, unabhängig von der Einheit.
-  function computeSizeRange(currentNumber) {
-    var min = 0;
-    var max = Math.max(currentNumber * 3, currentNumber + 1);
+  // Startwert berechnen, unabhängig von der Einheit - nur die a11y-Untergrenze ist fest.
+  function computeSizeRange(key, currentNumber, unit) {
+    var min = A11Y_MIN_PX[key] ? unitAwareFloor(unit, A11Y_MIN_PX[key]) : 0;
+    var max = Math.max(currentNumber * 3, currentNumber + 1, min + 1);
     var step = currentNumber < 6 ? 0.05 : 1;
     return { min: min, max: Math.round(max * 100) / 100, step: step };
   }
@@ -174,7 +190,15 @@
         return;
       }
       var parsed = parseSize(state[key]) || { number: 16, unit: "px" };
-      var range = computeSizeRange(parsed.number);
+      var range = computeSizeRange(key, parsed.number, parsed.unit);
+
+      // Gespeicherter Wert liegt unter der a11y-Untergrenze (z.B. altes Theme mit 14px
+      // Basisschrift) - auf die Untergrenze klemmen statt eine Diskrepanz zwischen
+      // Slider-Position und angezeigtem/angewendetem Wert zuzulassen.
+      if (parsed.number < range.min) {
+        parsed = { number: range.min, unit: parsed.unit };
+        state[key] = String(range.min) + parsed.unit;
+      }
 
       var row = document.createElement("div");
       row.className = "tb-live-row";
