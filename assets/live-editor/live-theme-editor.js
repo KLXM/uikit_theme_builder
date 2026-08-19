@@ -20,6 +20,7 @@
 
   var COLOR_FIELDS = ["primary", "secondary", "background", "color", "link"];
   var SIZE_FIELDS = ["font_size", "h1_size", "h2_size", "h3_size", "margin", "gutter"];
+  var FONT_FIELDS = ["font_family", "heading_font_family"];
 
   var LABELS = {
     primary: "Primary",
@@ -32,8 +33,50 @@
     h2_size: "H2-Größe",
     h3_size: "H3-Größe",
     margin: "Standard-Abstand",
-    gutter: "Container-Padding"
+    gutter: "Container-Padding",
+    font_family: "Primärschrift",
+    heading_font_family: "Überschriften-Schrift"
   };
+
+  // Bekannte Betriebssystem-/Web-safe-Fonts, die kein <link> zu Google Fonts brauchen.
+  // Gleiche Liste wie im normalen Theme-Editor (TypographyWidget-Vorschau).
+  var SYSTEM_FONTS = [
+    "Arial", "Verdana", "Helvetica", "Tahoma", "Trebuchet MS",
+    "Times New Roman", "Times", "Georgia", "Garamond",
+    "Courier New", "Courier", "Monaco", "Consolas",
+    "system-ui", "BlinkMacSystemFont", "-apple-system", "Segoe UI",
+    "Roboto", "Ubuntu", "Cantarell", "Helvetica Neue", "sans-serif", "serif", "monospace"
+  ];
+
+  var loadedGoogleFonts = {};
+
+  function extractFirstFont(fontStack) {
+    if (!fontStack || "inherit" === fontStack) {
+      return "";
+    }
+    var cleaned = fontStack.replace(/['"]/g, "").trim();
+    return cleaned.split(",")[0].trim();
+  }
+
+  function isSystemFont(fontName) {
+    return SYSTEM_FONTS.some(function (sf) {
+      return sf.toLowerCase() === fontName.toLowerCase();
+    });
+  }
+
+  // Gleiche Technik wie die bestehende Font-Vorschau im normalen Theme-Editor
+  // (TypographyWidget): fehlt der Font lokal, per Google Fonts CSS2-API nachladen.
+  function ensureFontLoaded(fontStack) {
+    var firstFont = extractFirstFont(fontStack);
+    if (!firstFont || isSystemFont(firstFont) || loadedGoogleFonts[firstFont]) {
+      return;
+    }
+    loadedGoogleFonts[firstFont] = true;
+    var link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://fonts.googleapis.com/css2?family=" + encodeURIComponent(firstFont) + "&display=swap";
+    document.head.appendChild(link);
+  }
 
   function ready(fn) {
     if (document.readyState === "loading") {
@@ -165,6 +208,50 @@
       });
     });
 
+    var fontInputs = {};
+
+    FONT_FIELDS.forEach(function (key) {
+      var field = config.fields[key];
+      if (!field) {
+        return;
+      }
+
+      var row = document.createElement("div");
+      row.className = "tb-live-row tb-live-row-font";
+
+      var label = document.createElement("label");
+      label.textContent = LABELS[key] || key;
+      row.appendChild(label);
+
+      var select = document.createElement("select");
+      if ("heading_font_family" === key) {
+        var inheritOption = document.createElement("option");
+        inheritOption.value = "inherit";
+        inheritOption.textContent = "Von Primärschrift erben";
+        select.appendChild(inheritOption);
+      }
+      Object.keys(config.fontOptions || {}).forEach(function (value) {
+        var option = document.createElement("option");
+        option.value = value;
+        option.textContent = config.fontOptions[value];
+        select.appendChild(option);
+      });
+      select.value = state[key] || (config.fields[key] ? "inherit" : "");
+      row.appendChild(select);
+
+      root.appendChild(row);
+      fontInputs[key] = select;
+
+      select.addEventListener("change", function () {
+        state[key] = select.value;
+        applyLocal(key, select.value);
+        ensureFontLoaded(select.value);
+        scheduleSync();
+      });
+
+      ensureFontLoaded(select.value);
+    });
+
     var actions = document.createElement("div");
     actions.className = "tb-live-actions";
     root.appendChild(actions);
@@ -292,6 +379,10 @@
                 sizeInputs[key].input.value = String(parsed.number);
                 sizeInputs[key].valueLabel.textContent = values[key];
               }
+            }
+            if (fontInputs[key]) {
+              fontInputs[key].value = values[key];
+              ensureFontLoaded(values[key]);
             }
           });
         } catch (e) {

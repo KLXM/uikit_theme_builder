@@ -4,6 +4,7 @@ namespace UikitThemeBuilder\InfoCenterWidgets;
 
 use KLXM\InfoCenter\AbstractWidget;
 use UikitThemeBuilder\DomainContext;
+use UikitThemeBuilder\GoogleFontsManager;
 use UikitThemeBuilder\LiveThemeState;
 use UikitThemeBuilder\UikitThemeBuilderManager;
 
@@ -71,6 +72,7 @@ class LiveThemeEditorWidget extends AbstractWidget
             'discardUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_discard']),
             'saveUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_save']),
             'isAdmin' => $user->isAdmin(),
+            'fontOptions' => self::buildFontOptions(),
         ];
 
         // Cache-Buster wie rex_view::addCssFile()/addJsFile() ihn automatisch anhängen -
@@ -104,6 +106,37 @@ HTML;
     private static function rootUrl(array $params): string
     {
         return '/?' . http_build_query($params);
+    }
+
+    /**
+     * Font-Stack-Optionen (Wert => Label), identisch aufgebaut zu TypographyWidget::getFields()
+     * (dieselben Fallback-Stacks pro Kategorie) - zeigt genau die Fonts, die der Theme Builder
+     * an anderer Stelle bereits anbietet: System-Stack, System-Fonts, bereits geladene Google
+     * Fonts. Neue Google Fonts hinzufügen bleibt Aufgabe des richtigen Editors (Font Browser).
+     */
+    private static function buildFontOptions(): array
+    {
+        $options = [
+            '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' => 'System Font Stack (empfohlen)',
+        ];
+
+        $fontManager = new GoogleFontsManager();
+        foreach ($fontManager->getAllAvailableFonts() as $font) {
+            $family = $font['family'];
+            $category = $font['category'] ?? 'sans-serif';
+            $fallback = match ($category) {
+                'serif' => ', "Times New Roman", Times, serif',
+                'monospace' => ', "SF Mono", Monaco, Consolas, monospace',
+                'cursive' => ', cursive',
+                default => ', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+            };
+
+            $value = '"' . $family . '"' . $fallback;
+            $sourceLabel = 'google' === ($font['source'] ?? '') ? ' (Google)' : ' (System)';
+            $options[$value] = $family . $sourceLabel;
+        }
+
+        return $options;
     }
 
     private static function withCacheBuster(\rex_addon $addon, string $relativePath): string

@@ -28,8 +28,44 @@
     font_size: "--tb-live-font-size",
     h1_size: "--tb-live-h1-size",
     h2_size: "--tb-live-h2-size",
-    h3_size: "--tb-live-h3-size"
+    h3_size: "--tb-live-h3-size",
+    margin: "--tb-live-margin",
+    gutter: "--tb-live-gutter",
+    font_family: "--tb-live-font-family",
+    heading_font_family: "--tb-live-heading-font-family"
   };
+
+  // Gleiche Technik wie live-theme-editor.js/TypographyWidget: fehlt der Font lokal,
+  // per Google Fonts CSS2-API nachladen, sonst bleibt die Property wirkungslos.
+  var SYSTEM_FONTS = [
+    "Arial", "Verdana", "Helvetica", "Tahoma", "Trebuchet MS",
+    "Times New Roman", "Times", "Georgia", "Garamond",
+    "Courier New", "Courier", "Monaco", "Consolas",
+    "system-ui", "BlinkMacSystemFont", "-apple-system", "Segoe UI",
+    "Roboto", "Ubuntu", "Cantarell", "Helvetica Neue", "sans-serif", "serif", "monospace"
+  ];
+  var loadedGoogleFonts = {};
+
+  function ensureFontLoaded(fontStack) {
+    if (!fontStack || "inherit" === fontStack) {
+      return;
+    }
+    var firstFont = fontStack.replace(/['"]/g, "").trim().split(",")[0].trim();
+    if (!firstFont || loadedGoogleFonts[firstFont]) {
+      return;
+    }
+    var isSystem = SYSTEM_FONTS.some(function (sf) {
+      return sf.toLowerCase() === firstFont.toLowerCase();
+    });
+    if (isSystem) {
+      return;
+    }
+    loadedGoogleFonts[firstFont] = true;
+    var link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://fonts.googleapis.com/css2?family=" + encodeURIComponent(firstFont) + "&display=swap";
+    document.head.appendChild(link);
+  }
 
   function apply(values) {
     if (!values || typeof values !== "object") {
@@ -38,6 +74,9 @@
     Object.keys(FIELD_CSS).forEach(function (key) {
       if (Object.prototype.hasOwnProperty.call(values, key)) {
         document.documentElement.style.setProperty(FIELD_CSS[key], values[key]);
+        if ("font_family" === key || "heading_font_family" === key) {
+          ensureFontLoaded(values[key]);
+        }
       }
     });
   }

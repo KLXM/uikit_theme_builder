@@ -25,6 +25,8 @@ class LiveThemeState
         'h3_size' => ['less' => 'base-h3-font-size', 'css' => '--tb-live-h3-size', 'type' => 'size', 'group' => 'typography'],
         'margin' => ['less' => 'global-margin', 'css' => '--tb-live-margin', 'type' => 'size', 'group' => 'spacing'],
         'gutter' => ['less' => 'global-gutter', 'css' => '--tb-live-gutter', 'type' => 'size', 'group' => 'spacing'],
+        'font_family' => ['less' => 'global-font-family', 'css' => '--tb-live-font-family', 'type' => 'font', 'group' => 'typography'],
+        'heading_font_family' => ['less' => 'base-heading-font-family', 'css' => '--tb-live-heading-font-family', 'type' => 'font', 'group' => 'typography'],
     ];
 
     /**
@@ -92,6 +94,8 @@ class LiveThemeState
                 $clean[$key] = $value;
             } elseif ('size' === $type && self::isValidSize($value)) {
                 $clean[$key] = $value;
+            } elseif ('font' === $type && self::isValidFontStack($value)) {
+                $clean[$key] = $value;
             }
         }
 
@@ -108,6 +112,20 @@ class LiveThemeState
     private static function isValidSize(string $size): bool
     {
         return (bool) preg_match('/^\d{1,4}(\.\d{1,3})?(px|rem|em|%)$/', $size);
+    }
+
+    /**
+     * "inherit" oder ein Font-Stack wie in ColorsWidget/TypographyWidget üblich, z.B.
+     * '"Open Sans", -apple-system, sans-serif'. Kein Enum, da Nutzer beliebige bereits
+     * geladene Google Fonts wählen können - stattdessen ein sicheres Zeichen-Whitelisting.
+     */
+    private static function isValidFontStack(string $font): bool
+    {
+        if ('inherit' === $font) {
+            return true;
+        }
+
+        return strlen($font) <= 200 && (bool) preg_match('/^[A-Za-z0-9 ,\-_."\']+$/', $font);
     }
 
     private static function baseDir(): string

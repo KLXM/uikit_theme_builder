@@ -20,6 +20,8 @@
   --tb-live-h3-size: unset;
   --tb-live-margin: unset;
   --tb-live-gutter: unset;
+  --tb-live-font-family: unset;
+  --tb-live-heading-font-family: unset;
 }
 
 /* Info Center (inkl. unser eigenes Widget darin) vor den eigenen Live-Regeln schützen:
@@ -41,6 +43,8 @@
   --tb-live-h3-size: unset !important;
   --tb-live-margin: unset !important;
   --tb-live-gutter: unset !important;
+  --tb-live-font-family: unset !important;
+  --tb-live-heading-font-family: unset !important;
 }
 
 html,
@@ -48,6 +52,12 @@ body {
   background: var(--tb-live-background, inherit) !important;
   color: var(--tb-live-color, inherit) !important;
   font-size: var(--tb-live-font-size, inherit) !important;
+  font-family: var(--tb-live-font-family, inherit) !important;
+}
+
+h1, h2, h3, h4, h5, h6,
+.uk-h1, .uk-h2, .uk-h3, .uk-h4, .uk-h5, .uk-h6 {
+  font-family: var(--tb-live-heading-font-family, inherit) !important;
 }
 
 a,
