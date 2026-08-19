@@ -40,7 +40,10 @@ class rex_api_uikit_theme_live_save extends rex_api_function
                     continue;
                 }
                 $field = UikitThemeBuilder\LiveThemeState::FIELDS[$fieldKey];
-                $themeData[$field['group']][$field['less']] = $value;
+                // 'less' kann eine Liste sein (z.B. heading_line_height für H1-H4 gleichzeitig).
+                foreach ((array) $field['less'] as $lessKey) {
+                    $themeData[$field['group']][$lessKey] = $value;
+                }
             }
 
             $manager->saveTheme($theme, $themeData);

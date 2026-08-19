@@ -54,8 +54,11 @@ class LiveThemeEditorWidget extends AbstractWidget
         $currentValues = [];
         foreach (LiveThemeState::FIELDS as $key => $field) {
             $source = $groups[$field['group']] ?? [];
-            if (isset($source[$field['less']])) {
-                $currentValues[$key] = $source[$field['less']];
+            // 'less' kann eine Liste sein (z.B. heading_line_height schreibt auf mehrere
+            // Ebenen gleichzeitig) - zum Anzeigen des aktuellen Werts reicht die erste.
+            $lessKey = is_array($field['less']) ? $field['less'][0] : $field['less'];
+            if (isset($source[$lessKey])) {
+                $currentValues[$key] = $source[$lessKey];
             }
         }
 

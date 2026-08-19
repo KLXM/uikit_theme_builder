@@ -33,6 +33,7 @@
   --tb-live-heading-color: unset;
   --tb-live-font-size: unset;
   --tb-live-line-height: unset;
+  --tb-live-heading-line-height: unset;
   --tb-live-h1-size: unset;
   --tb-live-h2-size: unset;
   --tb-live-h3-size: unset;
@@ -56,6 +57,7 @@ h1, h2, h3, h4, h5, h6,
 .uk-h1, .uk-h2, .uk-h3, .uk-h4, .uk-h5, .uk-h6 {
   font-family: var(--tb-live-heading-font-family, inherit) !important;
   color: var(--tb-live-heading-color, inherit) !important;
+  line-height: var(--tb-live-heading-line-height, inherit) !important;
 }
 
 a,

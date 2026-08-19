@@ -36,6 +36,10 @@ class LiveThemeState
         'heading_font_family' => ['less' => 'base-heading-font-family', 'css' => '--tb-live-heading-font-family', 'type' => 'font', 'group' => 'typography', 'section' => 'typography'],
         'font_size' => ['less' => 'global-font-size', 'css' => '--tb-live-font-size', 'type' => 'size', 'group' => 'typography', 'section' => 'typography'],
         'line_height' => ['less' => 'global-line-height', 'css' => '--tb-live-line-height', 'type' => 'number', 'group' => 'typography', 'section' => 'typography'],
+        // Kein einzelnes "heading-line-height"-Feld in TypographyWidget - UIkit selbst hat
+        // aber pro Ebene eigene Variablen (base-h1..h4-line-height); ein Regler schreibt hier
+        // bewusst auf alle vier gleichzeitig ("less" als Liste statt einzelnem String).
+        'heading_line_height' => ['less' => ['base-h1-line-height', 'base-h2-line-height', 'base-h3-line-height', 'base-h4-line-height'], 'css' => '--tb-live-heading-line-height', 'type' => 'number', 'group' => 'typography', 'section' => 'typography'],
         'h1_size' => ['less' => 'base-h1-font-size-m', 'css' => '--tb-live-h1-size', 'type' => 'size', 'group' => 'typography', 'section' => 'typography'],
         'h2_size' => ['less' => 'base-h2-font-size-m', 'css' => '--tb-live-h2-size', 'type' => 'size', 'group' => 'typography', 'section' => 'typography'],
         'h3_size' => ['less' => 'base-h3-font-size', 'css' => '--tb-live-h3-size', 'type' => 'size', 'group' => 'typography', 'section' => 'typography'],

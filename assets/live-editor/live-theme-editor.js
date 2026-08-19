@@ -8,8 +8,8 @@
   "use strict";
 
   var SECTIONS = [
-    { key: "colors", label: "Farben", open: true },
-    { key: "typography", label: "Typografie", open: false },
+    { key: "typography", label: "Typografie", open: true },
+    { key: "colors", label: "Farben", open: false },
     { key: "spacing", label: "Abstände", open: false }
   ];
 
@@ -33,6 +33,7 @@
     heading_font_family: "Überschriften-Schrift",
     font_size: "Basis-Schriftgröße",
     line_height: "Zeilenhöhe (Fließtext)",
+    heading_line_height: "Zeilenhöhe (Überschriften)",
     h1_size: "H1-Größe",
     h2_size: "H2-Größe",
     h3_size: "H3-Größe",
