@@ -7,12 +7,16 @@
 (function () {
   "use strict";
 
-  var SIZE_RANGES = {
-    font_size: { min: 12, max: 22, step: 0.5 },
-    h1_size: { min: 20, max: 72, step: 1 },
-    h2_size: { min: 18, max: 56, step: 1 },
-    h3_size: { min: 16, max: 40, step: 1 }
-  };
+  // Feste px-Bereiche passen nicht, sobald ein Theme rem/em statt px verwendet (z.B. 2.625rem
+  // liegt weit unter einem für px sinnvollen Minimum von 20 - der Slider-Thumb würde am linken
+  // Rand hängen bleiben, obwohl der Wert korrekt ist). Bereich daher relativ zum tatsächlichen
+  // Startwert berechnen, unabhängig von der Einheit.
+  function computeSizeRange(currentNumber) {
+    var min = 0;
+    var max = Math.max(currentNumber * 3, currentNumber + 1);
+    var step = currentNumber < 6 ? 0.05 : 1;
+    return { min: min, max: Math.round(max * 100) / 100, step: step };
+  }
 
   var LABELS = {
     primary: "Primary",
@@ -123,8 +127,8 @@
       if (!field) {
         return;
       }
-      var range = SIZE_RANGES[key];
-      var parsed = parseSize(state[key]) || { number: range.min, unit: "px" };
+      var parsed = parseSize(state[key]) || { number: 16, unit: "px" };
+      var range = computeSizeRange(parsed.number);
 
       var row = document.createElement("div");
       row.className = "tb-live-row";
