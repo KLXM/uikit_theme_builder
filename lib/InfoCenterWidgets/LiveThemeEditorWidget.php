@@ -46,10 +46,15 @@ class LiveThemeEditorWidget extends AbstractWidget
 
         $manager = new UikitThemeBuilderManager();
         $themeRecord = $manager->loadTheme($theme);
-        $colors = $themeRecord['data']['colors'] ?? [];
-        $typography = $themeRecord['data']['typography'] ?? [];
-        $spacing = $themeRecord['data']['spacing'] ?? [];
-        $groups = ['colors' => $colors, 'typography' => $typography, 'spacing' => $spacing];
+        $themeDataSections = $themeRecord['data'] ?? [];
+
+        // Datengruppe dynamisch aus den tatsächlich verwendeten FIELDS-Gruppen ableiten, statt
+        // sie hier hart zu pflegen - sonst fehlt bei jedem neuen 'group' (wie zuletzt
+        // 'container') sonst leicht die Zuordnung beim Lesen des aktuellen Werts.
+        $groups = [];
+        foreach (LiveThemeState::FIELDS as $field) {
+            $groups[$field['group']] = $themeDataSections[$field['group']] ?? [];
+        }
 
         $currentValues = [];
         foreach (LiveThemeState::FIELDS as $key => $field) {

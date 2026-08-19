@@ -48,7 +48,9 @@ class LiveThemeState
         // Abstände
         'margin' => ['less' => 'global-margin', 'css' => '--tb-live-margin', 'type' => 'size', 'group' => 'spacing', 'section' => 'spacing'],
         'gutter' => ['less' => 'global-gutter', 'css' => '--tb-live-gutter', 'type' => 'size', 'group' => 'spacing', 'section' => 'spacing'],
-        'container_width' => ['less' => 'container-max-width', 'css' => '--tb-live-container-width', 'type' => 'size', 'group' => 'spacing', 'section' => 'spacing'],
+        'container_width' => ['less' => 'container-max-width', 'css' => '--tb-live-container-width', 'type' => 'size', 'group' => 'container', 'section' => 'spacing'],
+        'container_width_small' => ['less' => 'container-small-max-width', 'css' => '--tb-live-container-width-small', 'type' => 'size', 'group' => 'container', 'section' => 'spacing'],
+        'container_width_large' => ['less' => 'container-large-max-width', 'css' => '--tb-live-container-width-large', 'type' => 'size', 'group' => 'container', 'section' => 'spacing'],
     ];
 
     /**

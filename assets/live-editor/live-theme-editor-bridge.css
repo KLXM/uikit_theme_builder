@@ -41,6 +41,8 @@
   --tb-live-margin: unset;
   --tb-live-gutter: unset;
   --tb-live-container-width: unset;
+  --tb-live-container-width-small: unset;
+  --tb-live-container-width-large: unset;
   --tb-live-font-family: unset;
   --tb-live-heading-font-family: unset;
 }
@@ -173,4 +175,12 @@ h4,
   padding-left: var(--tb-live-gutter, inherit) !important;
   padding-right: var(--tb-live-gutter, inherit) !important;
   max-width: var(--tb-live-container-width, inherit) !important;
+}
+
+.uk-container-small {
+  max-width: var(--tb-live-container-width-small, inherit) !important;
+}
+
+.uk-container-large {
+  max-width: var(--tb-live-container-width-large, inherit) !important;
 }
