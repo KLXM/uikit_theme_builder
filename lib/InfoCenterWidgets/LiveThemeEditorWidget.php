@@ -81,6 +81,9 @@ class LiveThemeEditorWidget extends AbstractWidget
             'saveUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_save']),
             'isAdmin' => $user->isAdmin(),
             'fontOptions' => self::buildFontOptions(),
+            'availableThemes' => DomainContext::getAvailableThemes(),
+            'themeCssUrlTemplate' => \rex_url::addonAssets('uikit_theme_builder', 'themes/compiled/__THEME__.css'),
+            'switchThemeUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_switch_theme']),
         ];
 
         // Cache-Buster wie rex_view::addCssFile()/addJsFile() ihn automatisch anhängen -

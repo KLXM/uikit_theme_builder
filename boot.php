@@ -282,7 +282,8 @@ if (rex::isFrontend()) {
             $listenerJsPath = rex_path::addonAssets('uikit_theme_builder', 'live-editor/live-theme-public-listener.js');
             $listenerJsMtime = @filemtime($listenerJsPath);
             $listenerJsUrl = $addon->getAssetsUrl('live-editor/live-theme-public-listener.js') . ($listenerJsMtime ? '?buster=' . $listenerJsMtime : '');
-            $listenerTag = '<script src="' . $listenerJsUrl . '" data-stream-url="' . rex_escape($streamUrl) . '"></script></body>';
+            $themeCssUrlTemplate = rex_url::addonAssets('uikit_theme_builder', 'themes/compiled/__THEME__.css');
+            $listenerTag = '<script src="' . $listenerJsUrl . '" data-stream-url="' . rex_escape($streamUrl) . '" data-theme-css-template="' . rex_escape($themeCssUrlTemplate) . '"></script></body>';
             $content = str_ireplace('</body>', $listenerTag, $content);
         }
 

@@ -106,6 +106,19 @@ class LiveThemeState
     public static function sanitizeValues(array $raw): array
     {
         $clean = [];
+
+        // Sonderfall Theme-Wechsel: kein FIELDS-Eintrag (schreibt keinen LESS-Wert, sondern
+        // wird als komplett anderes kompiliertes Theme-Stylesheet eingehängt), daher separat
+        // behandelt statt über den generischen FIELDS-Loop unten.
+        if (isset($raw['_switch_theme']) && is_string($raw['_switch_theme'])) {
+            try {
+                self::validateTheme($raw['_switch_theme']);
+                $clean['_switch_theme'] = $raw['_switch_theme'];
+            } catch (\Exception $e) {
+                // ungültiger/unbekannter Theme-Name - stillschweigend verwerfen wie sonst auch
+            }
+        }
+
         foreach ($raw as $key => $value) {
             if (!isset(self::FIELDS[$key]) || !is_string($value)) {
                 continue;

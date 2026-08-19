@@ -15,22 +15,41 @@
   }
 
   var streamUrl = script.getAttribute("data-stream-url");
+  var themeCssUrlTemplate = script.getAttribute("data-theme-css-template");
   if (!streamUrl || typeof EventSource === "undefined") {
     return;
   }
 
+  // Muss mit UikitThemeBuilder\LiveThemeState::FIELDS synchron gehalten werden (dort die
+  // Quelle der Wahrheit) - hier nur die Kurzschlüssel -> CSS-Custom-Property Zuordnung.
   var FIELD_CSS = {
     primary: "--tb-live-primary",
     secondary: "--tb-live-secondary",
+    success: "--tb-live-success",
+    warning: "--tb-live-warning",
+    danger: "--tb-live-danger",
     background: "--tb-live-background",
     color: "--tb-live-color",
+    emphasis: "--tb-live-emphasis",
+    muted: "--tb-live-muted",
     link: "--tb-live-link",
+    link_hover: "--tb-live-link-hover",
+    inverse: "--tb-live-inverse",
+    border: "--tb-live-border",
+    muted_background: "--tb-live-muted-background",
+    heading_color: "--tb-live-heading-color",
     font_size: "--tb-live-font-size",
+    line_height: "--tb-live-line-height",
+    heading_line_height: "--tb-live-heading-line-height",
     h1_size: "--tb-live-h1-size",
     h2_size: "--tb-live-h2-size",
     h3_size: "--tb-live-h3-size",
+    h4_size: "--tb-live-h4-size",
     margin: "--tb-live-margin",
     gutter: "--tb-live-gutter",
+    container_width: "--tb-live-container-width",
+    container_width_small: "--tb-live-container-width-small",
+    container_width_large: "--tb-live-container-width-large",
     font_family: "--tb-live-font-family",
     heading_font_family: "--tb-live-heading-font-family"
   };
@@ -67,9 +86,22 @@
     document.head.appendChild(link);
   }
 
+  function applyThemeSwitch(themeName) {
+    if (!themeName || !themeCssUrlTemplate) {
+      return;
+    }
+    var link = document.querySelector('link[href*="themes/compiled/"]');
+    if (link) {
+      link.href = themeCssUrlTemplate.replace("__THEME__", themeName);
+    }
+  }
+
   function apply(values) {
     if (!values || typeof values !== "object") {
       return;
+    }
+    if (values._switch_theme) {
+      applyThemeSwitch(values._switch_theme);
     }
     Object.keys(FIELD_CSS).forEach(function (key) {
       if (Object.prototype.hasOwnProperty.call(values, key)) {

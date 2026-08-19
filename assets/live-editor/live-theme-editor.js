@@ -165,10 +165,66 @@
 
     root.innerHTML = "";
 
-    var themeLabel = document.createElement("div");
-    themeLabel.className = "tb-live-row";
-    themeLabel.innerHTML = '<label style="opacity:.6;font-size:11px;">Theme: ' + config.theme + "</label>";
-    root.appendChild(themeLabel);
+    var currentTheme = config.theme;
+
+    var themeBadge = document.createElement("span");
+    themeBadge.className = "tb-live-theme-badge";
+    themeBadge.textContent = currentTheme;
+    root.appendChild(themeBadge);
+
+    var themeSwitchSelect = null;
+    if (config.availableThemes && Object.keys(config.availableThemes).length > 1) {
+      var switchRow = document.createElement("div");
+      switchRow.className = "tb-live-row";
+
+      var switchLabel = document.createElement("label");
+      switchLabel.textContent = "Theme wechseln";
+      switchRow.appendChild(switchLabel);
+
+      themeSwitchSelect = document.createElement("select");
+      Object.keys(config.availableThemes).forEach(function (value) {
+        var option = document.createElement("option");
+        option.value = value;
+        option.textContent = config.availableThemes[value];
+        themeSwitchSelect.appendChild(option);
+      });
+      themeSwitchSelect.value = currentTheme;
+      switchRow.appendChild(themeSwitchSelect);
+      root.appendChild(switchRow);
+
+      themeSwitchSelect.addEventListener("change", function () {
+        state._switch_theme = themeSwitchSelect.value;
+        applyThemeSwitch(themeSwitchSelect.value);
+        scheduleSync();
+      });
+
+      if (config.isAdmin) {
+        var switchActions = document.createElement("div");
+        switchActions.className = "tb-live-actions";
+        var applyThemeBtn = makeButton("Theme übernehmen", "tb-live-btn tb-live-btn-primary", function () {
+          if (themeSwitchSelect.value === currentTheme) {
+            return;
+          }
+          callApi(config.switchThemeUrl, { new_theme: themeSwitchSelect.value }).then(function (res) {
+            if (res && res.success) {
+              location.reload();
+            } else if (res && res.error) {
+              status.textContent = "Fehler: " + res.error;
+            }
+          });
+        });
+        switchActions.appendChild(applyThemeBtn);
+        root.appendChild(switchActions);
+      }
+    }
+
+    function applyThemeSwitch(themeName) {
+      var link = document.querySelector('link[href*="themes/compiled/"]');
+      if (link && config.themeCssUrlTemplate) {
+        link.href = config.themeCssUrlTemplate.replace("__THEME__", themeName);
+      }
+      themeBadge.textContent = themeName;
+    }
 
     SECTIONS.forEach(function (section) {
       var keysInSection = Object.keys(config.fields).filter(function (key) {
@@ -408,7 +464,17 @@
       es.onmessage = function (event) {
         try {
           var values = JSON.parse(event.data);
+          if (values._switch_theme) {
+            currentTheme = values._switch_theme;
+            applyThemeSwitch(currentTheme);
+            if (themeSwitchSelect) {
+              themeSwitchSelect.value = currentTheme;
+            }
+          }
           Object.keys(values).forEach(function (key) {
+            if ("_switch_theme" === key) {
+              return;
+            }
             state[key] = values[key];
             applyLocal(key, values[key]);
             if (colorInputs[key]) {

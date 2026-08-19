@@ -4,6 +4,18 @@
  * das Widget lebt innerhalb von .info-center-widget-content und übernimmt dessen
  * Farben/Dark-Mode, nur Layout-Details (Zeilen, Slider, Buttons) werden hier ergänzt.
  */
+.tb-live-body .tb-live-theme-badge {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #1e87f0;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
 .tb-live-body .tb-live-section {
   margin-bottom: 6px;
   border: 1px solid rgba(128, 128, 128, 0.2);
