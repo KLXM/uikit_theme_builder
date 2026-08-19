@@ -7,44 +7,40 @@
  * Das JS (live-theme-editor.js für den Redakteur, live-theme-public-listener.js für
  * alle anderen Besucher während einer aktiven Live-Session) setzt die Properties per
  * documentElement.style.setProperty(...), wodurch die Seite ohne Reload sofort neu malt.
+ *
+ * Schutz des Info Centers vor diesen Regeln sitzt bewusst NICHT hier (ein früherer Versuch,
+ * --tb-live-* innerhalb von .info-center-container per "unset" zurückzusetzen, war wirkungslos -
+ * Custom Properties sind IMMER vererbend, "unset" bedeutet für sie "vom Elternteil erben", ein
+ * No-Op). Der wirksame Schutz sitzt in info_center/assets/css/info-center.css mit eigenen
+ * !important-Regeln + mindestens klassenbasierter Spezifität, die die hier folgenden, nur
+ * typ-/universalselektor-basierten Regeln zuverlässig schlagen.
  */
 :root {
   --tb-live-primary: unset;
   --tb-live-secondary: unset;
+  --tb-live-success: unset;
+  --tb-live-warning: unset;
+  --tb-live-danger: unset;
   --tb-live-background: unset;
   --tb-live-color: unset;
+  --tb-live-emphasis: unset;
+  --tb-live-muted: unset;
   --tb-live-link: unset;
+  --tb-live-link-hover: unset;
+  --tb-live-inverse: unset;
+  --tb-live-border: unset;
+  --tb-live-muted-background: unset;
+  --tb-live-heading-color: unset;
   --tb-live-font-size: unset;
+  --tb-live-line-height: unset;
   --tb-live-h1-size: unset;
   --tb-live-h2-size: unset;
   --tb-live-h3-size: unset;
+  --tb-live-h4-size: unset;
   --tb-live-margin: unset;
   --tb-live-gutter: unset;
   --tb-live-font-family: unset;
   --tb-live-heading-font-family: unset;
-}
-
-/* Info Center (inkl. unser eigenes Widget darin) vor den eigenen Live-Regeln schützen:
-   z.B. ist der Widget-Titel selbst ein <h3> ("Live Theme Editor" usw.) - ohne diesen Reset
-   würde eine Änderung an "H3-Größe" auch die Infocenter-UI selbst verzerren. Die Custom
-   Properties per Vererbung innerhalb des Containers auf "unset" zurücksetzen, wodurch jede
-   var(--tb-live-x, inherit)-Regel hier auf ihren inherit-Fallback zurückfällt - unabhängig
-   davon, welche Selektoren künftig noch dazukommen. */
-.info-center-container,
-.info-center-container * {
-  --tb-live-primary: unset !important;
-  --tb-live-secondary: unset !important;
-  --tb-live-background: unset !important;
-  --tb-live-color: unset !important;
-  --tb-live-link: unset !important;
-  --tb-live-font-size: unset !important;
-  --tb-live-h1-size: unset !important;
-  --tb-live-h2-size: unset !important;
-  --tb-live-h3-size: unset !important;
-  --tb-live-margin: unset !important;
-  --tb-live-gutter: unset !important;
-  --tb-live-font-family: unset !important;
-  --tb-live-heading-font-family: unset !important;
 }
 
 html,
@@ -53,11 +49,13 @@ body {
   color: var(--tb-live-color, inherit) !important;
   font-size: var(--tb-live-font-size, inherit) !important;
   font-family: var(--tb-live-font-family, inherit) !important;
+  line-height: var(--tb-live-line-height, inherit) !important;
 }
 
 h1, h2, h3, h4, h5, h6,
 .uk-h1, .uk-h2, .uk-h3, .uk-h4, .uk-h5, .uk-h6 {
   font-family: var(--tb-live-heading-font-family, inherit) !important;
+  color: var(--tb-live-heading-color, inherit) !important;
 }
 
 a,
@@ -65,12 +63,16 @@ a,
   color: var(--tb-live-link, inherit) !important;
 }
 
+a:hover,
+.uk-link:hover {
+  color: var(--tb-live-link-hover, inherit) !important;
+}
+
 .uk-button-primary,
 .uk-badge,
 .uk-text-primary {
   background-color: var(--tb-live-primary, inherit) !important;
 }
-
 .uk-text-primary {
   color: var(--tb-live-primary, inherit) !important;
   background-color: transparent !important;
@@ -80,10 +82,60 @@ a,
 .uk-text-secondary {
   background-color: var(--tb-live-secondary, inherit) !important;
 }
-
 .uk-text-secondary {
   color: var(--tb-live-secondary, inherit) !important;
   background-color: transparent !important;
+}
+
+.uk-alert-success,
+.uk-label-success,
+.uk-text-success {
+  background-color: var(--tb-live-success, inherit) !important;
+}
+.uk-text-success {
+  color: var(--tb-live-success, inherit) !important;
+  background-color: transparent !important;
+}
+
+.uk-alert-warning,
+.uk-label-warning,
+.uk-text-warning {
+  background-color: var(--tb-live-warning, inherit) !important;
+}
+.uk-text-warning {
+  color: var(--tb-live-warning, inherit) !important;
+  background-color: transparent !important;
+}
+
+.uk-alert-danger,
+.uk-label-danger,
+.uk-text-danger {
+  background-color: var(--tb-live-danger, inherit) !important;
+}
+.uk-text-danger {
+  color: var(--tb-live-danger, inherit) !important;
+  background-color: transparent !important;
+}
+
+.uk-text-emphasis {
+  color: var(--tb-live-emphasis, inherit) !important;
+}
+
+.uk-text-muted {
+  color: var(--tb-live-muted, inherit) !important;
+}
+
+.uk-text-inverse {
+  color: var(--tb-live-inverse, inherit) !important;
+}
+
+.uk-border,
+[class*="uk-border-"] {
+  border-color: var(--tb-live-border, inherit) !important;
+}
+
+.uk-background-muted {
+  background-color: var(--tb-live-muted-background, inherit) !important;
 }
 
 h1,
@@ -99,6 +151,11 @@ h2,
 h3,
 .uk-h3 {
   font-size: var(--tb-live-h3-size, inherit) !important;
+}
+
+h4,
+.uk-h4 {
+  font-size: var(--tb-live-h4-size, inherit) !important;
 }
 
 /* Entspricht UIkits eigener Spacing-Rhythmik (siehe "* + figure { margin-top: ... }" etc.

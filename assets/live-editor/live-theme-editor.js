@@ -7,11 +7,45 @@
 (function () {
   "use strict";
 
+  var SECTIONS = [
+    { key: "colors", label: "Farben", open: true },
+    { key: "typography", label: "Typografie", open: false },
+    { key: "spacing", label: "Abstände", open: false }
+  ];
+
+  var LABELS = {
+    primary: "Primary",
+    secondary: "Secondary",
+    success: "Success",
+    warning: "Warning",
+    danger: "Danger",
+    color: "Text",
+    emphasis: "Emphasis",
+    muted: "Muted",
+    link: "Link",
+    link_hover: "Link Hover",
+    inverse: "Inverse",
+    border: "Border",
+    background: "Hintergrund",
+    muted_background: "Muted Background",
+    heading_color: "Überschriften-Farbe",
+    font_family: "Primärschrift",
+    heading_font_family: "Überschriften-Schrift",
+    font_size: "Basis-Schriftgröße",
+    line_height: "Zeilenhöhe (Fließtext)",
+    h1_size: "H1-Größe",
+    h2_size: "H2-Größe",
+    h3_size: "H3-Größe",
+    h4_size: "H4-Größe",
+    margin: "Standard-Abstand",
+    gutter: "Container-Padding"
+  };
+
   // A11y-Untergrenze: Basis-Schriftgröße darf laut gängigen Empfehlungen nie unter 16px
   // (bzw. dem äquivalenten rem/em/%-Wert bei unverändertem Root-Font-Size) fallen, sonst
   // leidet die Lesbarkeit. Überschriften dürfen nicht kleiner als die Basisschrift werden,
   // sonst bricht die visuelle Hierarchie - daher ebenfalls mit (etwas höherer) Untergrenze.
-  var A11Y_MIN_PX = { font_size: 16, h3_size: 18, h2_size: 20, h1_size: 24 };
+  var A11Y_MIN_PX = { font_size: 16, h4_size: 17, h3_size: 18, h2_size: 20, h1_size: 24 };
 
   function unitAwareFloor(unit, pxFloor) {
     if ("rem" === unit || "em" === unit) {
@@ -34,66 +68,6 @@
     return { min: min, max: Math.round(max * 100) / 100, step: step };
   }
 
-  var COLOR_FIELDS = ["primary", "secondary", "background", "color", "link"];
-  var SIZE_FIELDS = ["font_size", "h1_size", "h2_size", "h3_size", "margin", "gutter"];
-  var FONT_FIELDS = ["font_family", "heading_font_family"];
-
-  var LABELS = {
-    primary: "Primary",
-    secondary: "Secondary",
-    background: "Hintergrund",
-    color: "Text",
-    link: "Link",
-    font_size: "Basis-Schriftgröße",
-    h1_size: "H1-Größe",
-    h2_size: "H2-Größe",
-    h3_size: "H3-Größe",
-    margin: "Standard-Abstand",
-    gutter: "Container-Padding",
-    font_family: "Primärschrift",
-    heading_font_family: "Überschriften-Schrift"
-  };
-
-  // Bekannte Betriebssystem-/Web-safe-Fonts, die kein <link> zu Google Fonts brauchen.
-  // Gleiche Liste wie im normalen Theme-Editor (TypographyWidget-Vorschau).
-  var SYSTEM_FONTS = [
-    "Arial", "Verdana", "Helvetica", "Tahoma", "Trebuchet MS",
-    "Times New Roman", "Times", "Georgia", "Garamond",
-    "Courier New", "Courier", "Monaco", "Consolas",
-    "system-ui", "BlinkMacSystemFont", "-apple-system", "Segoe UI",
-    "Roboto", "Ubuntu", "Cantarell", "Helvetica Neue", "sans-serif", "serif", "monospace"
-  ];
-
-  var loadedGoogleFonts = {};
-
-  function extractFirstFont(fontStack) {
-    if (!fontStack || "inherit" === fontStack) {
-      return "";
-    }
-    var cleaned = fontStack.replace(/['"]/g, "").trim();
-    return cleaned.split(",")[0].trim();
-  }
-
-  function isSystemFont(fontName) {
-    return SYSTEM_FONTS.some(function (sf) {
-      return sf.toLowerCase() === fontName.toLowerCase();
-    });
-  }
-
-  // Gleiche Technik wie die bestehende Font-Vorschau im normalen Theme-Editor
-  // (TypographyWidget): fehlt der Font lokal, per Google Fonts CSS2-API nachladen.
-  function ensureFontLoaded(fontStack) {
-    var firstFont = extractFirstFont(fontStack);
-    if (!firstFont || isSystemFont(firstFont) || loadedGoogleFonts[firstFont]) {
-      return;
-    }
-    loadedGoogleFonts[firstFont] = true;
-    var link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "https://fonts.googleapis.com/css2?family=" + encodeURIComponent(firstFont) + "&display=swap";
-    document.head.appendChild(link);
-  }
-
   function ready(fn) {
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", fn);
@@ -103,7 +77,7 @@
   }
 
   // input[type=color] akzeptiert nur exakt #rrggbb - andere Formate (rgba(), 8-stelliges Hex
-  // mit Alpha, ...) würden vom Browser stillschweigend auf schwarz zurückgesetzt.
+  // mit Alpha, "inherit", ...) würden vom Browser stillschweigend auf schwarz zurückgesetzt.
   function toHexColor(value) {
     if (/^#[0-9a-fA-F]{6}$/.test(value || "")) {
       return value;
@@ -130,6 +104,43 @@
     };
   }
 
+  // Bekannte Betriebssystem-/Web-safe-Fonts, die kein <link> zu Google Fonts brauchen.
+  var SYSTEM_FONTS = [
+    "Arial", "Verdana", "Helvetica", "Tahoma", "Trebuchet MS",
+    "Times New Roman", "Times", "Georgia", "Garamond",
+    "Courier New", "Courier", "Monaco", "Consolas",
+    "system-ui", "BlinkMacSystemFont", "-apple-system", "Segoe UI",
+    "Roboto", "Ubuntu", "Cantarell", "Helvetica Neue", "sans-serif", "serif", "monospace"
+  ];
+  var loadedGoogleFonts = {};
+
+  function extractFirstFont(fontStack) {
+    if (!fontStack || "inherit" === fontStack) {
+      return "";
+    }
+    return fontStack.replace(/['"]/g, "").trim().split(",")[0].trim();
+  }
+
+  function isSystemFont(fontName) {
+    return SYSTEM_FONTS.some(function (sf) {
+      return sf.toLowerCase() === fontName.toLowerCase();
+    });
+  }
+
+  // Gleiche Technik wie die bestehende Font-Vorschau im normalen Theme-Editor
+  // (TypographyWidget): fehlt der Font lokal, per Google Fonts CSS2-API nachladen.
+  function ensureFontLoaded(fontStack) {
+    var firstFont = extractFirstFont(fontStack);
+    if (!firstFont || isSystemFont(firstFont) || loadedGoogleFonts[firstFont]) {
+      return;
+    }
+    loadedGoogleFonts[firstFont] = true;
+    var link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "https://fonts.googleapis.com/css2?family=" + encodeURIComponent(firstFont) + "&display=swap";
+    document.head.appendChild(link);
+  }
+
   ready(function () {
     var root = document.getElementById("tb-live-editor-root");
     if (!root) {
@@ -144,8 +155,10 @@
     }
 
     var state = Object.assign({}, config.values || {});
+    var colorInputs = {};
+    var sizeInputs = {};
+    var fontInputs = {};
 
-    // --- DOM aufbauen (direkt in den Info-Center-Widget-Content) --------
     root.innerHTML = "";
 
     var themeLabel = document.createElement("div");
@@ -153,127 +166,129 @@
     themeLabel.innerHTML = '<label style="opacity:.6;font-size:11px;">Theme: ' + config.theme + "</label>";
     root.appendChild(themeLabel);
 
-    var colorInputs = {};
-    var sizeInputs = {};
-
-    COLOR_FIELDS.forEach(function (key) {
-      var field = config.fields[key];
-      if (!field) {
+    SECTIONS.forEach(function (section) {
+      var keysInSection = Object.keys(config.fields).filter(function (key) {
+        return config.fields[key].section === section.key;
+      });
+      if (!keysInSection.length) {
         return;
       }
 
-      var row = document.createElement("div");
-      row.className = "tb-live-row";
-
-      var label = document.createElement("label");
-      label.textContent = LABELS[key] || key;
-      row.appendChild(label);
-
-      var colorInput = document.createElement("input");
-      colorInput.type = "color";
-      colorInput.value = toHexColor(state[key]);
-      row.appendChild(colorInput);
-
-      root.appendChild(row);
-      colorInputs[key] = colorInput;
-
-      colorInput.addEventListener("input", function () {
-        state[key] = colorInput.value;
-        applyLocal(key, colorInput.value);
-        scheduleSync();
-      });
-    });
-
-    SIZE_FIELDS.forEach(function (key) {
-      var field = config.fields[key];
-      if (!field) {
-        return;
-      }
-      var parsed = parseSize(state[key]) || { number: 16, unit: "px" };
-      var range = computeSizeRange(key, parsed.number, parsed.unit);
-
-      // Gespeicherter Wert liegt unter der a11y-Untergrenze (z.B. altes Theme mit 14px
-      // Basisschrift) - auf die Untergrenze klemmen statt eine Diskrepanz zwischen
-      // Slider-Position und angezeigtem/angewendetem Wert zuzulassen.
-      if (parsed.number < range.min) {
-        parsed = { number: range.min, unit: parsed.unit };
-        state[key] = String(range.min) + parsed.unit;
+      var details = document.createElement("details");
+      details.className = "tb-live-section";
+      if (section.open) {
+        details.open = true;
       }
 
-      var row = document.createElement("div");
-      row.className = "tb-live-row";
+      var summary = document.createElement("summary");
+      summary.textContent = section.label;
+      details.appendChild(summary);
 
-      var label = document.createElement("label");
-      label.textContent = LABELS[key] || key;
-      row.appendChild(label);
+      var body = document.createElement("div");
+      body.className = "tb-live-section-body";
+      details.appendChild(body);
 
-      var input = document.createElement("input");
-      input.type = "range";
-      input.min = String(range.min);
-      input.max = String(range.max);
-      input.step = String(range.step);
-      input.value = String(parsed.number);
-      row.appendChild(input);
+      keysInSection.forEach(function (key) {
+        var field = config.fields[key];
+        var row = document.createElement("div");
+        row.className = "tb-live-row";
 
-      var valueLabel = document.createElement("span");
-      valueLabel.className = "tb-live-size-value";
-      valueLabel.textContent = parsed.number + parsed.unit;
-      row.appendChild(valueLabel);
+        var label = document.createElement("label");
+        label.textContent = LABELS[key] || key;
+        row.appendChild(label);
 
-      root.appendChild(row);
-      sizeInputs[key] = { input: input, valueLabel: valueLabel, unit: parsed.unit };
+        if ("color" === field.type) {
+          var colorInput = document.createElement("input");
+          colorInput.type = "color";
+          colorInput.value = toHexColor(state[key]);
+          row.appendChild(colorInput);
+          colorInputs[key] = colorInput;
+          colorInput.addEventListener("input", function () {
+            state[key] = colorInput.value;
+            applyLocal(key, colorInput.value);
+            scheduleSync();
+          });
+        } else if ("font" === field.type) {
+          var select = document.createElement("select");
+          if ("heading_font_family" === key) {
+            var inheritOption = document.createElement("option");
+            inheritOption.value = "inherit";
+            inheritOption.textContent = "Von Primärschrift erben";
+            select.appendChild(inheritOption);
+          }
+          Object.keys(config.fontOptions || {}).forEach(function (value) {
+            var option = document.createElement("option");
+            option.value = value;
+            option.textContent = config.fontOptions[value];
+            select.appendChild(option);
+          });
+          select.value = state[key] || "inherit";
+          row.className += " tb-live-row-font";
+          row.appendChild(select);
+          fontInputs[key] = select;
+          select.addEventListener("change", function () {
+            state[key] = select.value;
+            applyLocal(key, select.value);
+            ensureFontLoaded(select.value);
+            scheduleSync();
+          });
+          ensureFontLoaded(select.value);
+        } else if ("number" === field.type) {
+          var numValue = parseFloat(state[key]) || 1.5;
+          var numInput = document.createElement("input");
+          numInput.type = "range";
+          numInput.min = "1";
+          numInput.max = "2.2";
+          numInput.step = "0.05";
+          numInput.value = String(numValue);
+          row.appendChild(numInput);
+          var numLabel = document.createElement("span");
+          numLabel.className = "tb-live-size-value";
+          numLabel.textContent = String(numValue);
+          row.appendChild(numLabel);
+          sizeInputs[key] = { input: numInput, valueLabel: numLabel, unit: "" };
+          numInput.addEventListener("input", function () {
+            numLabel.textContent = numInput.value;
+            state[key] = numInput.value;
+            applyLocal(key, numInput.value);
+            scheduleSync();
+          });
+        } else {
+          // size
+          var parsed = parseSize(state[key]) || { number: 16, unit: "px" };
+          var range = computeSizeRange(key, parsed.number, parsed.unit);
+          if (parsed.number < range.min) {
+            parsed = { number: range.min, unit: parsed.unit };
+            state[key] = String(range.min) + parsed.unit;
+          }
 
-      input.addEventListener("input", function () {
-        var newValue = input.value + parsed.unit;
-        valueLabel.textContent = newValue;
-        state[key] = newValue;
-        applyLocal(key, newValue);
-        scheduleSync();
+          var input = document.createElement("input");
+          input.type = "range";
+          input.min = String(range.min);
+          input.max = String(range.max);
+          input.step = String(range.step);
+          input.value = String(parsed.number);
+          row.appendChild(input);
+
+          var valueLabel = document.createElement("span");
+          valueLabel.className = "tb-live-size-value";
+          valueLabel.textContent = parsed.number + parsed.unit;
+          row.appendChild(valueLabel);
+
+          sizeInputs[key] = { input: input, valueLabel: valueLabel, unit: parsed.unit };
+          input.addEventListener("input", function () {
+            var newValue = input.value + parsed.unit;
+            valueLabel.textContent = newValue;
+            state[key] = newValue;
+            applyLocal(key, newValue);
+            scheduleSync();
+          });
+        }
+
+        body.appendChild(row);
       });
-    });
 
-    var fontInputs = {};
-
-    FONT_FIELDS.forEach(function (key) {
-      var field = config.fields[key];
-      if (!field) {
-        return;
-      }
-
-      var row = document.createElement("div");
-      row.className = "tb-live-row tb-live-row-font";
-
-      var label = document.createElement("label");
-      label.textContent = LABELS[key] || key;
-      row.appendChild(label);
-
-      var select = document.createElement("select");
-      if ("heading_font_family" === key) {
-        var inheritOption = document.createElement("option");
-        inheritOption.value = "inherit";
-        inheritOption.textContent = "Von Primärschrift erben";
-        select.appendChild(inheritOption);
-      }
-      Object.keys(config.fontOptions || {}).forEach(function (value) {
-        var option = document.createElement("option");
-        option.value = value;
-        option.textContent = config.fontOptions[value];
-        select.appendChild(option);
-      });
-      select.value = state[key] || (config.fields[key] ? "inherit" : "");
-      row.appendChild(select);
-
-      root.appendChild(row);
-      fontInputs[key] = select;
-
-      select.addEventListener("change", function () {
-        state[key] = select.value;
-        applyLocal(key, select.value);
-        ensureFontLoaded(select.value);
-        scheduleSync();
-      });
-
-      ensureFontLoaded(select.value);
+      root.appendChild(details);
     });
 
     var actions = document.createElement("div");
@@ -331,8 +346,6 @@
         actions.appendChild(btn);
       }
     });
-
-    // --- Hilfsfunktionen --------------------------------------------------
 
     function makeButton(text, className, onClick) {
       var btn = document.createElement("button");
@@ -398,11 +411,10 @@
               colorInputs[key].value = toHexColor(values[key]);
             }
             if (sizeInputs[key]) {
-              var parsed = parseSize(values[key]);
-              if (parsed) {
-                sizeInputs[key].input.value = String(parsed.number);
-                sizeInputs[key].valueLabel.textContent = values[key];
-              }
+              var parsedVal = parseFloat(values[key]);
+              var displayValue = isNaN(parsedVal) ? values[key] : parsedVal + (sizeInputs[key].unit || "");
+              sizeInputs[key].input.value = String(parsedVal);
+              sizeInputs[key].valueLabel.textContent = displayValue;
             }
             if (fontInputs[key]) {
               fontInputs[key].value = values[key];

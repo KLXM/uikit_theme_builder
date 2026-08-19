@@ -14,19 +14,36 @@ class LiveThemeState
      * Die Datengruppe entspricht dem Widget-Key in UikitThemeBuilderManager::compileTheme() (colors/typography).
      */
     public const FIELDS = [
-        'primary' => ['less' => 'global-primary-background', 'css' => '--tb-live-primary', 'type' => 'color', 'group' => 'colors'],
-        'secondary' => ['less' => 'global-secondary-background', 'css' => '--tb-live-secondary', 'type' => 'color', 'group' => 'colors'],
-        'background' => ['less' => 'global-background', 'css' => '--tb-live-background', 'type' => 'color', 'group' => 'colors'],
-        'color' => ['less' => 'global-color', 'css' => '--tb-live-color', 'type' => 'color', 'group' => 'colors'],
-        'link' => ['less' => 'global-link-color', 'css' => '--tb-live-link', 'type' => 'color', 'group' => 'colors'],
-        'font_size' => ['less' => 'global-font-size', 'css' => '--tb-live-font-size', 'type' => 'size', 'group' => 'typography'],
-        'h1_size' => ['less' => 'base-h1-font-size-m', 'css' => '--tb-live-h1-size', 'type' => 'size', 'group' => 'typography'],
-        'h2_size' => ['less' => 'base-h2-font-size-m', 'css' => '--tb-live-h2-size', 'type' => 'size', 'group' => 'typography'],
-        'h3_size' => ['less' => 'base-h3-font-size', 'css' => '--tb-live-h3-size', 'type' => 'size', 'group' => 'typography'],
-        'margin' => ['less' => 'global-margin', 'css' => '--tb-live-margin', 'type' => 'size', 'group' => 'spacing'],
-        'gutter' => ['less' => 'global-gutter', 'css' => '--tb-live-gutter', 'type' => 'size', 'group' => 'spacing'],
-        'font_family' => ['less' => 'global-font-family', 'css' => '--tb-live-font-family', 'type' => 'font', 'group' => 'typography'],
-        'heading_font_family' => ['less' => 'base-heading-font-family', 'css' => '--tb-live-heading-font-family', 'type' => 'font', 'group' => 'typography'],
+        // Farben (komplette ColorsWidget-Palette)
+        'primary' => ['less' => 'global-primary-background', 'css' => '--tb-live-primary', 'type' => 'color', 'group' => 'colors', 'section' => 'colors'],
+        'secondary' => ['less' => 'global-secondary-background', 'css' => '--tb-live-secondary', 'type' => 'color', 'group' => 'colors', 'section' => 'colors'],
+        'success' => ['less' => 'global-success-background', 'css' => '--tb-live-success', 'type' => 'color', 'group' => 'colors', 'section' => 'colors'],
+        'warning' => ['less' => 'global-warning-background', 'css' => '--tb-live-warning', 'type' => 'color', 'group' => 'colors', 'section' => 'colors'],
+        'danger' => ['less' => 'global-danger-background', 'css' => '--tb-live-danger', 'type' => 'color', 'group' => 'colors', 'section' => 'colors'],
+        'color' => ['less' => 'global-color', 'css' => '--tb-live-color', 'type' => 'color', 'group' => 'colors', 'section' => 'colors'],
+        'emphasis' => ['less' => 'global-emphasis-color', 'css' => '--tb-live-emphasis', 'type' => 'color', 'group' => 'colors', 'section' => 'colors'],
+        'muted' => ['less' => 'global-muted-color', 'css' => '--tb-live-muted', 'type' => 'color', 'group' => 'colors', 'section' => 'colors'],
+        'link' => ['less' => 'global-link-color', 'css' => '--tb-live-link', 'type' => 'color', 'group' => 'colors', 'section' => 'colors'],
+        'link_hover' => ['less' => 'global-link-hover-color', 'css' => '--tb-live-link-hover', 'type' => 'color', 'group' => 'colors', 'section' => 'colors'],
+        'inverse' => ['less' => 'global-inverse-color', 'css' => '--tb-live-inverse', 'type' => 'color', 'group' => 'colors', 'section' => 'colors'],
+        'border' => ['less' => 'global-border', 'css' => '--tb-live-border', 'type' => 'color', 'group' => 'colors', 'section' => 'colors'],
+        'background' => ['less' => 'global-background', 'css' => '--tb-live-background', 'type' => 'color', 'group' => 'colors', 'section' => 'colors'],
+        'muted_background' => ['less' => 'global-muted-background', 'css' => '--tb-live-muted-background', 'type' => 'color', 'group' => 'colors', 'section' => 'colors'],
+        'heading_color' => ['less' => 'base-heading-color', 'css' => '--tb-live-heading-color', 'type' => 'color', 'group' => 'typography', 'section' => 'colors'],
+
+        // Typografie
+        'font_family' => ['less' => 'global-font-family', 'css' => '--tb-live-font-family', 'type' => 'font', 'group' => 'typography', 'section' => 'typography'],
+        'heading_font_family' => ['less' => 'base-heading-font-family', 'css' => '--tb-live-heading-font-family', 'type' => 'font', 'group' => 'typography', 'section' => 'typography'],
+        'font_size' => ['less' => 'global-font-size', 'css' => '--tb-live-font-size', 'type' => 'size', 'group' => 'typography', 'section' => 'typography'],
+        'line_height' => ['less' => 'global-line-height', 'css' => '--tb-live-line-height', 'type' => 'number', 'group' => 'typography', 'section' => 'typography'],
+        'h1_size' => ['less' => 'base-h1-font-size-m', 'css' => '--tb-live-h1-size', 'type' => 'size', 'group' => 'typography', 'section' => 'typography'],
+        'h2_size' => ['less' => 'base-h2-font-size-m', 'css' => '--tb-live-h2-size', 'type' => 'size', 'group' => 'typography', 'section' => 'typography'],
+        'h3_size' => ['less' => 'base-h3-font-size', 'css' => '--tb-live-h3-size', 'type' => 'size', 'group' => 'typography', 'section' => 'typography'],
+        'h4_size' => ['less' => 'base-h4-font-size', 'css' => '--tb-live-h4-size', 'type' => 'size', 'group' => 'typography', 'section' => 'typography'],
+
+        // Abstände
+        'margin' => ['less' => 'global-margin', 'css' => '--tb-live-margin', 'type' => 'size', 'group' => 'spacing', 'section' => 'spacing'],
+        'gutter' => ['less' => 'global-gutter', 'css' => '--tb-live-gutter', 'type' => 'size', 'group' => 'spacing', 'section' => 'spacing'],
     ];
 
     /**
@@ -96,6 +113,8 @@ class LiveThemeState
                 $clean[$key] = $value;
             } elseif ('font' === $type && self::isValidFontStack($value)) {
                 $clean[$key] = $value;
+            } elseif ('number' === $type && self::isValidNumber($value)) {
+                $clean[$key] = $value;
             }
         }
 
@@ -112,6 +131,12 @@ class LiveThemeState
     private static function isValidSize(string $size): bool
     {
         return (bool) preg_match('/^\d{1,4}(\.\d{1,3})?(px|rem|em|%)$/', $size);
+    }
+
+    /** Unitless Werte wie die Zeilenhöhe (z.B. "1.5"). */
+    private static function isValidNumber(string $number): bool
+    {
+        return (bool) preg_match('/^\d(\.\d{1,3})?$/', $number);
     }
 
     /**

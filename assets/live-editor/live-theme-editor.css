@@ -4,6 +4,40 @@
  * das Widget lebt innerhalb von .info-center-widget-content und übernimmt dessen
  * Farben/Dark-Mode, nur Layout-Details (Zeilen, Slider, Buttons) werden hier ergänzt.
  */
+.tb-live-body .tb-live-section {
+  margin-bottom: 6px;
+  border: 1px solid rgba(128, 128, 128, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.tb-live-body .tb-live-section summary {
+  padding: 8px 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  opacity: 0.8;
+  list-style: none;
+}
+
+.tb-live-body .tb-live-section summary::-webkit-details-marker {
+  display: none;
+}
+
+.tb-live-body .tb-live-section summary::before {
+  content: "▸ ";
+}
+
+.tb-live-body .tb-live-section[open] summary::before {
+  content: "▾ ";
+}
+
+.tb-live-body .tb-live-section-body {
+  padding: 8px 10px 10px;
+}
+
 .tb-live-body .tb-live-row {
   display: flex;
   align-items: center;
