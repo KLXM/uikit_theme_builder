@@ -248,6 +248,38 @@ if (rex_request('previewtheme', 'string')) {
     exit; // Normale REDAXO-Verarbeitung stoppen
 }
 
+// Live Theme Editor: SSE-Stream (Draft = nur eigene Session, Public = alle Besucher
+// während einer aktiven Live-Session). Läuft ohne normale REDAXO-Seitenausgabe, analog
+// zur previewtheme-Route oben.
+$themeLiveStreamMode = rex_request('theme_live_stream', 'string', '');
+if ('' !== $themeLiveStreamMode) {
+    $themeLiveStreamTheme = rex_request('theme', 'string', '');
+    UikitThemeBuilder\LiveThemeState::streamSse($themeLiveStreamMode, $themeLiveStreamTheme);
+    exit;
+}
+
+// Live Theme Editor: Bridge-CSS auf jeder Frontend-Seite laden (wirkungslos ohne aktive
+// Live-Session) und den Listener für normale Besucher nur einbinden, solange für das
+// Domain-Theme eine Live-Session aktiv ist ("Live schalten").
+if (rex::isFrontend()) {
+    rex_extension::register('OUTPUT_FILTER', function (rex_extension_point $ep) {
+        $content = $ep->getSubject();
+        $addon = rex_addon::get('uikit_theme_builder');
+
+        $bridgeCssTag = '<link rel="stylesheet" href="' . $addon->getAssetsUrl('live-editor/live-theme-editor-bridge.css') . '"></head>';
+        $content = str_ireplace('</head>', $bridgeCssTag, $content);
+
+        $theme = UikitThemeBuilder\DomainContext::getCurrentTheme();
+        if ($theme && file_exists(UikitThemeBuilder\LiveThemeState::flagPath($theme))) {
+            $streamUrl = rex_url::frontendController(['theme_live_stream' => 'public', 'theme' => $theme], false);
+            $listenerTag = '<script src="' . $addon->getAssetsUrl('live-editor/live-theme-public-listener.js') . '" data-stream-url="' . rex_escape($streamUrl) . '"></script></body>';
+            $content = str_ireplace('</body>', $listenerTag, $content);
+        }
+
+        $ep->setSubject($content);
+    });
+}
+
 // Template Manager Integration - installiere verfügbare Templates beim Boot
 if (rex::isBackend() && rex::getUser()) {
     // Optionale automatische Installation: Nur einmalig triggern

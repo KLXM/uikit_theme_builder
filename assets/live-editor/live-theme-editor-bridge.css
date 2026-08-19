@@ -1,0 +1,69 @@
+/**
+ * Live Theme Editor - CSS-Custom-Property-Brücke.
+ *
+ * Wird auf JEDER Frontend-Seite geladen (siehe boot.php), unabhängig davon, ob gerade
+ * eine Live-Session läuft. Solange keine der --tb-live-* Properties gesetzt ist, sind
+ * alle Regeln hier wirkungslos (Fallback = "unset", also der ursprüngliche Theme-Wert).
+ * Das JS (live-theme-editor.js für den Redakteur, live-theme-public-listener.js für
+ * alle anderen Besucher während einer aktiven Live-Session) setzt die Properties per
+ * documentElement.style.setProperty(...), wodurch die Seite ohne Reload sofort neu malt.
+ */
+:root {
+  --tb-live-primary: unset;
+  --tb-live-secondary: unset;
+  --tb-live-background: unset;
+  --tb-live-color: unset;
+  --tb-live-link: unset;
+  --tb-live-font-size: unset;
+  --tb-live-h1-size: unset;
+  --tb-live-h2-size: unset;
+  --tb-live-h3-size: unset;
+}
+
+html,
+body {
+  background: var(--tb-live-background, inherit) !important;
+  color: var(--tb-live-color, inherit) !important;
+  font-size: var(--tb-live-font-size, inherit) !important;
+}
+
+a,
+.uk-link {
+  color: var(--tb-live-link, inherit) !important;
+}
+
+.uk-button-primary,
+.uk-badge,
+.uk-text-primary {
+  background-color: var(--tb-live-primary, inherit) !important;
+}
+
+.uk-text-primary {
+  color: var(--tb-live-primary, inherit) !important;
+  background-color: transparent !important;
+}
+
+.uk-button-secondary,
+.uk-text-secondary {
+  background-color: var(--tb-live-secondary, inherit) !important;
+}
+
+.uk-text-secondary {
+  color: var(--tb-live-secondary, inherit) !important;
+  background-color: transparent !important;
+}
+
+h1,
+.uk-h1 {
+  font-size: var(--tb-live-h1-size, inherit) !important;
+}
+
+h2,
+.uk-h2 {
+  font-size: var(--tb-live-h2-size, inherit) !important;
+}
+
+h3,
+.uk-h3 {
+  font-size: var(--tb-live-h3-size, inherit) !important;
+}
