@@ -22,6 +22,27 @@
   --tb-live-gutter: unset;
 }
 
+/* Info Center (inkl. unser eigenes Widget darin) vor den eigenen Live-Regeln schützen:
+   z.B. ist der Widget-Titel selbst ein <h3> ("Live Theme Editor" usw.) - ohne diesen Reset
+   würde eine Änderung an "H3-Größe" auch die Infocenter-UI selbst verzerren. Die Custom
+   Properties per Vererbung innerhalb des Containers auf "unset" zurücksetzen, wodurch jede
+   var(--tb-live-x, inherit)-Regel hier auf ihren inherit-Fallback zurückfällt - unabhängig
+   davon, welche Selektoren künftig noch dazukommen. */
+.info-center-container,
+.info-center-container * {
+  --tb-live-primary: unset !important;
+  --tb-live-secondary: unset !important;
+  --tb-live-background: unset !important;
+  --tb-live-color: unset !important;
+  --tb-live-link: unset !important;
+  --tb-live-font-size: unset !important;
+  --tb-live-h1-size: unset !important;
+  --tb-live-h2-size: unset !important;
+  --tb-live-h3-size: unset !important;
+  --tb-live-margin: unset !important;
+  --tb-live-gutter: unset !important;
+}
+
 html,
 body {
   background: var(--tb-live-background, inherit) !important;
