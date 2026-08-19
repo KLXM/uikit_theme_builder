@@ -266,7 +266,12 @@ if (rex::isFrontend()) {
         $content = $ep->getSubject();
         $addon = rex_addon::get('uikit_theme_builder');
 
-        $bridgeCssTag = '<link rel="stylesheet" href="' . $addon->getAssetsUrl('live-editor/live-theme-editor-bridge.css') . '"></head>';
+        // Cache-Buster manuell anhängen (Filemtime) - diese Tags gehen direkt raus statt über
+        // rex_view::addCssFile()/addJsFile(), die das sonst automatisch übernehmen würden.
+        $bridgeCssPath = rex_path::addonAssets('uikit_theme_builder', 'live-editor/live-theme-editor-bridge.css');
+        $bridgeCssMtime = @filemtime($bridgeCssPath);
+        $bridgeCssUrl = $addon->getAssetsUrl('live-editor/live-theme-editor-bridge.css') . ($bridgeCssMtime ? '?buster=' . $bridgeCssMtime : '');
+        $bridgeCssTag = '<link rel="stylesheet" href="' . $bridgeCssUrl . '"></head>';
         $content = str_ireplace('</head>', $bridgeCssTag, $content);
 
         $theme = UikitThemeBuilder\DomainContext::getCurrentTheme();
@@ -274,7 +279,10 @@ if (rex::isFrontend()) {
             // Bewusst keine rex_url::frontendController() (=.../index.php?...) - unter YRewrite
             // würde "index.php" als Artikel-Pfad gesucht und 404en, bevor der Stream startet.
             $streamUrl = '/?' . http_build_query(['theme_live_stream' => 'public', 'theme' => $theme]);
-            $listenerTag = '<script src="' . $addon->getAssetsUrl('live-editor/live-theme-public-listener.js') . '" data-stream-url="' . rex_escape($streamUrl) . '"></script></body>';
+            $listenerJsPath = rex_path::addonAssets('uikit_theme_builder', 'live-editor/live-theme-public-listener.js');
+            $listenerJsMtime = @filemtime($listenerJsPath);
+            $listenerJsUrl = $addon->getAssetsUrl('live-editor/live-theme-public-listener.js') . ($listenerJsMtime ? '?buster=' . $listenerJsMtime : '');
+            $listenerTag = '<script src="' . $listenerJsUrl . '" data-stream-url="' . rex_escape($streamUrl) . '"></script></body>';
             $content = str_ireplace('</body>', $listenerTag, $content);
         }
 

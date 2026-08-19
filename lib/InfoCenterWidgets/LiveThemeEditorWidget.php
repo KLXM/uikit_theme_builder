@@ -73,8 +73,12 @@ class LiveThemeEditorWidget extends AbstractWidget
             'isAdmin' => $user->isAdmin(),
         ];
 
-        $editorCss = $addon->getAssetsUrl('live-editor/live-theme-editor.css');
-        $editorJs = $addon->getAssetsUrl('live-editor/live-theme-editor.js');
+        // Cache-Buster wie rex_view::addCssFile()/addJsFile() ihn automatisch anhängen -
+        // unsere <link>/<script>-Tags hier gehen aber direkt raus (nicht über rex_view), daher
+        // müssen wir das manuell nachbilden, sonst bleiben Browser/Proxy nach einem Update auf
+        // einer alten gecachten Version hängen.
+        $editorCss = self::withCacheBuster($addon, 'live-editor/live-theme-editor.css');
+        $editorJs = self::withCacheBuster($addon, 'live-editor/live-theme-editor.js');
 
         $configJson = htmlspecialchars(json_encode($config), ENT_QUOTES, 'UTF-8');
 
@@ -100,5 +104,14 @@ HTML;
     private static function rootUrl(array $params): string
     {
         return '/?' . http_build_query($params);
+    }
+
+    private static function withCacheBuster(\rex_addon $addon, string $relativePath): string
+    {
+        $url = $addon->getAssetsUrl($relativePath);
+        $absolutePath = \rex_path::addonAssets($addon->getName(), $relativePath);
+        $mtime = @filemtime($absolutePath);
+
+        return $mtime ? $url . '?buster=' . $mtime : $url;
     }
 }
