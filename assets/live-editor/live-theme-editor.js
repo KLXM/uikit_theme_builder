@@ -39,7 +39,7 @@
     h3_size: "H3-Größe",
     h4_size: "H4-Größe",
     margin: "Standard-Abstand",
-    gutter: "Container-Padding / uk-padding",
+    gutter: "Padding (Medium/Standard) & Container-Gutter",
     gutter_small: "Padding (Small)",
     gutter_large: "Padding (Large)",
     container_width: "Container-Breite (Standard)",
