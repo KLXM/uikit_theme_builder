@@ -4,6 +4,33 @@
  * das Widget lebt innerhalb von .info-center-widget-content und übernimmt dessen
  * Farben/Dark-Mode, nur Layout-Details (Zeilen, Slider, Buttons) werden hier ergänzt.
  */
+/* Overlay für "Bearbeitbare Elemente markieren" - wird direkt in <body> gehängt (nicht ins
+   Widget), daher unscoped. position:absolute relativ zum Dokument (nicht zum Viewport), damit
+   die Labels beim Scrollen einfach mitwandern statt neu berechnet werden zu müssen. */
+#tb-live-inspect-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  z-index: 2147483000;
+  pointer-events: none;
+}
+
+.tb-live-inspect-badge {
+  position: absolute;
+  transform: translateY(-100%);
+  background: #1e87f0;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 3px 3px 3px 0;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
 .tb-live-body .tb-live-theme-badge {
   display: inline-block;
   margin-bottom: 10px;

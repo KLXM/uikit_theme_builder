@@ -174,6 +174,17 @@
     themeBadge.textContent = currentTheme;
     root.appendChild(themeBadge);
 
+    var inspectRow = document.createElement("div");
+    inspectRow.className = "tb-live-row";
+    var inspectLabel = document.createElement("label");
+    inspectLabel.textContent = "Bearbeitbare Elemente markieren";
+    inspectRow.appendChild(inspectLabel);
+    var inspectToggle = makeButton("Labels anzeigen", "tb-live-btn", function () {
+      setInspectActive(!inspectActive);
+    });
+    inspectRow.appendChild(inspectToggle);
+    root.appendChild(inspectRow);
+
     var themeSwitchSelect = null;
     if (config.availableThemes && Object.keys(config.availableThemes).length > 1) {
       var switchRow = document.createElement("div");
@@ -226,6 +237,76 @@
         link.href = config.themeCssUrlTemplate.replace("__THEME__", themeName);
       }
       themeBadge.textContent = themeName;
+    }
+
+    // --- "Bearbeitbare Elemente markieren" -------------------------------
+    // Reihenfolge wichtig: spezifischere Klassen zuerst, damit z.B. ein Element mit sowohl
+    // .uk-container als auch .uk-container-large (kommt in UIkit nicht vor, aber sicher ist
+    // sicher) das treffendere Label bekommt. Bewusst auf Container/Sections beschränkt (nicht
+    // jede uk-card/uk-badge/etc.), das wäre zu viel Rauschen auf einer echten Seite.
+    var INSPECT_LABELS = [
+      { selector: ".uk-container-small", label: "Container: Small" },
+      { selector: ".uk-container-large", label: "Container: Large" },
+      { selector: ".uk-container", label: "Container: Standard" },
+      { selector: ".uk-section-primary", label: "Section: Primary" },
+      { selector: ".uk-section-secondary", label: "Section: Secondary" },
+      { selector: ".uk-section-muted", label: "Section: Muted" },
+      { selector: ".uk-section-default", label: "Section: Default" }
+    ];
+
+    var inspectActive = false;
+    var inspectOverlay = null;
+    var inspectResizeHandler = null;
+
+    function setInspectActive(active) {
+      inspectActive = active;
+      inspectToggle.textContent = active ? "Labels ausblenden" : "Labels anzeigen";
+      if (active) {
+        renderInspectLabels();
+        inspectResizeHandler = debounce(renderInspectLabels, 200);
+        window.addEventListener("resize", inspectResizeHandler);
+      } else {
+        clearInspectLabels();
+        if (inspectResizeHandler) {
+          window.removeEventListener("resize", inspectResizeHandler);
+          inspectResizeHandler = null;
+        }
+      }
+    }
+
+    function clearInspectLabels() {
+      if (inspectOverlay) {
+        inspectOverlay.remove();
+        inspectOverlay = null;
+      }
+    }
+
+    function renderInspectLabels() {
+      clearInspectLabels();
+      inspectOverlay = document.createElement("div");
+      inspectOverlay.id = "tb-live-inspect-overlay";
+      document.body.appendChild(inspectOverlay);
+
+      var labeled = [];
+      INSPECT_LABELS.forEach(function (entry) {
+        document.querySelectorAll(entry.selector).forEach(function (el) {
+          if (el.closest(".info-center-container") || labeled.indexOf(el) !== -1) {
+            return;
+          }
+          labeled.push(el);
+
+          var rect = el.getBoundingClientRect();
+          if (!rect.width && !rect.height) {
+            return;
+          }
+          var badge = document.createElement("div");
+          badge.className = "tb-live-inspect-badge";
+          badge.textContent = entry.label;
+          badge.style.top = rect.top + window.scrollY + "px";
+          badge.style.left = rect.left + window.scrollX + "px";
+          inspectOverlay.appendChild(badge);
+        });
+      });
     }
 
     SECTIONS.forEach(function (section) {
