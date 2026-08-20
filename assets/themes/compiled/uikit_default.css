@@ -1,7 +1,7 @@
 /*
  * UIKit Theme Builder - Compiled CSS
  * Theme: uikit_default
- * Generated: 2026-08-19 17:28:17
+ * Generated: 2026-08-19 21:12:50
  * Source: UIKit Theme Builder
  */
 
@@ -38,7 +38,7 @@ body {
  */
 a,
 .uk-link {
-  color: #004d65;
+  color: #e32400;
   text-decoration: none;
   cursor: pointer;
 }
@@ -483,7 +483,7 @@ a.uk-link-heading,
 a.uk-link-heading:hover,
 .uk-link-heading a:hover,
 .uk-link-toggle:hover .uk-link-heading {
-  color: #ff4013;
+  color: #e32400;
   text-decoration: none;
 }
 /* Reset
@@ -776,10 +776,10 @@ a.uk-link-reset,
   color: #283542 !important;
 }
 .uk-list-primary > ::marker {
-  color: #ff4013 !important;
+  color: #e32400 !important;
 }
 .uk-list-secondary > ::marker {
-  color: #77bb41 !important;
+  color: #0042aa !important;
 }
 /* Image bullet modifier
  ========================================================================== */
@@ -1483,7 +1483,7 @@ button.uk-icon:not(:disabled) {
   outline: none;
   background-color: #f3f6fb;
   color: #791a3e;
-  border-color: #ff4013;
+  border-color: #e32400;
 }
 /* Disabled */
 .uk-input:disabled,
@@ -1682,7 +1682,7 @@ select.uk-form-width-xsmall {
 .uk-checkbox:focus {
   background-color: rgba(0, 0, 0, 0);
   outline: none;
-  border-color: #ff4013;
+  border-color: #e32400;
 }
 /*
  * Checked
@@ -1690,14 +1690,14 @@ select.uk-form-width-xsmall {
 .uk-radio:checked,
 .uk-checkbox:checked,
 .uk-checkbox:indeterminate {
-  background-color: #ff4013;
+  background-color: #e32400;
   border-color: transparent;
 }
 /* Focus */
 .uk-radio:checked:focus,
 .uk-checkbox:checked:focus,
 .uk-checkbox:indeterminate:focus {
-  background-color: #df2b00;
+  background-color: #b01c00;
 }
 /*
  * Icons
@@ -1978,38 +1978,38 @@ select.uk-form-width-xsmall {
  * Primary
  */
 .uk-button-primary {
-  background-color: #ff4013;
+  background-color: #e32400;
   color: #fff;
   border: 1px solid transparent;
 }
 /* Hover */
 .uk-button-primary:hover {
-  background-color: #f92f00;
+  background-color: #ca2000;
   color: #fff;
 }
 /* OnClick + Active */
 .uk-button-primary:active,
 .uk-button-primary.uk-active {
-  background-color: #df2b00;
+  background-color: #b01c00;
   color: #fff;
 }
 /*
  * Secondary
  */
 .uk-button-secondary {
-  background-color: #77bb41;
+  background-color: #0042aa;
   color: #fff;
   border: 1px solid transparent;
 }
 /* Hover */
 .uk-button-secondary:hover {
-  background-color: #6ba83a;
+  background-color: #003891;
   color: #fff;
 }
 /* OnClick + Active */
 .uk-button-secondary:active,
 .uk-button-secondary.uk-active {
-  background-color: #5f9534;
+  background-color: #002e77;
   color: #fff;
 }
 /*
@@ -2196,11 +2196,11 @@ select.uk-form-width-xsmall {
  *    https://bugzilla.mozilla.org/show_bug.cgi?id=662351
  */
 .uk-progress::-webkit-progress-value {
-  background-color: #ff4013;
+  background-color: #e32400;
   transition: width 0.6s ease;
 }
 .uk-progress::-moz-progress-bar {
-  background-color: #ff4013;
+  background-color: #e32400;
   /* 1 */
   transition: width 0.6s ease;
 }
@@ -2295,14 +2295,14 @@ select.uk-form-width-xsmall {
  */
 .uk-section-primary {
   --uk-inverse: light;
-  background: #ff4013;
+  background: #e32400;
 }
 /*
  * Secondary
  */
 .uk-section-secondary {
   --uk-inverse: light;
-  background: #77bb41;
+  background: #0042aa;
 }
 /* Overlap modifier
  ========================================================================== */
@@ -2557,14 +2557,14 @@ select.uk-form-width-xsmall {
  */
 .uk-tile-primary {
   --uk-inverse: light;
-  background-color: #ff4013;
+  background-color: #e32400;
 }
 /*
  * Secondary
  */
 .uk-tile-secondary {
   --uk-inverse: light;
-  background-color: #77bb41;
+  background-color: #0042aa;
 }
 /* ========================================================================
    Component: Card
@@ -2638,7 +2638,7 @@ select.uk-form-width-xsmall {
   height: 22px;
   padding: 0 10px;
   /* 3 */
-  background: #ff4013;
+  background: #e32400;
   color: #fff;
   font-size: 0.875rem;
   /* 4 */
@@ -2691,7 +2691,7 @@ select.uk-form-width-xsmall {
  */
 .uk-card-primary {
   --uk-inverse: light;
-  background-color: #ff4013;
+  background-color: #e32400;
   color: #fff;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
 }
@@ -2699,7 +2699,7 @@ select.uk-form-width-xsmall {
   color: #fff;
 }
 .uk-card-primary.uk-card-hover:hover {
-  background-color: #ff4013;
+  background-color: #e32400;
   box-shadow: 0 14px 25px rgba(0, 0, 0, 0.16);
 }
 /*
@@ -2707,7 +2707,7 @@ select.uk-form-width-xsmall {
  */
 .uk-card-secondary {
   --uk-inverse: light;
-  background-color: #77bb41;
+  background-color: #0042aa;
   color: #fff;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
 }
@@ -2715,7 +2715,7 @@ select.uk-form-width-xsmall {
   color: #fff;
 }
 .uk-card-secondary.uk-card-hover:hover {
-  background-color: #77bb41;
+  background-color: #0042aa;
   box-shadow: 0 14px 25px rgba(0, 0, 0, 0.16);
 }
 /* Size modifier
@@ -2915,7 +2915,7 @@ select.uk-form-width-xsmall {
  */
 .uk-marker {
   padding: 5px;
-  background: #77bb41;
+  background: #0042aa;
   color: #fff;
   border-radius: 500px;
 }
@@ -2972,8 +2972,8 @@ select.uk-form-width-xsmall {
  * Primary
  */
 .uk-alert-primary {
-  background: #ffdfd7;
-  color: #ff4013;
+  background: #f8cbc2;
+  color: #e32400;
 }
 /*
  * Success
@@ -3049,7 +3049,7 @@ select.uk-form-width-xsmall {
   border-radius: 500px;
   vertical-align: middle;
   /* 1 */
-  background: #ff4013;
+  background: #e32400;
   color: #fff !important;
   font-size: 11px;
   /* 2 */
@@ -3070,7 +3070,7 @@ select.uk-form-width-xsmall {
 .uk-label {
   display: inline-block;
   padding: 0 10px;
-  background: #ff4013;
+  background: #e32400;
   line-height: 1.5;
   font-size: 0.875rem;
   color: #fff;
@@ -3130,7 +3130,7 @@ select.uk-form-width-xsmall {
  */
 .uk-overlay-primary {
   --uk-inverse: light;
-  background: rgba(119, 187, 65, 0.8);
+  background: rgba(0, 66, 170, 0.8);
 }
 /* ========================================================================
    Component: Article
@@ -3377,7 +3377,7 @@ select.uk-form-width-xsmall {
 /* Focus */
 .uk-search-default .uk-search-input:focus {
   background-color: #ebf0f8;
-  border-color: #ff4013;
+  border-color: #e32400;
 }
 /*
  * Icon
@@ -3410,7 +3410,7 @@ select.uk-form-width-xsmall {
 /* Focus */
 .uk-search-navbar .uk-search-input:focus {
   background-color: #f3f6fb;
-  border-color: #ff4013;
+  border-color: #e32400;
 }
 /*
  * Icon
@@ -3444,7 +3444,7 @@ select.uk-form-width-xsmall {
 /* Focus */
 .uk-search-medium .uk-search-input:focus {
   background-color: #ebf0f8;
-  border-color: #ff4013;
+  border-color: #e32400;
 }
 /*
  * Icon
@@ -3478,7 +3478,7 @@ select.uk-form-width-xsmall {
 /* Focus */
 .uk-search-large .uk-search-input:focus {
   background-color: #ebf0f8;
-  border-color: #ff4013;
+  border-color: #e32400;
 }
 /*
  * Icon
@@ -4107,7 +4107,7 @@ select.uk-form-width-xsmall {
   box-sizing: border-box;
   width: 270px;
   padding: 20px 20px;
-  background: #77bb41;
+  background: #0042aa;
   /* 3 */
   overflow-y: auto;
 }
@@ -4434,7 +4434,7 @@ select.uk-form-width-xsmall {
  * Primary
  */
 .uk-notification-message-primary {
-  color: #ff4013;
+  color: #e32400;
 }
 /*
  * Success
@@ -5930,7 +5930,7 @@ ul.uk-nav-sub {
 }
 /* Active */
 .uk-subnav-pill > .uk-active > a {
-  background-color: #ff4013;
+  background-color: #e32400;
   color: #fff;
 }
 /* Disabled
@@ -6129,7 +6129,7 @@ ul.uk-nav-sub {
 /* Active */
 .uk-tab > .uk-active > a {
   color: #283542;
-  border-color: #ff4013;
+  border-color: #e32400;
 }
 /* Disabled */
 .uk-tab > .uk-disabled > a {
@@ -7649,10 +7649,10 @@ ul.uk-nav-sub {
   color: #283542 !important;
 }
 .uk-text-primary {
-  color: #ff4013 !important;
+  color: #e32400 !important;
 }
 .uk-text-secondary {
-  color: #77bb41 !important;
+  color: #0042aa !important;
 }
 .uk-text-success {
   color: #5bb585 !important;
@@ -7679,8 +7679,8 @@ ul.uk-nav-sub {
   /* 3 */
   display: inline-block;
   /* 4 */
-  background-color: #ff4013;
-  background-image: linear-gradient(90deg, #ff4013 0%, #ffdd13 100%);
+  background-color: #e32400;
+  background-image: linear-gradient(90deg, #e32400 0%, #e3bb00 100%);
 }
 /* Alignment modifiers
  ========================================================================== */
@@ -7997,10 +7997,10 @@ iframe[data-uk-cover] {
   background-color: #f3f6fb;
 }
 .uk-background-primary {
-  background-color: #ff4013;
+  background-color: #e32400;
 }
 .uk-background-secondary {
-  background-color: #77bb41;
+  background-color: #0042aa;
 }
 /* Size
  ========================================================================== */
