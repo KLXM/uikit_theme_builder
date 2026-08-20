@@ -16,6 +16,20 @@ use UikitThemeBuilder\UikitThemeBuilderManager;
  */
 class LiveThemeEditorWidget extends AbstractWidget
 {
+    /**
+     * Echte UIkit-Standardwerte (sources/uikit/less/) für LESS-Variablen, die kein Widget-
+     * Formular in diesem Addon jemals als eigenes Feld anbietet (also nie in der gespeicherten
+     * Theme-JSON auftauchen, selbst wenn der Nutzer alle Widgets einmal durchgespeichert hat).
+     * Nur für genau diese Lücke - alle anderen FIELDS-Einträge werden bereits über die echten
+     * Theme-Daten befüllt.
+     */
+    private const UIKIT_DEFAULTS = [
+        // sources/uikit/less/components/base.less
+        'base-h1-line-height' => '1.2',
+        // sources/uikit/less/components/variables.less
+        'global-medium-gutter' => '40px',
+    ];
+
     public function __construct()
     {
         parent::__construct();
@@ -64,6 +78,13 @@ class LiveThemeEditorWidget extends AbstractWidget
             $lessKey = is_array($field['less']) ? $field['less'][0] : $field['less'];
             if (isset($source[$lessKey])) {
                 $currentValues[$key] = $source[$lessKey];
+            } elseif (isset(self::UIKIT_DEFAULTS[$lessKey])) {
+                // Theme hat diese Variable nie explizit gesetzt (z.B. weil das zugehörige
+                // Formular sie gar nicht anbietet, wie base-h1-line-height/global-medium-gutter).
+                // Ohne Fallback zeigt der Regler dann einen falschen Platzhalter statt des
+                // tatsächlich gerenderten UIkit-Standardwerts - das war der gemeldete Bug
+                // ("Live-Editor übernimmt die Theme-Werte manchmal nicht").
+                $currentValues[$key] = self::UIKIT_DEFAULTS[$lessKey];
             }
         }
 
