@@ -35,14 +35,6 @@ if (is_dir($themesDir)) {
     }
 }
 
-// Live Theme Editor - Broadcast an alle Besucher ("Live schalten"-Checkbox im Editor)
-// muss hier zusätzlich global freigeschaltet werden, bevor sie für Admins nutzbar wird.
-// Standardmäßig deaktiviert.
-$liveBroadcastField = $form->addCheckboxField('live_broadcast_enabled');
-$liveBroadcastField->addOption('Aktivieren', '1');
-$liveBroadcastField->setLabel('Live Theme Editor: Live-Schaltung für Besucher erlauben');
-$liveBroadcastField->setNotice('Erlaubt Admins, im Live Theme Editor per Checkbox Änderungen live für ALLE Website-Besucher sichtbar zu schalten (Broadcast), bis sie es wieder ausschalten oder speichern. Ohne diese Freigabe steht nur die private Vorschau der eigenen Sitzung zur Verfügung.');
-
 // Live Theme Editor - welche Themes im "Theme wechseln"-Dropdown wählbar sind
 $liveThemesField = $form->addSelectField('live_editor_available_themes', null, ['class' => 'form-control', 'multiple' => 'multiple', 'size' => 6]);
 $liveThemesField->setLabel('Live Theme Editor: wählbare Themes');

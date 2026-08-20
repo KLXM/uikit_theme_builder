@@ -211,47 +211,6 @@
     inspectRow.appendChild(inspectToggle);
     root.appendChild(inspectRow);
 
-    // "Live schalten": explizites Opt-in, macht den aktuellen Entwurf für ALLE Besucher
-    // sichtbar (Broadcast), nicht nur die eigene Session. Nur Admins, da Wirkung auf die
-    // öffentliche Website - UND nur wenn in den Addon-Einstellungen global freigeschaltet
-    // (config.canBroadcast).
-    if (config.isAdmin && config.canBroadcast) {
-      var liveRow = document.createElement("div");
-      liveRow.className = "tb-live-row";
-
-      var liveLabel = document.createElement("label");
-      liveLabel.textContent = "Live schalten (für alle Besucher sichtbar)";
-      liveRow.appendChild(liveLabel);
-
-      var liveCheckbox = document.createElement("input");
-      liveCheckbox.type = "checkbox";
-      liveCheckbox.checked = !!config.isLiveActive;
-      liveRow.appendChild(liveCheckbox);
-      root.appendChild(liveRow);
-
-      var liveStatus = document.createElement("div");
-      liveStatus.className = "tb-live-status";
-      liveStatus.textContent = liveCheckbox.checked ? "Live für alle Besucher sichtbar." : "";
-      root.appendChild(liveStatus);
-
-      liveCheckbox.addEventListener("change", function () {
-        var goingLive = liveCheckbox.checked;
-        var url = goingLive ? config.goLiveUrl : config.stopUrl;
-        liveCheckbox.disabled = true;
-        callApi(url, {}).then(function (res) {
-          if (res && res.success) {
-            liveStatus.textContent = goingLive ? "Live für alle Besucher sichtbar." : "";
-          } else {
-            // Fehlgeschlagen: Checkbox-Zustand zurücksetzen, nicht so tun als hätte es geklappt.
-            liveCheckbox.checked = !goingLive;
-            liveStatus.textContent = "Fehler: " + ((res && res.error) || "Keine Verbindung zum Server.");
-          }
-        }).finally(function () {
-          liveCheckbox.disabled = false;
-        });
-      });
-    }
-
     var themeSwitchSelect = null;
     if (config.canSwitchTheme && config.availableThemes && Object.keys(config.availableThemes).length > 1) {
       var switchRow = document.createElement("div");
@@ -626,8 +585,8 @@
     function callApi(url, extraParams) {
       // currentTheme statt config.theme (nur der Wert bei Seitenaufruf): nach einer
       // Theme-Wechsel-Vorschau (Dropdown, ohne "Theme übernehmen"/Reload) wich das sonst
-      // auseinander - alle Aktionen (Push/Live schalten/Speichern/...) liefen dann noch
-      // gegen den ursprünglichen Theme-Namen, nicht den gerade vorgeschauten.
+      // auseinander - alle Aktionen (Push/Speichern/...) liefen dann noch gegen den
+      // ursprünglichen Theme-Namen, nicht den gerade vorgeschauten.
       var params = Object.assign({ theme: currentTheme }, extraParams || {});
       var body = Object.keys(params)
         .map(function (key) {

@@ -71,7 +71,6 @@ default_config:
     google_fonts_api_key: ''
     backend_theme: ''
     live_editor_available_themes: ''
-    live_broadcast_enabled: ''
 
 permissions:
     uikit_theme_builder[]: translate:perm_uikit_theme_builder

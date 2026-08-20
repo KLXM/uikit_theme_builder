@@ -38,21 +38,6 @@ class rex_api_uikit_theme_live_push extends rex_api_function
                 $values
             );
 
-            // Solange "Live schalten" für dieses Theme aktiv ist UND genau dieser Nutzer sie
-            // ausgelöst hat (nicht irgendein anderer Redakteur mit einem parallelen privaten
-            // Draft), jeden weiteren Push zusätzlich live spiegeln - sonst friert der öffentliche
-            // Broadcast beim Stand vom Klick auf "Live schalten" ein, obwohl im Editor
-            // munter weiterbearbeitet wird ("es passiert nicht live").
-            if (
-                UikitThemeBuilder\DomainContext::isLiveBroadcastEnabled()
-                && UikitThemeBuilder\LiveThemeState::liveBroadcastOwnerId($theme) === $user->getId()
-            ) {
-                UikitThemeBuilder\LiveThemeState::writeJson(
-                    UikitThemeBuilder\LiveThemeState::publicPath($theme),
-                    $values
-                );
-            }
-
             rex_response::cleanOutputBuffers();
             rex_response::sendJson(['success' => true, 'values' => $values]);
             exit;

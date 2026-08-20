@@ -4,11 +4,10 @@ namespace UikitThemeBuilder;
 
 /**
  * Zentrale Datei-/Validierungs-Logik für den Live Theme Editor (Frontend-Overlay + SSE).
- * Hält Draft-/Public-/Flag-Zustand als flache JSON-Dateien, analog zum bestehenden
- * "themes/compiled" / "fonts.json" Muster dieses Addons (kein DB-Schema nötig). Draft ist
- * immer privat (nur eigene Session, siehe canUseEditor()); Public/Flag existieren nur, wenn
- * der Redakteur die "Live schalten"-Checkbox im Editor explizit aktiviert hat (Opt-in, kein
- * automatischer Broadcast).
+ * Hält den Draft-Zustand als flache JSON-Dateien, analog zum bestehenden "themes/compiled" /
+ * "fonts.json" Muster dieses Addons (kein DB-Schema nötig). Rein privat - nur die eigene Session
+ * sieht ihren Draft (siehe canUseEditor()). Kein Broadcast an normale Besucher (bewusst entfernt -
+ * zu fehleranfällig/riskant für die echte, öffentliche Website).
  */
 class LiveThemeState
 {
@@ -111,8 +110,8 @@ class LiveThemeState
     }
 
     /**
-     * Für Aktionen mit Wirkung auf alle Besucher (Live schalten / beenden) oder dauerhafter
-     * Wirkung auf das echte Theme (Speichern / Theme dauerhaft übernehmen) reicht Admin.
+     * Für Aktionen mit dauerhafter Wirkung auf das echte Theme (Speichern / Theme dauerhaft
+     * übernehmen) reicht Admin.
      *
      * @throws \Exception
      */
@@ -231,90 +230,6 @@ class LiveThemeState
     }
 
     /**
-     * Öffentlich sichtbarer Zustand, solange die "Live schalten"-Checkbox im Editor gesetzt ist
-     * (explizites Opt-in, kein automatischer Broadcast) - siehe flagPath().
-     */
-    public static function publicPath(string $theme): string
-    {
-        return self::baseDir() . 'public-' . $theme . '.json';
-    }
-
-    /** Existenz = "Live schalten" ist für dieses Theme gerade aktiv (siehe isBroadcastActive()). */
-    public static function flagPath(string $theme): string
-    {
-        return self::baseDir() . 'active-' . $theme . '.flag';
-    }
-
-    /**
-     * Sicherheitsnetz gegen "vergessen auszuschalten": eine Live-Session bleibt nie dauerhaft
-     * bestehen, sondern läuft nach dieser Zeit automatisch aus (kein Cronjob nötig, siehe
-     * isBroadcastActive()).
-     */
-    private const BROADCAST_MAX_AGE_SECONDS = 3600;
-
-    /**
-     * Ist "Live schalten" für dieses Theme gerade aktiv UND noch nicht abgelaufen? Ablauf wird
-     * lazy geprüft (bei jedem Aufruf, kein Hintergrund-Job) - bei Überschreitung werden Flag +
-     * Public-Datei gleich mit aufgeräumt, damit kein verwaister Zustand liegen bleibt. Alte,
-     * vor diesem Feature per touch() erzeugte Flags (kein 'startedAt' im Inhalt) laufen NICHT
-     * automatisch ab, da kein Startzeitpunkt bekannt ist - sie werden aber beim nächsten
-     * "Live schalten"-Klick ohnehin durch ein neues, korrektes Flag ersetzt.
-     */
-    public static function isBroadcastActive(string $theme): bool
-    {
-        $flagPath = self::flagPath($theme);
-        if (!file_exists($flagPath)) {
-            return false;
-        }
-
-        $flag = self::readJson($flagPath);
-        $startedAt = isset($flag['startedAt']) ? (int) $flag['startedAt'] : 0;
-
-        if ($startedAt > 0 && (time() - $startedAt) > self::BROADCAST_MAX_AGE_SECONDS) {
-            self::deleteIfExists($flagPath);
-            self::deleteIfExists(self::publicPath($theme));
-
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Wer hat "Live schalten" für dieses Theme aktiviert (userId aus dem Flag-Inhalt, von
-     * golive.php geschrieben). Damit dürfen NUR die weiteren Pushes genau dieses Admins
-     * während der laufenden Session in public.json gespiegelt werden - sonst könnte jeder
-     * andere Redakteur mit bloßem live_editor_style-Recht (kein Admin, dürfte selbst gar
-     * kein "Live schalten" auslösen) über seinen eigenen Draft-Push live auf die öffentliche
-     * Website durchschreiben, sobald irgendein Admin zufällig gerade live ist.
-     */
-    public static function liveBroadcastOwnerId(string $theme): ?int
-    {
-        if (!self::isBroadcastActive($theme)) {
-            return null;
-        }
-
-        $flag = self::readJson(self::flagPath($theme));
-
-        return isset($flag['userId']) ? (int) $flag['userId'] : null;
-    }
-
-    /**
-     * Zeitpunkt (Unix-Timestamp), seit dem "Live schalten" für dieses Theme aktiv ist, oder
-     * null wenn gerade keine Session läuft. Für die Backend-Warnung (siehe boot.php).
-     */
-    public static function broadcastStartedAt(string $theme): ?int
-    {
-        if (!self::isBroadcastActive($theme)) {
-            return null;
-        }
-
-        $flag = self::readJson(self::flagPath($theme));
-
-        return isset($flag['startedAt']) ? (int) $flag['startedAt'] : null;
-    }
-
-    /**
      * Alle Draft-Dateien eines Themes einsammeln (z.B. für Cleanup nach dem Speichern).
      *
      * @return list<string>
@@ -350,16 +265,15 @@ class LiveThemeState
     }
 
     /**
-     * SSE-Stream für einen verbundenen Client ausgeben. "draft" = private Vorschau der eigenen
-     * Session (z.B. um mehrere eigene Tabs synchron zu halten), "public" = Broadcast an alle
-     * Besucher, aber NUR solange die "Live schalten"-Checkbox im Editor aktiv ist (flagPath()) -
-     * explizites Opt-in, kein automatischer Broadcast. Läuft für maximal ~25s, danach beendet
-     * sich der Handler selbst (EventSource reconnected automatisch) - vermeidet dauerhaft
+     * SSE-Stream für einen verbundenen Client ausgeben - ausschließlich die private Vorschau der
+     * eigenen Session (z.B. um mehrere eigene Tabs synchron zu halten). Kein Broadcast-Modus mehr
+     * (bewusst entfernt, siehe LiveThemeState-Klassenkommentar). Läuft für maximal ~25s, danach
+     * beendet sich der Handler selbst (EventSource reconnected automatisch) - vermeidet dauerhaft
      * blockierte PHP-FPM Worker bei vielen gleichzeitigen Verbindungen.
      */
     public static function streamSse(string $mode, string $theme): void
     {
-        if (!in_array($mode, ['draft', 'public'], true)) {
+        if ('draft' !== $mode) {
             return;
         }
 
@@ -370,25 +284,12 @@ class LiveThemeState
             return;
         }
 
-        if ('draft' === $mode) {
-            $user = \rex_backend_login::createUser();
-            if (!$user || !self::canUseEditor($user)) {
-                http_response_code(403);
-                return;
-            }
-            $path = self::draftPath($theme, $user->getId());
-        } else {
-            // Zusätzlich zum Flag den globalen Addon-Schalter prüfen: wird er deaktiviert,
-            // während eine Live-Session noch läuft, soll auch eine bereits offene
-            // EventSource-Verbindung nicht einfach weiter (oder nach Reconnect erneut)
-            // Live-Daten bekommen - das Flag allein bliebe sonst bis zum expliziten
-            // "Live-Session beenden" bestehen.
-            if (!DomainContext::isLiveBroadcastEnabled() || !self::isBroadcastActive($theme)) {
-                http_response_code(204);
-                return;
-            }
-            $path = self::publicPath($theme);
+        $user = \rex_backend_login::createUser();
+        if (!$user || !self::canUseEditor($user)) {
+            http_response_code(403);
+            return;
         }
+        $path = self::draftPath($theme, $user->getId());
 
         while (ob_get_level() > 0) {
             ob_end_clean();
@@ -404,12 +305,6 @@ class LiveThemeState
 
         while (true) {
             if (connection_aborted()) {
-                break;
-            }
-
-            if ('public' === $mode && (!DomainContext::isLiveBroadcastEnabled() || !self::isBroadcastActive($theme))) {
-                echo "event: stop\ndata: {}\n\n";
-                flush();
                 break;
             }
 

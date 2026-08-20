@@ -248,10 +248,9 @@ if (rex_request('previewtheme', 'string')) {
     exit; // Normale REDAXO-Verarbeitung stoppen
 }
 
-// Live Theme Editor: SSE-Stream. "draft" = private Vorschau der eigenen Session (z.B. um
-// mehrere eigene Tabs synchron zu halten). "public" = Broadcast an alle Besucher, aber NUR
-// solange die "Live schalten"-Checkbox im Editor aktiv ist (explizites Opt-in, siehe
-// LiveThemeState::flagPath()) - kein automatischer Broadcast ohne diese Checkbox.
+// Live Theme Editor: SSE-Stream, ausschließlich private Vorschau der eigenen Session (z.B. um
+// mehrere eigene Tabs synchron zu halten). Kein Broadcast an normale Besucher (bewusst entfernt -
+// zu fehleranfällig/riskant für die echte, öffentliche Website).
 $themeLiveStreamMode = rex_request('theme_live_stream', 'string', '');
 if ('' !== $themeLiveStreamMode) {
     $themeLiveStreamTheme = rex_request('theme', 'string', '');
@@ -259,13 +258,11 @@ if ('' !== $themeLiveStreamMode) {
     exit;
 }
 
-// Live Theme Editor: Bridge-CSS laden für (a) eingeloggte Redakteure mit Editor-Recht (eigene
-// private Vorschau) ODER (b) alle Besucher, solange für das Domain-Theme "Live schalten" aktiv
-// ist (flagPath()) - NICHT unconditional für jeden Besucher immer. Die Bridge-Regeln nutzen
-// var(--tb-live-x, inherit) !important - "inherit" ist auf html/body (kein Elternelement)
-// gleichbedeutend mit "initial" und überschreibt dort IMMER Hintergrund/Farbe/Schrift des
-// echten Themes, auch ganz ohne aktive Live-Vorschau. Unconditional laden hätte also jede Seite
-// für jeden Besucher kaputt gemacht.
+// Live Theme Editor: Bridge-CSS NUR für eingeloggte Redakteure mit Editor-Recht (eigene private
+// Vorschau) - NIE für normale Besucher. Die Bridge-Regeln nutzen var(--tb-live-x, inherit)
+// !important - "inherit" ist auf html/body (kein Elternelement) gleichbedeutend mit "initial"
+// und überschreibt dort IMMER Hintergrund/Farbe/Schrift des echten Themes, auch ganz ohne aktive
+// Live-Vorschau. Unconditional laden hätte also jede Seite für jeden Besucher kaputt gemacht.
 // Zusätzlich nur, wenn das aktuelle Template das Domain-Theme auch tatsächlich per
 // TemplateHelper::includeAllStyles() eingebunden hat (siehe LiveThemeEditorWidget) - sonst würde
 // die Bridge-CSS die Seite kaputt machen, obwohl das Widget dort gar nicht angezeigt wird
@@ -278,15 +275,7 @@ if (rex::isFrontend()) {
         }
 
         $user = rex_backend_login::createUser();
-        $isEditor = $user && UikitThemeBuilder\LiveThemeState::canUseEditor($user);
-        // Zusätzlich zum Flag prüfen wir den globalen Addon-Schalter: wird die Einstellung
-        // deaktiviert, während eine Live-Session noch läuft, soll der Broadcast SOFORT enden
-        // (nicht erst wenn jemand "Live-Session beenden" klickt) - sonst könnte ein Admin die
-        // Einstellung deaktivieren und trotzdem denkt, Besucher sehen nichts mehr live.
-        $liveActive = UikitThemeBuilder\DomainContext::isLiveBroadcastEnabled()
-            && UikitThemeBuilder\LiveThemeState::isBroadcastActive($theme);
-
-        if (!$isEditor && !$liveActive) {
+        if (!$user || !UikitThemeBuilder\LiveThemeState::canUseEditor($user)) {
             return;
         }
 
@@ -301,65 +290,9 @@ if (rex::isFrontend()) {
         $bridgeCssTag = '<link rel="stylesheet" href="' . $bridgeCssUrl . '"></head>';
         $content = str_ireplace('</head>', $bridgeCssTag, $content);
 
-        // Public-Listener nur für Besucher OHNE eigenes Editor-Widget (das synct sich schon
-        // selbst über den Draft-Stream) und nur solange "Live schalten" aktiv ist.
-        if (!$isEditor && $liveActive) {
-            // Bewusst keine rex_url::frontendController() (=.../index.php?...) - unter YRewrite
-            // würde "index.php" als Artikel-Pfad gesucht und 404en, bevor der Stream startet.
-            // REDAXO-Core setzt ini_set('arg_separator.output', '&amp;') (src/core/boot.php) -
-            // http_build_query() liefert hier also schon HTML-sicheren Output; KEIN zusätzliches
-            // rex_escape() (sonst "&amp;amp;", kaputte URL im Browser).
-            $streamUrl = '/?' . http_build_query(['theme_live_stream' => 'public', 'theme' => $theme]);
-            $listenerJsPath = rex_path::addonAssets('uikit_theme_builder', 'live-editor/live-theme-public-listener.js');
-            $listenerJsMtime = @filemtime($listenerJsPath);
-            $listenerJsUrl = $addon->getAssetsUrl('live-editor/live-theme-public-listener.js') . ($listenerJsMtime ? '?buster=' . $listenerJsMtime : '');
-            $themeCssUrlTemplate = rex_url::addonAssets('uikit_theme_builder', 'themes/compiled/__THEME__.css');
-            $fontsBaseUrl = rex_url::assets('addons/uikit_theme_builder/fonts/');
-            $listenerTag = '<script src="' . $listenerJsUrl . '" data-stream-url="' . $streamUrl . '" data-theme-css-template="' . rex_escape($themeCssUrlTemplate) . '" data-fonts-base-url="' . rex_escape($fontsBaseUrl) . '"></script></body>';
-            $content = str_ireplace('</body>', $listenerTag, $content);
-        }
-
         $ep->setSubject($content);
     });
 }
-
-// Backend-Warnung: solange "Live schalten" für irgendein Theme aktiv ist, sollen Admins das auf
-// JEDER Backend-Seite sehen (leicht vergessen, wieder auszuschalten - eine laufende Session
-// betrifft die echte, öffentliche Website). Automatisches 1h-Timeout als zusätzliches
-// Sicherheitsnetz sitzt in LiveThemeState::isBroadcastActive() - diese Warnung ist nur die
-// sichtbare Erinnerung dazu, kein Ersatz dafür.
-rex_extension::register('PAGE_HEADER', function (rex_extension_point $ep) {
-    if (!rex::isBackend() || !rex::getUser() || !rex::getUser()->isAdmin()) {
-        return $ep->getSubject();
-    }
-
-    $activeThemes = [];
-    foreach (UikitThemeBuilder\DomainContext::getAvailableThemes() as $themeName => $themeLabel) {
-        $startedAt = UikitThemeBuilder\LiveThemeState::broadcastStartedAt($themeName);
-        if (null !== $startedAt) {
-            $activeThemes[] = rex_escape($themeLabel) . ' (seit ' . date('H:i', $startedAt) . ' Uhr)';
-        }
-    }
-
-    if ([] === $activeThemes) {
-        return $ep->getSubject();
-    }
-
-    // Kein rex_view::warning() (normaler Alert-Box-Baustein, fließt im normalen Content-Fluss) -
-    // der REDAXO-Header ist sticky/fixed und würde eine PAGE_HEADER-Box sofort überdecken.
-    // Stattdessen ein kleines, selbst positioniertes Label mit hohem z-index, unabhängig vom
-    // Seitenlayout - titelt zusätzlich (title-Attribut) den vollen Text für den Hover.
-    $label = 'LIVE für Besucher: ' . implode(', ', $activeThemes);
-    $settingsUrl = rex_url::backendPage('uikit_theme_builder/settings');
-    $badge = '<a href="' . rex_escape($settingsUrl) . '" '
-        . 'title="Läuft automatisch nach 1 Stunde ab, kann im Live Theme Editor über die \'Live schalten\'-Checkbox vorher beendet werden." '
-        . 'style="position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:99999;'
-        . 'background:#e74c3c;color:#fff;padding:3px 12px;font:600 11px/1.4 -apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif;'
-        . 'border-radius:0 0 6px 6px;box-shadow:0 2px 6px rgba(0,0,0,.3);white-space:nowrap;text-decoration:none;">'
-        . rex_escape($label) . '</a>';
-
-    return $ep->getSubject() . $badge;
-});
 
 // Live Theme Editor Widget im Info Center registrieren - dem in info_center/README.md
 // dokumentierten Muster folgend: Registrierung vom konsumierenden Addon aus, verzögert bis
