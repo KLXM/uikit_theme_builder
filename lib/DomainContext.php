@@ -542,6 +542,20 @@ class DomainContext
     }
 
     /**
+     * Globaler Schalter (Addon-Einstellungen): darf die "Live schalten"-Checkbox im Live Theme
+     * Editor überhaupt benutzt werden (Broadcast an ALLE Besucher)? Standardmäßig deaktiviert -
+     * Admin-Berechtigung allein reicht nicht, das muss zusätzlich hier freigeschaltet sein.
+     * Wird sowohl in der UI (Checkbox ein-/ausblenden) als auch serverseitig in den
+     * golive/stop-Endpoints und beim Ausliefern der Bridge-CSS/des Public-Listeners geprüft.
+     */
+    public static function isLiveBroadcastEnabled(): bool
+    {
+        $raw = (string) \rex_config::get('uikit_theme_builder', 'live_broadcast_enabled', '');
+
+        return in_array('1', explode('|', trim($raw, '|')), true);
+    }
+
+    /**
      * Cache zurücksetzen (z.B. nach Theme-Wechsel)
      */
     public static function clearCache(): void

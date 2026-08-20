@@ -2,9 +2,11 @@
  * Live Theme Editor - Listener für normale (nicht eingeloggte) Besucher.
  *
  * Wird von boot.php NUR inline in Seiten eingebunden, solange eine Live-Session aktiv ist
- * (siehe LiveThemeState::flagPath()). Öffnet den öffentlichen SSE-Stream und wendet
- * empfangene Werte als CSS-Custom-Properties an - die eigentliche visuelle Wirkung kommt
- * von live-theme-editor-bridge.css, die auf jeder Frontend-Seite geladen ist.
+ * (siehe LiveThemeState::flagPath()) UND der Redakteur die "Live schalten"-Checkbox im Editor
+ * explizit gesetzt hat (Opt-in, kein automatischer Broadcast). Öffnet den öffentlichen SSE-
+ * Stream und wendet empfangene Werte als CSS-Custom-Properties an - die eigentliche visuelle
+ * Wirkung kommt von live-theme-editor-bridge.css, die für diesen Besucher dafür ebenfalls
+ * (nur währenddessen) mit ausgeliefert wird.
  */
 (function () {
   "use strict";
@@ -16,6 +18,7 @@
 
   var streamUrl = script.getAttribute("data-stream-url");
   var themeCssUrlTemplate = script.getAttribute("data-theme-css-template");
+  var fontsBaseUrl = script.getAttribute("data-fonts-base-url");
   if (!streamUrl || typeof EventSource === "undefined") {
     return;
   }
@@ -64,19 +67,27 @@
     navbar_dropdown_width: "--tb-live-navbar-dropdown-width"
   };
 
-  // Gleiche Technik wie live-theme-editor.js/TypographyWidget: fehlt der Font lokal,
-  // per Google Fonts CSS2-API nachladen, sonst bleibt die Property wirkungslos.
   var SYSTEM_FONTS = [
     "Arial", "Verdana", "Helvetica", "Tahoma", "Trebuchet MS",
     "Times New Roman", "Times", "Georgia", "Garamond",
     "Courier New", "Courier", "Monaco", "Consolas",
     "system-ui", "BlinkMacSystemFont", "-apple-system", "Segoe UI",
-    "Roboto", "Ubuntu", "Cantarell", "Helvetica Neue", "sans-serif", "serif", "monospace"
+    "Roboto", "Ubuntu", "Cantarell", "Helvetica Neue",
+    "Palatino", "Bookman", "Comic Sans MS", "Arial Black", "Impact",
+    "sans-serif", "serif", "monospace", "cursive", "fantasy"
   ];
   var loadedGoogleFonts = {};
 
+  function sanitizeFontName(fontName) {
+    return fontName.replace(/[^a-zA-Z0-9_-]/g, "_");
+  }
+
+  // NIE live fonts.googleapis.com kontaktieren - echte Website-Besucher ohne Einwilligung
+  // dürfen keine Verbindung zu Drittanbietern bekommen (siehe live-theme-editor.js). Nur lokal
+  // bereits heruntergeladene Fonts (GoogleFontsManager); fehlt die Datei, bleibt es beim
+  // Fallback-Stack.
   function ensureFontLoaded(fontStack) {
-    if (!fontStack || "inherit" === fontStack) {
+    if (!fontStack || "inherit" === fontStack || !fontsBaseUrl) {
       return;
     }
     var firstFont = fontStack.replace(/['"]/g, "").trim().split(",")[0].trim();
@@ -92,7 +103,7 @@
     loadedGoogleFonts[firstFont] = true;
     var link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "https://fonts.googleapis.com/css2?family=" + encodeURIComponent(firstFont) + "&display=swap";
+    link.href = fontsBaseUrl + sanitizeFontName(firstFont) + ".css";
     document.head.appendChild(link);
   }
 

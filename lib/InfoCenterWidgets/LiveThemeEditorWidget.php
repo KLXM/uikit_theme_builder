@@ -105,11 +105,26 @@ class LiveThemeEditorWidget extends AbstractWidget
             'fields' => LiveThemeState::FIELDS,
             'streamUrl' => self::rootUrl(['theme_live_stream' => 'draft', 'theme' => $theme]),
             'pushUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_push']),
+            'goLiveUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_golive']),
+            'stopUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_stop']),
             'discardUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_discard']),
             'saveUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_save']),
+            // Spiegelt den echten Zustand beim Laden - z.B. nach einem Reload während eine
+            // vorherige Live-Session noch aktiv ist, damit die Checkbox nicht "aus" anzeigt,
+            // obwohl gerade live geschaltet ist.
+            'isLiveActive' => file_exists(LiveThemeState::flagPath($theme)),
+            // Globaler Schalter aus den Addon-Einstellungen - ohne den blendet das JS die
+            // "Live schalten"-Checkbox erst gar nicht ein. Serverseitig zusätzlich in den
+            // golive/stop-Endpoints geprüft (UI-Ausblenden allein wäre kein echter Schutz).
+            'canBroadcast' => DomainContext::isLiveBroadcastEnabled(),
             'isAdmin' => $user->isAdmin(),
             'canStyle' => LiveThemeState::canStyle($user),
             'canSwitchTheme' => LiveThemeState::canSwitchTheme($user),
+            // Lokal gehostete Google-Fonts-CSS-Dateien (siehe GoogleFontsManager/getGoogleFontsHtml())
+            // - das JS baut daraus die URL für eine Font-Vorschau selbst, MUSS aber NIE live
+            // fonts.googleapis.com kontaktieren (das war ein Bug: "Arial Black" wurde fälschlich
+            // nicht als Systemschrift erkannt und live bei Google angefragt, 403).
+            'fontsBaseUrl' => \rex_url::assets('addons/uikit_theme_builder/fonts/'),
             'fontOptions' => self::buildFontOptions(),
             'availableThemes' => DomainContext::getLiveEditorAvailableThemes($theme),
             'themeCssUrlTemplate' => \rex_url::addonAssets('uikit_theme_builder', 'themes/compiled/__THEME__.css'),

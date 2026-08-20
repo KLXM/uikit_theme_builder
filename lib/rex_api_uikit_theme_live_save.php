@@ -53,6 +53,8 @@ class rex_api_uikit_theme_live_save extends rex_api_function
             foreach (UikitThemeBuilder\LiveThemeState::allDraftPaths($theme) as $draftPath) {
                 UikitThemeBuilder\LiveThemeState::deleteIfExists($draftPath);
             }
+            UikitThemeBuilder\LiveThemeState::deleteIfExists(UikitThemeBuilder\LiveThemeState::publicPath($theme));
+            UikitThemeBuilder\LiveThemeState::deleteIfExists(UikitThemeBuilder\LiveThemeState::flagPath($theme));
 
             rex_response::cleanOutputBuffers();
             rex_response::sendJson([

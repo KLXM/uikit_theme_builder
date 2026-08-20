@@ -116,7 +116,9 @@
     "Times New Roman", "Times", "Georgia", "Garamond",
     "Courier New", "Courier", "Monaco", "Consolas",
     "system-ui", "BlinkMacSystemFont", "-apple-system", "Segoe UI",
-    "Roboto", "Ubuntu", "Cantarell", "Helvetica Neue", "sans-serif", "serif", "monospace"
+    "Roboto", "Ubuntu", "Cantarell", "Helvetica Neue",
+    "Palatino", "Bookman", "Comic Sans MS", "Arial Black", "Impact",
+    "sans-serif", "serif", "monospace", "cursive", "fantasy"
   ];
   var loadedGoogleFonts = {};
 
@@ -133,17 +135,25 @@
     });
   }
 
-  // Gleiche Technik wie die bestehende Font-Vorschau im normalen Theme-Editor
-  // (TypographyWidget): fehlt der Font lokal, per Google Fonts CSS2-API nachladen.
-  function ensureFontLoaded(fontStack) {
+  // NIE live fonts.googleapis.com kontaktieren - das lief hier bisher genauso wie im normalen
+  // Theme-Editor, war aber ein Bug: "Arial Black" fehlte in SYSTEM_FONTS, wurde also fälschlich
+  // live bei Google angefragt (403, da gar kein Google Font). Ausdrücklicher Auftrag: Google
+  // Fonts kommen ausschließlich aus der eigenen, bereits heruntergeladenen Fontverwaltung
+  // (siehe GoogleFontsManager/TemplateHelper::includeGoogleFonts()) - fehlt die lokale Datei
+  // (Font nie heruntergeladen), bleibt es beim Fallback-Stack, statt extern nachzuladen.
+  function sanitizeFontName(fontName) {
+    return fontName.replace(/[^a-zA-Z0-9_-]/g, "_");
+  }
+
+  function ensureFontLoaded(fontStack, fontsBaseUrl) {
     var firstFont = extractFirstFont(fontStack);
-    if (!firstFont || isSystemFont(firstFont) || loadedGoogleFonts[firstFont]) {
+    if (!firstFont || isSystemFont(firstFont) || loadedGoogleFonts[firstFont] || !fontsBaseUrl) {
       return;
     }
     loadedGoogleFonts[firstFont] = true;
     var link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "https://fonts.googleapis.com/css2?family=" + encodeURIComponent(firstFont) + "&display=swap";
+    link.href = fontsBaseUrl + sanitizeFontName(firstFont) + ".css";
     document.head.appendChild(link);
   }
 
@@ -200,6 +210,47 @@
     }, "tag");
     inspectRow.appendChild(inspectToggle);
     root.appendChild(inspectRow);
+
+    // "Live schalten": explizites Opt-in, macht den aktuellen Entwurf für ALLE Besucher
+    // sichtbar (Broadcast), nicht nur die eigene Session. Nur Admins, da Wirkung auf die
+    // öffentliche Website - UND nur wenn in den Addon-Einstellungen global freigeschaltet
+    // (config.canBroadcast).
+    if (config.isAdmin && config.canBroadcast) {
+      var liveRow = document.createElement("div");
+      liveRow.className = "tb-live-row";
+
+      var liveLabel = document.createElement("label");
+      liveLabel.textContent = "Live schalten (für alle Besucher sichtbar)";
+      liveRow.appendChild(liveLabel);
+
+      var liveCheckbox = document.createElement("input");
+      liveCheckbox.type = "checkbox";
+      liveCheckbox.checked = !!config.isLiveActive;
+      liveRow.appendChild(liveCheckbox);
+      root.appendChild(liveRow);
+
+      var liveStatus = document.createElement("div");
+      liveStatus.className = "tb-live-status";
+      liveStatus.textContent = liveCheckbox.checked ? "Live für alle Besucher sichtbar." : "";
+      root.appendChild(liveStatus);
+
+      liveCheckbox.addEventListener("change", function () {
+        var goingLive = liveCheckbox.checked;
+        var url = goingLive ? config.goLiveUrl : config.stopUrl;
+        liveCheckbox.disabled = true;
+        callApi(url, {}).then(function (res) {
+          if (res && res.success) {
+            liveStatus.textContent = goingLive ? "Live für alle Besucher sichtbar." : "";
+          } else {
+            // Fehlgeschlagen: Checkbox-Zustand zurücksetzen, nicht so tun als hätte es geklappt.
+            liveCheckbox.checked = !goingLive;
+            liveStatus.textContent = "Fehler: " + ((res && res.error) || "Keine Verbindung zum Server.");
+          }
+        }).finally(function () {
+          liveCheckbox.disabled = false;
+        });
+      });
+    }
 
     var themeSwitchSelect = null;
     if (config.canSwitchTheme && config.availableThemes && Object.keys(config.availableThemes).length > 1) {
@@ -413,10 +464,10 @@
           select.addEventListener("change", function () {
             state[key] = select.value;
             applyLocal(key, select.value);
-            ensureFontLoaded(select.value);
+            ensureFontLoaded(select.value, config.fontsBaseUrl);
             scheduleSync();
           });
-          ensureFontLoaded(select.value);
+          ensureFontLoaded(select.value, config.fontsBaseUrl);
         } else if ("number" === field.type) {
           var numValue = parseFloat(state[key]) || 1.5;
           var numInput = document.createElement("input");
@@ -631,7 +682,7 @@
             }
             if (fontInputs[key]) {
               fontInputs[key].value = values[key];
-              ensureFontLoaded(values[key]);
+              ensureFontLoaded(values[key], config.fontsBaseUrl);
             }
           });
         } catch (e) {

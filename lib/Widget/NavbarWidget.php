@@ -581,7 +581,9 @@ class NavbarWidget extends AbstractWidget
         $output .= '    \'Times New Roman\', \'Times\', \'Georgia\', \'Garamond\',';
         $output .= '    \'Courier New\', \'Courier\', \'Monaco\', \'Consolas\',';
         $output .= '    \'system-ui\', \'BlinkMacSystemFont\', \'-apple-system\', \'Segoe UI\',';
-        $output .= '    \'Roboto\', \'Ubuntu\', \'Cantarell\', \'Helvetica Neue\', \'sans-serif\', \'serif\', \'monospace\'';
+        $output .= '    \'Roboto\', \'Ubuntu\', \'Cantarell\', \'Helvetica Neue\',';
+        $output .= '    \'Palatino\', \'Bookman\', \'Comic Sans MS\', \'Arial Black\', \'Impact\',';
+        $output .= '    \'sans-serif\', \'serif\', \'monospace\', \'cursive\', \'fantasy\'';
         $output .= '  ];';
         $output .= '  function extractFirstFont(fontFamily) {';
         $output .= '    if (!fontFamily) return \'\';';
@@ -597,9 +599,11 @@ class NavbarWidget extends AbstractWidget
         $output .= '    if (firstFont && firstFont !== \'inherit\') {';
         $output .= '      preview.style.fontFamily = fullFont;';
         $output .= '      if (!isSystemFont(firstFont)) {';
+        // NIE live fonts.googleapis.com kontaktieren - nur lokal bereits heruntergeladene Fonts
+        // (siehe GoogleFontsManager). Fehlt die lokale Datei, bleibt es beim Fallback-Stack.
         $output .= '        const link = document.createElement(\'link\');';
         $output .= '        link.rel = \'stylesheet\';';
-        $output .= '        link.href = \'https://fonts.googleapis.com/css2?family=\' + encodeURIComponent(firstFont) + \'&display=swap\';';
+        $output .= '        link.href = ' . json_encode(\rex_url::addonAssets('uikit_theme_builder', 'fonts/')) . ' + firstFont.replace(/[^a-zA-Z0-9_-]/g, \'_\') + \'.css\';';
         $output .= '        document.head.appendChild(link);';
         $output .= '      }';
         $output .= '    } else {';
