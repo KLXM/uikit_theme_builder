@@ -6,6 +6,7 @@ use KLXM\InfoCenter\AbstractWidget;
 use UikitThemeBuilder\DomainContext;
 use UikitThemeBuilder\GoogleFontsManager;
 use UikitThemeBuilder\LiveThemeState;
+use UikitThemeBuilder\TemplateHelper;
 use UikitThemeBuilder\UikitThemeBuilderManager;
 
 /**
@@ -55,6 +56,14 @@ class LiveThemeEditorWidget extends AbstractWidget
 
         $theme = DomainContext::getCurrentTheme();
         if (!$theme) {
+            return '';
+        }
+
+        // Nur anzeigen, wenn das aktuelle Template dieses Theme auch tatsächlich per
+        // TemplateHelper::includeAllStyles() eingebunden hat - sonst bearbeitet der Redakteur
+        // Werte, die auf der gerade betrachteten Seite gar nicht sichtbar werden (z.B. Templates,
+        // die eine eigene statische CSS-Datei einbinden statt des Theme Builders).
+        if (!TemplateHelper::isThemeIncluded($theme)) {
             return '';
         }
 

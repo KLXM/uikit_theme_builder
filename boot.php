@@ -265,10 +265,19 @@ if ('' !== $themeLiveStreamMode) {
 // dort IMMER Hintergrund/Farbe/Schrift des echten Themes, auch ganz ohne aktive Live-Vorschau.
 // Unconditional laden hätte also jede Seite für jeden Besucher kaputt gemacht - deshalb strikt an
 // den gleichen Rechte-Check gebunden wie das Editor-Widget selbst (LiveThemeState::canUseEditor()).
+// Zusätzlich nur, wenn das aktuelle Template das Domain-Theme auch tatsächlich per
+// TemplateHelper::includeAllStyles() eingebunden hat (siehe LiveThemeEditorWidget) - sonst würde
+// die Bridge-CSS selbst dem eingeloggten Redakteur die Seite kaputt machen, obwohl das Widget dort
+// gar nicht angezeigt wird (z.B. Templates mit eigener statischer CSS-Datei).
 if (rex::isFrontend()) {
     rex_extension::register('OUTPUT_FILTER', function (rex_extension_point $ep) {
         $user = rex_backend_login::createUser();
         if (!$user || !UikitThemeBuilder\LiveThemeState::canUseEditor($user)) {
+            return;
+        }
+
+        $theme = UikitThemeBuilder\DomainContext::getCurrentTheme();
+        if (!$theme || !UikitThemeBuilder\TemplateHelper::isThemeIncluded($theme)) {
             return;
         }
 

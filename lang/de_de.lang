@@ -71,7 +71,7 @@ domains_yrewrite_not_available = Das YRewrite-Addon ist nicht installiert oder n
 domains_info_title = Domain-basierte Themes
 domains_info_text = Ordne jedem YRewrite-Domain ein eigenes Theme zu. Module können dann automatisch die passenden Farben und Stile verwenden.
 domains_info_module = Module verwenden: <code>DomainContext::getCardStyleOptions()</code>
-domains_info_css = Automatische CSS-Einbindung im Frontend
+domains_info_css = CSS-/JS-Einbindung im Frontend - abhängig vom verwendeten Template (muss TemplateHelper::includeAllStyles() UND TemplateHelper::includeAllJS() aufrufen, sonst passiert hier nichts automatisch)
 domains_info_colors = Farben aus Theme-Definitionen werden gecacht
 
 # Utility-Stile Übersetzungen
