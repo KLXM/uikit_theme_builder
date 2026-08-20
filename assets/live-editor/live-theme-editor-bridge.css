@@ -206,10 +206,22 @@ h4,
 }
 
 /* Entspricht UIkits eigener Spacing-Rhythmik (siehe "* + figure { margin-top: ... }" etc.
-   in components/base.less) - deckt die typischen aufeinanderfolgenden Block-Elemente ab. */
-* + h1, * + h2, * + h3, * + h4, * + h5, * + h6,
-* + p, * + ul, * + ol, * + dl, * + pre, * + blockquote, * + figure, * + hr,
-* + .uk-margin {
+   in components/base.less) - deckt die typischen aufeinanderfolgenden Block-Elemente ab.
+   :not(.info-center-container *) schließt das Info-Center-Widget aus: als eingeloggter
+   Redakteur ist dessen eigene Sidebar (die dieses Bridge-CSS selbst mit einbindet) immer
+   Teil der Seite, und diese universalselektor-basierte !important-Regel würde sonst dessen
+   eigene, nicht-!important margin-top-Regeln überall zerschießen (per !important gewinnt
+   diese Regel kategorisch, unabhängig von Spezifität - das führte zu sichtbar
+   "ineinandergeschobenen" Abständen im Info Center). Vorher wurde versucht, das umgekehrt in
+   info_center per "margin-top: revert !important" zu kontern - das hat dasselbe Problem nur
+   verlagert (revert fällt auf den Browser-Default zurück und überschreibt damit ebenfalls
+   info_centers eigene, beabsichtigte margin-top-Werte). Der Ausschluss hier an der Quelle
+   ist der richtige Ort dafür. */
+* + h1:not(.info-center-container *), * + h2:not(.info-center-container *), * + h3:not(.info-center-container *),
+* + h4:not(.info-center-container *), * + h5:not(.info-center-container *), * + h6:not(.info-center-container *),
+* + p:not(.info-center-container *), * + ul:not(.info-center-container *), * + ol:not(.info-center-container *),
+* + dl:not(.info-center-container *), * + pre:not(.info-center-container *), * + blockquote:not(.info-center-container *),
+* + figure:not(.info-center-container *), * + hr:not(.info-center-container *), * + .uk-margin:not(.info-center-container *) {
   margin-top: var(--tb-live-margin, inherit) !important;
 }
 
