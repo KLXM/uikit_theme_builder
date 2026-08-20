@@ -47,6 +47,8 @@
     h4_size: "--tb-live-h4-size",
     margin: "--tb-live-margin",
     gutter: "--tb-live-gutter",
+    gutter_small: "--tb-live-gutter-small",
+    gutter_large: "--tb-live-gutter-large",
     container_width: "--tb-live-container-width",
     container_width_small: "--tb-live-container-width-small",
     container_width_large: "--tb-live-container-width-large",

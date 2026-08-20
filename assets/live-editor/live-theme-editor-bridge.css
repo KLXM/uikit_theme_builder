@@ -40,6 +40,8 @@
   --tb-live-h4-size: unset;
   --tb-live-margin: unset;
   --tb-live-gutter: unset;
+  --tb-live-gutter-small: unset;
+  --tb-live-gutter-large: unset;
   --tb-live-container-width: unset;
   --tb-live-container-width-small: unset;
   --tb-live-container-width-large: unset;
@@ -75,21 +77,44 @@ a:hover,
 
 .uk-button-primary,
 .uk-badge,
-.uk-text-primary {
+.uk-text-primary,
+.uk-background-primary,
+.uk-section-primary,
+.uk-card-primary {
   background-color: var(--tb-live-primary, inherit) !important;
 }
 .uk-text-primary {
   color: var(--tb-live-primary, inherit) !important;
   background-color: transparent !important;
 }
+.uk-card-primary,
+.uk-card-primary .uk-card-title {
+  color: var(--tb-live-inverse, inherit) !important;
+}
 
 .uk-button-secondary,
-.uk-text-secondary {
+.uk-text-secondary,
+.uk-background-secondary,
+.uk-section-secondary,
+.uk-card-secondary {
   background-color: var(--tb-live-secondary, inherit) !important;
 }
 .uk-text-secondary {
   color: var(--tb-live-secondary, inherit) !important;
   background-color: transparent !important;
+}
+.uk-card-secondary,
+.uk-card-secondary .uk-card-title {
+  color: var(--tb-live-inverse, inherit) !important;
+}
+
+.uk-background-default,
+.uk-section-default,
+.uk-card-default {
+  background-color: var(--tb-live-background, inherit) !important;
+}
+.uk-card-default {
+  color: var(--tb-live-color, inherit) !important;
 }
 
 .uk-alert-success,
@@ -139,7 +164,8 @@ a:hover,
   border-color: var(--tb-live-border, inherit) !important;
 }
 
-.uk-background-muted {
+.uk-background-muted,
+.uk-section-muted {
   background-color: var(--tb-live-muted-background, inherit) !important;
 }
 
@@ -175,6 +201,18 @@ h4,
   padding-left: var(--tb-live-gutter, inherit) !important;
   padding-right: var(--tb-live-gutter, inherit) !important;
   max-width: var(--tb-live-container-width, inherit) !important;
+}
+
+.uk-padding {
+  padding: var(--tb-live-gutter, inherit) !important;
+}
+
+.uk-padding-small {
+  padding: var(--tb-live-gutter-small, inherit) !important;
+}
+
+.uk-padding-large {
+  padding: var(--tb-live-gutter-large, inherit) !important;
 }
 
 .uk-container-small {
