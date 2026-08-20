@@ -17,6 +17,13 @@
   pointer-events: none;
 }
 
+/* Pickit Color hängt sein Popup an document.body (appendTo-Default) und setzt dabei inline
+   z-index:9999 - das läge UNTER dem Info-Center-Overlay (2147483000 s.o.) und wäre dahinter
+   verborgen, wie zuvor bei Pickr. !important schlägt den inline-Wert zuverlässig. */
+.colorpicker-container {
+  z-index: 2147483001 !important;
+}
+
 .tb-live-inspect-badge {
   position: absolute;
   transform: translateY(-100%);
@@ -113,15 +120,13 @@
   font-size: 12px;
 }
 
-.tb-live-body input[type="color"] {
+/* Pickit Color im Compact-Modus: Swatch-Button statt eines nativen input[type=color] -
+   Größe an die kompakte Widget-Zeile angeglichen (vorher 32x28px). */
+.tb-live-body .colorpicker-compact-button {
   width: 32px;
-  height: 28px;
-  padding: 0;
-  border: 1px solid rgba(128, 128, 128, 0.3);
-  border-radius: 4px;
-  cursor: pointer;
+  height: 32px;
   flex-shrink: 0;
-  background: none;
+  border-color: rgba(128, 128, 128, 0.3);
 }
 
 .tb-live-body input[type="range"] {
@@ -162,22 +167,10 @@
   color: #fff;
 }
 
-.tb-live-body button.tb-live-btn-danger {
-  background: #f0506e;
-  border-color: #f0506e;
-  color: #fff;
-}
-
 .tb-live-body .tb-live-status {
   margin-top: 10px;
   font-size: 11px;
   opacity: 0.7;
-}
-
-.tb-live-body .tb-live-status.tb-live-status-active {
-  color: #d9534f;
-  opacity: 1;
-  font-weight: 600;
 }
 
 .tb-live-body .tb-live-loading {

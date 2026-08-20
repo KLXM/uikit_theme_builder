@@ -283,7 +283,7 @@ class NavbarWidget extends AbstractWidget
         $output .= '<div>';
         $output .= $this->renderFormRow(
             'Container Hintergrund',
-            $this->renderColorPicker('navbar-container-background', $values['navbar-container-background'] ?? $fields['navbar-container-background']['default']),
+            $this->renderColorPicker('navbar-container-background', $values['navbar-container-background'] ?? $fields['navbar-container-background']['default'], ['alpha' => true]),
             'Hintergrund des äußeren Containers'
         );
         $output .= '</div>';
@@ -318,7 +318,7 @@ class NavbarWidget extends AbstractWidget
         // Navbar Background
         $output .= $this->renderFormRow(
             'Navbar Hintergrund',
-            $this->renderColorPicker('navbar-background', $values['navbar-background'] ?? $fields['navbar-background']['default']),
+            $this->renderColorPicker('navbar-background', $values['navbar-background'] ?? $fields['navbar-background']['default'], ['alpha' => true]),
             'Hintergrundfarbe (unterstützt rgba für Transparenz)'
         );
         
@@ -336,13 +336,13 @@ class NavbarWidget extends AbstractWidget
         // Navigation Colors
         $output .= $this->renderFormRow(
             'Text Farbe',
-            $this->renderColorPicker('navbar-nav-item-color', $values['navbar-nav-item-color'] ?? $fields['navbar-nav-item-color']['default']),
+            $this->renderColorPicker('navbar-nav-item-color', $values['navbar-nav-item-color'] ?? $fields['navbar-nav-item-color']['default'], ['alpha' => true]),
             'Textfarbe der Navigation'
         );
         
         $output .= $this->renderFormRow(
             'Hover Farbe',
-            $this->renderColorPicker('navbar-nav-item-hover-color', $values['navbar-nav-item-hover-color'] ?? $fields['navbar-nav-item-hover-color']['default']),
+            $this->renderColorPicker('navbar-nav-item-hover-color', $values['navbar-nav-item-hover-color'] ?? $fields['navbar-nav-item-hover-color']['default'], ['alpha' => true]),
             'Farbe bei Hover'
         );
         
@@ -396,7 +396,7 @@ class NavbarWidget extends AbstractWidget
         $output .= '<div>';
         $output .= $this->renderFormRow(
             'Dropdown Hintergrund',
-            $this->renderColorPicker('navbar-dropdown-background', $values['navbar-dropdown-background'] ?? $fields['navbar-dropdown-background']['default']),
+            $this->renderColorPicker('navbar-dropdown-background', $values['navbar-dropdown-background'] ?? $fields['navbar-dropdown-background']['default'], ['alpha' => true]),
             'Hintergrundfarbe der Dropdowns'
         );
         $output .= '</div>';
@@ -405,7 +405,7 @@ class NavbarWidget extends AbstractWidget
         $output .= '<div>';
         $output .= $this->renderFormRow(
             'Dropdown Text',
-            $this->renderColorPicker('navbar-dropdown-color', $values['navbar-dropdown-color'] ?? $fields['navbar-dropdown-color']['default']),
+            $this->renderColorPicker('navbar-dropdown-color', $values['navbar-dropdown-color'] ?? $fields['navbar-dropdown-color']['default'], ['alpha' => true]),
             'Textfarbe in Dropdowns'
         );
         $output .= '</div>';
@@ -414,7 +414,7 @@ class NavbarWidget extends AbstractWidget
         $output .= '<div>';
         $output .= $this->renderFormRow(
             'Dropdown Hover',
-            $this->renderColorPicker('navbar-dropdown-nav-item-hover-color', $values['navbar-dropdown-nav-item-hover-color'] ?? $fields['navbar-dropdown-nav-item-hover-color']['default']),
+            $this->renderColorPicker('navbar-dropdown-nav-item-hover-color', $values['navbar-dropdown-nav-item-hover-color'] ?? $fields['navbar-dropdown-nav-item-hover-color']['default'], ['alpha' => true]),
             'Hover-Farbe in Dropdowns'
         );
         $output .= '</div>';
@@ -423,7 +423,7 @@ class NavbarWidget extends AbstractWidget
         $output .= '<div>';
         $output .= $this->renderFormRow(
             'Sub-Level Text',
-            $this->renderColorPicker('navbar-dropdown-nav-sublist-item-color', $values['navbar-dropdown-nav-sublist-item-color'] ?? $fields['navbar-dropdown-nav-sublist-item-color']['default']),
+            $this->renderColorPicker('navbar-dropdown-nav-sublist-item-color', $values['navbar-dropdown-nav-sublist-item-color'] ?? $fields['navbar-dropdown-nav-sublist-item-color']['default'], ['alpha' => true]),
             'Farbe tieferer Ebenen (Fallback: Grau)'
         );
         $output .= '</div>';
@@ -432,7 +432,7 @@ class NavbarWidget extends AbstractWidget
         $output .= '<div>';
         $output .= $this->renderFormRow(
             'Sub-Level Hover',
-            $this->renderColorPicker('navbar-dropdown-nav-sublist-item-hover-color', $values['navbar-dropdown-nav-sublist-item-hover-color'] ?? $fields['navbar-dropdown-nav-sublist-item-hover-color']['default']),
+            $this->renderColorPicker('navbar-dropdown-nav-sublist-item-hover-color', $values['navbar-dropdown-nav-sublist-item-hover-color'] ?? $fields['navbar-dropdown-nav-sublist-item-hover-color']['default'], ['alpha' => true]),
             'Hover-Farbe tieferer Ebenen'
         );
         $output .= '</div>';
@@ -487,8 +487,8 @@ class NavbarWidget extends AbstractWidget
     }
 
     /**
-     * Rendert ein Input-Feld das sowohl Farben als auch Text (rgba) akzeptiert
-     * Jetzt mit verbesserter Farbauswahl (Fallback bei fehlendem Pickr)
+     * Rendert ein Input-Feld das sowohl Farben als auch Text (rgba) akzeptiert.
+     * Aktuell ungenutzt (renderForm() nutzt durchgehend renderColorPicker()).
      */
     private function renderColorOrTextInput(string $name, string $value): string
     {

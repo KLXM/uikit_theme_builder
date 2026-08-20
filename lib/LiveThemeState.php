@@ -4,8 +4,10 @@ namespace UikitThemeBuilder;
 
 /**
  * Zentrale Datei-/Validierungs-Logik für den Live Theme Editor (Frontend-Overlay + SSE).
- * Hält Draft-/Public-/Flag-Zustand als flache JSON-Dateien, analog zum bestehenden
- * "themes/compiled" / "fonts.json" Muster dieses Addons (kein DB-Schema nötig).
+ * Hält den Draft-Zustand (private Vorschau der eigenen Redakteurs-Session) als flache
+ * JSON-Datei, analog zum bestehenden "themes/compiled" / "fonts.json" Muster dieses Addons
+ * (kein DB-Schema nötig). Kein Broadcast an normale Besucher - die Vorschau ist strikt
+ * editor-only, siehe canUseEditor().
  */
 class LiveThemeState
 {
@@ -108,7 +110,7 @@ class LiveThemeState
     }
 
     /**
-     * Für Aktionen mit Wirkung auf alle Besucher (Go Live / Stop / Save / Theme dauerhaft
+     * Für Aktionen mit dauerhafter Wirkung auf das echte Theme (Speichern / Theme dauerhaft
      * übernehmen) reicht Admin.
      *
      * @throws \Exception
@@ -227,16 +229,6 @@ class LiveThemeState
         return self::baseDir() . 'draft-' . $theme . '-' . $userId . '.json';
     }
 
-    public static function publicPath(string $theme): string
-    {
-        return self::baseDir() . 'public-' . $theme . '.json';
-    }
-
-    public static function flagPath(string $theme): string
-    {
-        return self::baseDir() . 'active-' . $theme . '.flag';
-    }
-
     /**
      * Alle Draft-Dateien eines Themes einsammeln (z.B. für Cleanup nach dem Speichern).
      *
@@ -273,13 +265,14 @@ class LiveThemeState
     }
 
     /**
-     * SSE-Stream für einen verbundenen Client ausgeben. Läuft für maximal ~25s, danach
-     * beendet sich der Handler selbst (EventSource reconnected automatisch) - vermeidet
-     * dauerhaft blockierte PHP-FPM Worker bei vielen gleichzeitigen Verbindungen.
+     * SSE-Stream für einen verbundenen Client ausgeben (nur "draft" - private Vorschau der
+     * eigenen Session, z.B. um mehrere eigene Tabs synchron zu halten). Läuft für maximal
+     * ~25s, danach beendet sich der Handler selbst (EventSource reconnected automatisch) -
+     * vermeidet dauerhaft blockierte PHP-FPM Worker bei vielen gleichzeitigen Verbindungen.
      */
     public static function streamSse(string $mode, string $theme): void
     {
-        if (!in_array($mode, ['draft', 'public'], true)) {
+        if ('draft' !== $mode) {
             return;
         }
 
@@ -290,20 +283,12 @@ class LiveThemeState
             return;
         }
 
-        if ('draft' === $mode) {
-            $user = \rex_backend_login::createUser();
-            if (!$user || !self::canUseEditor($user)) {
-                http_response_code(403);
-                return;
-            }
-            $path = self::draftPath($theme, $user->getId());
-        } else {
-            if (!file_exists(self::flagPath($theme))) {
-                http_response_code(204);
-                return;
-            }
-            $path = self::publicPath($theme);
+        $user = \rex_backend_login::createUser();
+        if (!$user || !self::canUseEditor($user)) {
+            http_response_code(403);
+            return;
         }
+        $path = self::draftPath($theme, $user->getId());
 
         while (ob_get_level() > 0) {
             ob_end_clean();
@@ -319,12 +304,6 @@ class LiveThemeState
 
         while (true) {
             if (connection_aborted()) {
-                break;
-            }
-
-            if ('public' === $mode && !file_exists(self::flagPath($theme))) {
-                echo "event: stop\ndata: {}\n\n";
-                flush();
                 break;
             }
 

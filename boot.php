@@ -91,9 +91,9 @@ if (rex::isBackend() && rex::getUser()) {
     // UIKit Core aus compiled_uikit (wird für Icon-Rendering benötigt)
     rex_view::addJsFile(rex_url::addonAssets('uikit_theme_builder', 'compiled_uikit/js/uikit.min.js'));
     
-    // Pickr Colorpicker
-    rex_view::addCssFile(rex_url::addonAssets('uikit_theme_builder', 'pickr/pickr.min.css'));
-    rex_view::addJsFile(rex_url::addonAssets('uikit_theme_builder', 'pickr/pickr.min.js'));
+    // Pickit Color (https://github.com/skerbis/pickit_color) - eigene Colorpicker-Bibliothek
+    rex_view::addCssFile(rex_url::addonAssets('uikit_theme_builder', 'pickit-color/colorpicker.min.css'));
+    rex_view::addJsFile(rex_url::addonAssets('uikit_theme_builder', 'pickit-color/colorpicker.min.js'));
     
     // UIKit Icon Picker
     rex_view::addJsFile(rex_url::addonAssets('uikit_theme_builder', 'js/uikit-icon-picker.js'));
@@ -248,9 +248,10 @@ if (rex_request('previewtheme', 'string')) {
     exit; // Normale REDAXO-Verarbeitung stoppen
 }
 
-// Live Theme Editor: SSE-Stream (Draft = nur eigene Session, Public = alle Besucher
-// während einer aktiven Live-Session). Läuft ohne normale REDAXO-Seitenausgabe, analog
-// zur previewtheme-Route oben.
+// Live Theme Editor: SSE-Stream, nur noch "draft" (private Vorschau der eigenen Session,
+// z.B. um mehrere eigene Tabs synchron zu halten). Der frühere "public"-Modus (Broadcast an
+// alle Besucher via "Live schalten") wurde entfernt - normale Besucher sollen von
+// Theme-Bearbeitung nichts mitbekommen, siehe auch die Bridge-CSS-Ladebedingung unten.
 $themeLiveStreamMode = rex_request('theme_live_stream', 'string', '');
 if ('' !== $themeLiveStreamMode) {
     $themeLiveStreamTheme = rex_request('theme', 'string', '');
@@ -258,34 +259,29 @@ if ('' !== $themeLiveStreamMode) {
     exit;
 }
 
-// Live Theme Editor: Bridge-CSS auf jeder Frontend-Seite laden (wirkungslos ohne aktive
-// Live-Session) und den Listener für normale Besucher nur einbinden, solange für das
-// Domain-Theme eine Live-Session aktiv ist ("Live schalten").
+// Live Theme Editor: Bridge-CSS nur für eingeloggte Redakteure mit Editor-Recht laden, NICHT
+// für jeden Frontend-Besucher. Die Bridge-Regeln nutzen var(--tb-live-x, inherit) !important -
+// "inherit" ist auf html/body (kein Elternelement) gleichbedeutend mit "initial" und überschreibt
+// dort IMMER Hintergrund/Farbe/Schrift des echten Themes, auch ganz ohne aktive Live-Vorschau.
+// Unconditional laden hätte also jede Seite für jeden Besucher kaputt gemacht - deshalb strikt an
+// den gleichen Rechte-Check gebunden wie das Editor-Widget selbst (LiveThemeState::canUseEditor()).
 if (rex::isFrontend()) {
     rex_extension::register('OUTPUT_FILTER', function (rex_extension_point $ep) {
+        $user = rex_backend_login::createUser();
+        if (!$user || !UikitThemeBuilder\LiveThemeState::canUseEditor($user)) {
+            return;
+        }
+
         $content = $ep->getSubject();
         $addon = rex_addon::get('uikit_theme_builder');
 
-        // Cache-Buster manuell anhängen (Filemtime) - diese Tags gehen direkt raus statt über
-        // rex_view::addCssFile()/addJsFile(), die das sonst automatisch übernehmen würden.
+        // Cache-Buster manuell anhängen (Filemtime) - dieser Tag geht direkt raus statt über
+        // rex_view::addCssFile(), das das sonst automatisch übernehmen würde.
         $bridgeCssPath = rex_path::addonAssets('uikit_theme_builder', 'live-editor/live-theme-editor-bridge.css');
         $bridgeCssMtime = @filemtime($bridgeCssPath);
         $bridgeCssUrl = $addon->getAssetsUrl('live-editor/live-theme-editor-bridge.css') . ($bridgeCssMtime ? '?buster=' . $bridgeCssMtime : '');
         $bridgeCssTag = '<link rel="stylesheet" href="' . $bridgeCssUrl . '"></head>';
         $content = str_ireplace('</head>', $bridgeCssTag, $content);
-
-        $theme = UikitThemeBuilder\DomainContext::getCurrentTheme();
-        if ($theme && file_exists(UikitThemeBuilder\LiveThemeState::flagPath($theme))) {
-            // Bewusst keine rex_url::frontendController() (=.../index.php?...) - unter YRewrite
-            // würde "index.php" als Artikel-Pfad gesucht und 404en, bevor der Stream startet.
-            $streamUrl = '/?' . http_build_query(['theme_live_stream' => 'public', 'theme' => $theme]);
-            $listenerJsPath = rex_path::addonAssets('uikit_theme_builder', 'live-editor/live-theme-public-listener.js');
-            $listenerJsMtime = @filemtime($listenerJsPath);
-            $listenerJsUrl = $addon->getAssetsUrl('live-editor/live-theme-public-listener.js') . ($listenerJsMtime ? '?buster=' . $listenerJsMtime : '');
-            $themeCssUrlTemplate = rex_url::addonAssets('uikit_theme_builder', 'themes/compiled/__THEME__.css');
-            $listenerTag = '<script src="' . $listenerJsUrl . '" data-stream-url="' . rex_escape($streamUrl) . '" data-theme-css-template="' . rex_escape($themeCssUrlTemplate) . '"></script></body>';
-            $content = str_ireplace('</body>', $listenerTag, $content);
-        }
 
         $ep->setSubject($content);
     });

@@ -1,12 +1,20 @@
 /**
  * Live Theme Editor - CSS-Custom-Property-Brücke.
  *
- * Wird auf JEDER Frontend-Seite geladen (siehe boot.php), unabhängig davon, ob gerade
- * eine Live-Session läuft. Solange keine der --tb-live-* Properties gesetzt ist, sind
- * alle Regeln hier wirkungslos (Fallback = "unset", also der ursprüngliche Theme-Wert).
- * Das JS (live-theme-editor.js für den Redakteur, live-theme-public-listener.js für
- * alle anderen Besucher während einer aktiven Live-Session) setzt die Properties per
- * documentElement.style.setProperty(...), wodurch die Seite ohne Reload sofort neu malt.
+ * Wird NUR für eingeloggte Redakteure mit Editor-Recht geladen (siehe boot.php,
+ * LiveThemeState::canUseEditor()) - NICHT für normale Frontend-Besucher. Das war anfangs
+ * anders (unconditional auf jeder Seite, mit der Annahme "wirkungslos ohne aktive Live-
+ * Session"), das stimmt aber NICHT: var(--tb-live-x, inherit) fällt zurück auf "inherit",
+ * sobald die Custom Property nicht gesetzt ist (der Normalfall) - auf html/body (kein
+ * Elternelement) ist "inherit" gleichbedeutend mit "initial" und überschreibt dort IMMER
+ * Hintergrund/Farbe/Schrift des echten Themes; auf allen anderen Selektoren übernimmt es
+ * den Wert des Elternelements statt den vom Theme vorgesehenen. Beides macht die Seite
+ * kaputt, auch ganz ohne aktive Bearbeitung - deshalb jetzt strikt editor-only geladen.
+ *
+ * Das JS (live-theme-editor.js) setzt die Properties per
+ * documentElement.style.setProperty(...), wodurch die Seite ohne Reload sofort neu malt -
+ * ausschließlich in der eigenen Redakteurs-Session sichtbar (kein Broadcast an andere
+ * Besucher, siehe boot.php).
  *
  * Schutz des Info Centers vor diesen Regeln sitzt bewusst NICHT hier (ein früherer Versuch,
  * --tb-live-* innerhalb von .info-center-container per "unset" zurückzusetzen, war wirkungslos -

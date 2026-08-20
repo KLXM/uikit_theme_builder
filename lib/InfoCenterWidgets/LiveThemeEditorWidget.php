@@ -75,8 +75,6 @@ class LiveThemeEditorWidget extends AbstractWidget
             'fields' => LiveThemeState::FIELDS,
             'streamUrl' => self::rootUrl(['theme_live_stream' => 'draft', 'theme' => $theme]),
             'pushUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_push']),
-            'goLiveUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_golive']),
-            'stopUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_stop']),
             'discardUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_discard']),
             'saveUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_save']),
             'isAdmin' => $user->isAdmin(),
@@ -94,11 +92,17 @@ class LiveThemeEditorWidget extends AbstractWidget
         // einer alten gecachten Version hängen.
         $editorCss = self::withCacheBuster($addon, 'live-editor/live-theme-editor.css');
         $editorJs = self::withCacheBuster($addon, 'live-editor/live-theme-editor.js');
+        // Pickit Color (https://github.com/skerbis/pickit_color) - im Frontend nicht über
+        // boot.php vorgeladen (das gilt nur backend-seitig), daher hier explizit einbinden.
+        $colorPickerCss = self::withCacheBuster($addon, 'pickit-color/colorpicker.min.css');
+        $colorPickerJs = self::withCacheBuster($addon, 'pickit-color/colorpicker.min.js');
 
         $configJson = htmlspecialchars(json_encode($config), ENT_QUOTES, 'UTF-8');
 
         $content = <<<HTML
 <link rel="stylesheet" href="{$editorCss}">
+<link rel="stylesheet" href="{$colorPickerCss}">
+<script src="{$colorPickerJs}"></script>
 <div id="tb-live-editor-root" class="tb-live-body" data-tb-live-config="{$configJson}">
     <p class="tb-live-loading">Lade …</p>
 </div>
@@ -115,10 +119,18 @@ HTML;
      * verarbeitet wird - ein leerer Pfad ("/") landet dagegen korrekt bei der Startseite und
      * lässt REDAXO die Query-Params normal auswerten. Gleiches Muster wie boot.php's
      * bestehende previewtheme-Route ("/?previewtheme=...").
+     *
+     * Separator explizit "&" statt REDAXOs Default: REDAXO-Core setzt ini_set(
+     * 'arg_separator.output', '&amp;') (src/core/boot.php, für HTML-sicheren Output ohne
+     * eigenes Escaping). Diese URLs landen hier aber NICHT direkt im HTML, sondern als Wert in
+     * $config, das json_encode()+htmlspecialchars() für das data-tb-live-config-Attribut
+     * durchläuft und im Browser per JSON.parse() gelesen wird - JSON.parse() dekodiert keine
+     * HTML-Entities, ein "&amp;" bliebe also wörtlich in der URL stehen (kaputte EventSource-/
+     * fetch()-Aufrufe). Für diesen JSON-Kontext wird daher der echte "&" gebraucht.
      */
     private static function rootUrl(array $params): string
     {
-        return '/?' . http_build_query($params);
+        return '/?' . http_build_query($params, '', '&');
     }
 
     /**

@@ -91,15 +91,6 @@
     }
   }
 
-  // input[type=color] akzeptiert nur exakt #rrggbb - andere Formate (rgba(), 8-stelliges Hex
-  // mit Alpha, "inherit", ...) würden vom Browser stillschweigend auf schwarz zurückgesetzt.
-  function toHexColor(value) {
-    if (/^#[0-9a-fA-F]{6}$/.test(value || "")) {
-      return value;
-    }
-    return "#000000";
-  }
-
   function parseSize(value) {
     var match = /^(\d+(?:\.\d+)?)(px|rem|em|%)$/.exec(value || "");
     if (!match) {
@@ -173,6 +164,20 @@
     var colorInputs = {};
     var sizeInputs = {};
     var fontInputs = {};
+
+    // Muss vor dem Aufbau der Felder stehen: Pickit Color ruft onChange bereits synchron
+    // während der Konstruktion auf (initiale Anzeige), also bevor der Rest dieser Funktion
+    // (weiter unten) syncScheduled sonst zuweisen würde - "var" wird zwar gehoisted, ist aber
+    // bis zur Zuweisung noch undefined, ein Aufruf davor wirft "not a function" und bricht die
+    // gesamte Render-Funktion ab (Symptom: nur der erste Abschnitt bis zum ersten Farbfeld
+    // erscheint, alles danach - weitere Abschnitte, Speichern/Live-schalten-Buttons - fehlt).
+    var syncScheduled = debounce(function () {
+      callApi(config.pushUrl, { values: JSON.stringify(state) });
+    }, 150);
+
+    function scheduleSync() {
+      syncScheduled();
+    }
 
     root.innerHTML = "";
 
@@ -329,6 +334,10 @@
 
       var details = document.createElement("details");
       details.className = "tb-live-section";
+      // Natives Accordion-Verhalten (Chrome 109+/Firefox 118+/Safari 17+): gleicher "name"
+      // sorgt dafür, dass beim Öffnen eines Abschnitts alle anderen automatisch zuklappen,
+      // ganz ohne eigenes JS.
+      details.name = "tb-live-accordion";
 
       var summary = document.createElement("summary");
       if (section.icon) {
@@ -355,15 +364,32 @@
 
         if ("color" === field.type) {
           var colorInput = document.createElement("input");
-          colorInput.type = "color";
-          colorInput.value = toHexColor(state[key]);
+          colorInput.type = "text";
+          colorInput.className = "tb-color-input";
+          colorInput.autocomplete = "off";
+          colorInput.value = state[key] || "";
           row.appendChild(colorInput);
-          colorInputs[key] = colorInput;
-          colorInput.addEventListener("input", function () {
-            state[key] = colorInput.value;
-            applyLocal(key, colorInput.value);
-            scheduleSync();
-          });
+
+          var picker = null;
+          if (window.colorpicker && window.colorpicker.ColorPicker) {
+            // navbar_* Felder landen unverändert (kein Alpha-Stripping) in NavbarWidget::
+            // generateLessVariables() - dort war 8-stelliges Hex nie erprobt (die alte Pickr-
+            // Logik hat bei Transparenz immer rgba() erzeugt, nie Hex mit Alpha, siehe
+            // AbstractWidget::renderColorPicker()). format:"rgb" hält das bei -
+            // rgb()/rgba() statt #rrggbbaa.
+            picker = new window.colorpicker.ColorPicker(colorInput, {
+              format: "navbar" === field.group ? "rgb" : "hex",
+              showAlpha: true,
+              compact: true,
+              language: "de",
+              onChange: function (value) {
+                state[key] = value;
+                applyLocal(key, value);
+                scheduleSync();
+              }
+            });
+          }
+          colorInputs[key] = { input: colorInput, picker: picker };
         } else if ("font" === field.type) {
           var select = document.createElement("select");
           if ("heading_font_family" === key) {
@@ -464,33 +490,12 @@
     }, "trash");
 
     var saveBtn = null;
-    var goLiveBtn = null;
-    var stopBtn = null;
 
     if (config.isAdmin) {
-      goLiveBtn = makeButton("Live schalten", "tb-live-btn tb-live-btn-primary", function () {
-        callApi(config.goLiveUrl, {}).then(function (res) {
-          if (res && res.success) {
-            status.textContent = "Live für alle Besucher sichtbar.";
-            status.classList.add("tb-live-status-active");
-          }
-        });
-      }, "world");
-
-      stopBtn = makeButton("Live-Session beenden", "tb-live-btn tb-live-btn-danger", function () {
-        callApi(config.stopUrl, {}).then(function (res) {
-          if (res && res.success) {
-            status.textContent = "Nur du siehst diese Änderungen.";
-            status.classList.remove("tb-live-status-active");
-          }
-        });
-      }, "off");
-
       saveBtn = makeButton("Speichern", "tb-live-btn tb-live-btn-primary", function () {
         callApi(config.saveUrl, {}).then(function (res) {
           if (res && res.success) {
             status.textContent = "Gespeichert - Theme neu kompiliert.";
-            status.classList.remove("tb-live-status-active");
           } else if (res && res.error) {
             status.textContent = "Fehler: " + res.error;
           }
@@ -498,7 +503,7 @@
       }, "check");
     }
 
-    [goLiveBtn, stopBtn, saveBtn, discardBtn].forEach(function (btn) {
+    [saveBtn, discardBtn].forEach(function (btn) {
       if (btn) {
         actions.appendChild(btn);
       }
@@ -533,16 +538,12 @@
       applyLocal(key, state[key]);
     });
 
-    var syncScheduled = debounce(function () {
-      callApi(config.pushUrl, { values: JSON.stringify(state) });
-    }, 150);
-
-    function scheduleSync() {
-      syncScheduled();
-    }
-
     function callApi(url, extraParams) {
-      var params = Object.assign({ theme: config.theme }, extraParams || {});
+      // currentTheme statt config.theme (nur der Wert bei Seitenaufruf): nach einer
+      // Theme-Wechsel-Vorschau (Dropdown, ohne "Theme übernehmen"/Reload) wich das sonst
+      // auseinander - alle Aktionen (Push/Live schalten/Speichern/...) liefen dann noch
+      // gegen den ursprünglichen Theme-Namen, nicht den gerade vorgeschauten.
+      var params = Object.assign({ theme: currentTheme }, extraParams || {});
       var body = Object.keys(params)
         .map(function (key) {
           return encodeURIComponent(key) + "=" + encodeURIComponent(params[key]);
@@ -583,7 +584,10 @@
             state[key] = values[key];
             applyLocal(key, values[key]);
             if (colorInputs[key]) {
-              colorInputs[key].value = toHexColor(values[key]);
+              colorInputs[key].input.value = values[key];
+              if (colorInputs[key].picker) {
+                colorInputs[key].picker.setColor(values[key]);
+              }
             }
             if (sizeInputs[key]) {
               var parsedVal = parseFloat(values[key]);
