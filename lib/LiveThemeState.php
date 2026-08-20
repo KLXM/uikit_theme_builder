@@ -308,7 +308,16 @@ class LiveThemeState
                 break;
             }
 
-            if (time() - $start > 25) {
+            // Kurz gehalten (nicht z.B. 25s): diese Schleife blockiert für ihre gesamte Laufzeit
+            // einen kompletten PHP-Worker-Prozess (Apache prefork-Kindprozess lokal, php-fpm-
+            // Worker auf dem Plesk-Server - beides ein kleiner, endlicher Pool synchroner
+            // Worker). Solange der Editor offen ist, hält diese Verbindung IMMER einen Worker
+            // belegt; ein zusätzlicher, langsamerer Request (z.B. "Speichern" mit LESS-Kompile)
+            // muss sich dann einen der wenigen übrigen Worker teilen - spürbar als "alles wird
+            // kurz langsam", nicht nur beim Speichern selbst. Kürzere Verbindungsdauer gibt den
+            // Worker viel öfter wieder frei (EventSource reconnected automatisch, kostet nur
+            // einen zusätzlichen Request alle paar Sekunden statt alle 25s).
+            if (time() - $start > 5) {
                 break;
             }
 
