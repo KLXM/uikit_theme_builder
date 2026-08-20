@@ -171,9 +171,11 @@
     // bis zur Zuweisung noch undefined, ein Aufruf davor wirft "not a function" und bricht die
     // gesamte Render-Funktion ab (Symptom: nur der erste Abschnitt bis zum ersten Farbfeld
     // erscheint, alles danach - weitere Abschnitte, Speichern/Live-schalten-Buttons - fehlt).
-    var syncScheduled = debounce(function () {
-      callApi(config.pushUrl, { values: JSON.stringify(state) });
-    }, 150);
+    function pushNow() {
+      return callApi(config.pushUrl, { values: JSON.stringify(state) });
+    }
+
+    var syncScheduled = debounce(pushNow, 150);
 
     function scheduleSync() {
       syncScheduled();
@@ -478,10 +480,30 @@
     actions.className = "tb-live-actions";
     root.appendChild(actions);
 
+    var DEFAULT_STATUS_TEXT = "Nur du siehst diese Änderungen.";
+
     var status = document.createElement("div");
     status.className = "tb-live-status";
-    status.textContent = "Nur du siehst diese Änderungen.";
+    status.textContent = DEFAULT_STATUS_TEXT;
     root.appendChild(status);
+
+    var statusResetTimer = null;
+
+    // autoHideMs gesetzt: Meldung (Erfolg/Fehler) verschwindet danach wieder zum Standardtext -
+    // sonst bliebe z.B. "Gespeichert" dauerhaft stehen, obwohl die Aktion längst vorbei ist.
+    function setStatus(text, autoHideMs) {
+      status.textContent = text;
+      if (statusResetTimer) {
+        clearTimeout(statusResetTimer);
+        statusResetTimer = null;
+      }
+      if (autoHideMs) {
+        statusResetTimer = setTimeout(function () {
+          status.textContent = DEFAULT_STATUS_TEXT;
+          statusResetTimer = null;
+        }, autoHideMs);
+      }
+    }
 
     var discardBtn = makeButton("Verwerfen", "tb-live-btn", function () {
       callApi(config.discardUrl, {}).then(function () {
@@ -493,12 +515,24 @@
 
     if (config.isAdmin) {
       saveBtn = makeButton("Speichern", "tb-live-btn tb-live-btn-primary", function () {
-        callApi(config.saveUrl, {}).then(function (res) {
+        saveBtn.disabled = true;
+        setStatus("Speichert …");
+
+        // Erst den aktuellen Stand SOFORT pushen (nicht auf den gedebouncten Push warten) -
+        // sonst kann "Speichern" schneller sein als der letzte Feldwechsel, der Server liest
+        // dann noch den alten (oder gar keinen) Entwurf: "Kein Entwurf zum Speichern vorhanden."
+        pushNow().then(function () {
+          return callApi(config.saveUrl, {});
+        }).then(function (res) {
           if (res && res.success) {
-            status.textContent = "Gespeichert - Theme neu kompiliert.";
+            setStatus("Gespeichert - Theme neu kompiliert.", 4000);
           } else if (res && res.error) {
-            status.textContent = "Fehler: " + res.error;
+            setStatus("Fehler: " + res.error, 6000);
+          } else {
+            setStatus("Fehler: Keine Verbindung zum Server.", 6000);
           }
+        }).finally(function () {
+          saveBtn.disabled = false;
         });
       }, "check");
     }

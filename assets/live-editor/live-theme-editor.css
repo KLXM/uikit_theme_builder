@@ -161,6 +161,11 @@
   font-size: 12px;
 }
 
+.tb-live-body button.tb-live-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .tb-live-body button.tb-live-btn-primary {
   background: #1e87f0;
   border-color: #1e87f0;
