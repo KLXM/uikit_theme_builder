@@ -15,12 +15,20 @@
   - Primär-/Überschriften-Schriftart inkl. bereits geladener Google Fonts
   - Schriftgrößen H1–H4 (mit Barrierefreiheits-Untergrenze: Basis-Schriftgröße nie unter 16px)
   - Zeilenhöhe für Fließtext und Überschriften
-  - Abstände: Standard-Margin, Padding/Gutter in drei Stufen (Small/Medium/Large), Container-
+  - Maße: Standard-Margin, Padding/Gutter in drei Stufen (Small/Medium/Large), Container-
     Breite in drei Stufen (Standard/Small/Large)
-  - Live-Theme-Wechsel: komplettes Theme testen und per Klick dauerhaft der Domain zuweisen
+  - Navigation: Navbar-Hintergrund/Text-/Hover-Farbe/Höhe sowie Dropdown-Hintergrund/Text-/
+    Hover-Farbe/Breite (wirkt auf `uk-navbar-*` und `uk-navbar-dropdown*`)
+  - Live-Theme-Wechsel: komplettes Theme testen und per Klick dauerhaft der Domain zuweisen;
+    in den Addon-Einstellungen lässt sich einschränken, welche Themes im Wechsel-Dropdown
+    überhaupt zur Auswahl stehen
   - "Bearbeitbare Elemente markieren": ein-/ausblendbare Overlay-Labels, die Container- und
     Section-Typen direkt auf der Seite kennzeichnen
-  - Akkordeon-Gliederung (Typografie/Farben/Abstände) statt einer langen Liste
+  - Akkordeon-Gliederung (Typografie/Farben/Maße/Navigation), initial eingeklappt, mit
+    passenden UIkit-Icons je Abschnitt und Aktion
+  - Eigene, feingranulare Rechte statt des bisherigen `info_center[]`-Behelfs: Editor nutzen,
+    Stile bearbeiten und Theme wechseln sind separat vergebbar (serverseitig durchgesetzt,
+    nicht nur in der UI ausgeblendet)
 
 ### Changed
 

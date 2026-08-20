@@ -8,9 +8,10 @@
   "use strict";
 
   var SECTIONS = [
-    { key: "typography", label: "Typografie", open: true },
-    { key: "colors", label: "Farben", open: false },
-    { key: "spacing", label: "Abstände", open: false }
+    { key: "typography", label: "Typografie", icon: "pencil" },
+    { key: "colors", label: "Farben", icon: "paint-bucket" },
+    { key: "spacing", label: "Maße", icon: "expand" },
+    { key: "navigation", label: "Navigation", icon: "menu" }
   ];
 
   var LABELS = {
@@ -44,7 +45,15 @@
     gutter_large: "Padding (Large)",
     container_width: "Container-Breite (Standard)",
     container_width_small: "Container-Breite (Small)",
-    container_width_large: "Container-Breite (Large)"
+    container_width_large: "Container-Breite (Large)",
+    navbar_background: "Navbar-Hintergrund",
+    navbar_item_color: "Navigation-Text",
+    navbar_item_hover_color: "Navigation-Text (Hover)",
+    navbar_item_height: "Navigation-Höhe",
+    navbar_dropdown_background: "Dropdown-Hintergrund",
+    navbar_dropdown_color: "Dropdown-Text",
+    navbar_dropdown_hover_color: "Dropdown-Text (Hover)",
+    navbar_dropdown_width: "Dropdown-Breite"
   };
 
   // A11y-Untergrenze: Basis-Schriftgröße darf laut gängigen Empfehlungen nie unter 16px
@@ -181,12 +190,12 @@
     inspectRow.appendChild(inspectLabel);
     var inspectToggle = makeButton("Labels anzeigen", "tb-live-btn", function () {
       setInspectActive(!inspectActive);
-    });
+    }, "tag");
     inspectRow.appendChild(inspectToggle);
     root.appendChild(inspectRow);
 
     var themeSwitchSelect = null;
-    if (config.availableThemes && Object.keys(config.availableThemes).length > 1) {
+    if (config.canSwitchTheme && config.availableThemes && Object.keys(config.availableThemes).length > 1) {
       var switchRow = document.createElement("div");
       switchRow.className = "tb-live-row";
 
@@ -225,7 +234,7 @@
               status.textContent = "Fehler: " + res.error;
             }
           });
-        });
+        }, "forward");
         switchActions.appendChild(applyThemeBtn);
         root.appendChild(switchActions);
       }
@@ -260,7 +269,7 @@
 
     function setInspectActive(active) {
       inspectActive = active;
-      inspectToggle.textContent = active ? "Labels ausblenden" : "Labels anzeigen";
+      inspectToggle._tbTextNode.textContent = active ? "Labels ausblenden" : "Labels anzeigen";
       if (active) {
         renderInspectLabels();
         inspectResizeHandler = debounce(renderInspectLabels, 200);
@@ -309,6 +318,7 @@
       });
     }
 
+    if (config.canStyle) {
     SECTIONS.forEach(function (section) {
       var keysInSection = Object.keys(config.fields).filter(function (key) {
         return config.fields[key].section === section.key;
@@ -319,12 +329,15 @@
 
       var details = document.createElement("details");
       details.className = "tb-live-section";
-      if (section.open) {
-        details.open = true;
-      }
 
       var summary = document.createElement("summary");
-      summary.textContent = section.label;
+      if (section.icon) {
+        var summaryIcon = document.createElement("span");
+        summaryIcon.className = "tb-live-section-icon";
+        summaryIcon.setAttribute("uk-icon", "icon: " + section.icon + "; ratio: 0.8");
+        summary.appendChild(summaryIcon);
+      }
+      summary.appendChild(document.createTextNode(section.label));
       details.appendChild(summary);
 
       var body = document.createElement("div");
@@ -433,6 +446,7 @@
 
       root.appendChild(details);
     });
+    }
 
     var actions = document.createElement("div");
     actions.className = "tb-live-actions";
@@ -447,7 +461,7 @@
       callApi(config.discardUrl, {}).then(function () {
         location.reload();
       });
-    });
+    }, "trash");
 
     var saveBtn = null;
     var goLiveBtn = null;
@@ -461,7 +475,7 @@
             status.classList.add("tb-live-status-active");
           }
         });
-      });
+      }, "world");
 
       stopBtn = makeButton("Live-Session beenden", "tb-live-btn tb-live-btn-danger", function () {
         callApi(config.stopUrl, {}).then(function (res) {
@@ -470,7 +484,7 @@
             status.classList.remove("tb-live-status-active");
           }
         });
-      });
+      }, "off");
 
       saveBtn = makeButton("Speichern", "tb-live-btn tb-live-btn-primary", function () {
         callApi(config.saveUrl, {}).then(function (res) {
@@ -481,7 +495,7 @@
             status.textContent = "Fehler: " + res.error;
           }
         });
-      });
+      }, "check");
     }
 
     [goLiveBtn, stopBtn, saveBtn, discardBtn].forEach(function (btn) {
@@ -490,11 +504,19 @@
       }
     });
 
-    function makeButton(text, className, onClick) {
+    function makeButton(text, className, onClick, icon) {
       var btn = document.createElement("button");
       btn.type = "button";
       btn.className = className;
-      btn.textContent = text;
+      if (icon) {
+        var iconSpan = document.createElement("span");
+        iconSpan.setAttribute("uk-icon", "icon: " + icon + "; ratio: 0.8");
+        btn.appendChild(iconSpan);
+        btn.appendChild(document.createTextNode(" "));
+      }
+      var textNode = document.createTextNode(text);
+      btn.appendChild(textNode);
+      btn._tbTextNode = textNode;
       btn.addEventListener("click", onClick);
       return btn;
     }

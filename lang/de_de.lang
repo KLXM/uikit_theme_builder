@@ -15,6 +15,9 @@ perm_uikit_theme_builder_icons = Custom Icons
 perm_uikit_theme_builder_custom_widgets = Custom Widgets
 perm_uikit_theme_builder_settings = Einstellungen
 perm_uikit_theme_builder_debug = Debug
+perm_uikit_theme_builder_live_editor = Live Theme Editor (Frontend-Widget nutzen)
+perm_uikit_theme_builder_live_editor_style = Live Theme Editor: Stile bearbeiten (Farben/Typografie/Maße/Navigation)
+perm_uikit_theme_builder_live_editor_theme = Live Theme Editor: Theme wechseln
 
 # Extra Styles
 extra_styles_caption = Extra Styles

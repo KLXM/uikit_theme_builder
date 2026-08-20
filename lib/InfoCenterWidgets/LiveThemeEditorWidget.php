@@ -35,7 +35,7 @@ class LiveThemeEditorWidget extends AbstractWidget
         }
 
         $user = \rex_backend_login::createUser();
-        if (!$user || !($user->isAdmin() || $user->hasPerm('info_center[]'))) {
+        if (!$user || !LiveThemeState::canUseEditor($user)) {
             return '';
         }
 
@@ -80,8 +80,10 @@ class LiveThemeEditorWidget extends AbstractWidget
             'discardUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_discard']),
             'saveUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_save']),
             'isAdmin' => $user->isAdmin(),
+            'canStyle' => LiveThemeState::canStyle($user),
+            'canSwitchTheme' => LiveThemeState::canSwitchTheme($user),
             'fontOptions' => self::buildFontOptions(),
-            'availableThemes' => DomainContext::getAvailableThemes(),
+            'availableThemes' => DomainContext::getLiveEditorAvailableThemes($theme),
             'themeCssUrlTemplate' => \rex_url::addonAssets('uikit_theme_builder', 'themes/compiled/__THEME__.css'),
             'switchThemeUrl' => self::rootUrl(['rex-api-call' => 'uikit_theme_live_switch_theme']),
         ];

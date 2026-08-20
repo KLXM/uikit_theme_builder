@@ -65,6 +65,14 @@
   display: none;
 }
 
+.tb-live-body .tb-live-section-icon {
+  margin-right: 6px;
+}
+
+.tb-live-body button.tb-live-btn .uk-icon {
+  margin-right: 4px;
+}
+
 .tb-live-body .tb-live-section summary::before {
   content: "▸ ";
 }

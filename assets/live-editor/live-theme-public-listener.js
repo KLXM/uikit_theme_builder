@@ -53,7 +53,15 @@
     container_width_small: "--tb-live-container-width-small",
     container_width_large: "--tb-live-container-width-large",
     font_family: "--tb-live-font-family",
-    heading_font_family: "--tb-live-heading-font-family"
+    heading_font_family: "--tb-live-heading-font-family",
+    navbar_background: "--tb-live-navbar-background",
+    navbar_item_color: "--tb-live-navbar-item-color",
+    navbar_item_hover_color: "--tb-live-navbar-item-hover-color",
+    navbar_item_height: "--tb-live-navbar-item-height",
+    navbar_dropdown_background: "--tb-live-navbar-dropdown-background",
+    navbar_dropdown_color: "--tb-live-navbar-dropdown-color",
+    navbar_dropdown_hover_color: "--tb-live-navbar-dropdown-hover-color",
+    navbar_dropdown_width: "--tb-live-navbar-dropdown-width"
   };
 
   // Gleiche Technik wie live-theme-editor.js/TypographyWidget: fehlt der Font lokal,

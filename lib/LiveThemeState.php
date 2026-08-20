@@ -54,18 +54,53 @@ class LiveThemeState
         'container_width' => ['less' => 'container-max-width', 'css' => '--tb-live-container-width', 'type' => 'size', 'group' => 'container', 'section' => 'spacing'],
         'container_width_small' => ['less' => 'container-small-max-width', 'css' => '--tb-live-container-width-small', 'type' => 'size', 'group' => 'container', 'section' => 'spacing'],
         'container_width_large' => ['less' => 'container-large-max-width', 'css' => '--tb-live-container-width-large', 'type' => 'size', 'group' => 'container', 'section' => 'spacing'],
+
+        // Navigation (Navbar/Dropdown) - Gruppe 'navbar' entspricht NavbarWidget::getKey(), dessen
+        // Feld-Keys bereits die echten UIkit-LESS-Variablennamen sind (siehe NavbarWidget::getFields()).
+        'navbar_background' => ['less' => 'navbar-background', 'css' => '--tb-live-navbar-background', 'type' => 'color', 'group' => 'navbar', 'section' => 'navigation'],
+        'navbar_item_color' => ['less' => 'navbar-nav-item-color', 'css' => '--tb-live-navbar-item-color', 'type' => 'color', 'group' => 'navbar', 'section' => 'navigation'],
+        'navbar_item_hover_color' => ['less' => 'navbar-nav-item-hover-color', 'css' => '--tb-live-navbar-item-hover-color', 'type' => 'color', 'group' => 'navbar', 'section' => 'navigation'],
+        'navbar_item_height' => ['less' => 'navbar-nav-item-height', 'css' => '--tb-live-navbar-item-height', 'type' => 'size', 'group' => 'navbar', 'section' => 'navigation'],
+        // NavbarWidget::generateLessVariables() spiegelt 'navbar-dropdown-color' beim vollen
+        // Speichern zusätzlich auf 'navbar-dropdown-nav-item-color' - hier direkt auf beide
+        // schreiben, damit auch die Live-Vorschau (vor dem Speichern) korrekt aussieht.
+        'navbar_dropdown_color' => ['less' => ['navbar-dropdown-color', 'navbar-dropdown-nav-item-color'], 'css' => '--tb-live-navbar-dropdown-color', 'type' => 'color', 'group' => 'navbar', 'section' => 'navigation'],
+        'navbar_dropdown_hover_color' => ['less' => 'navbar-dropdown-nav-item-hover-color', 'css' => '--tb-live-navbar-dropdown-hover-color', 'type' => 'color', 'group' => 'navbar', 'section' => 'navigation'],
+        'navbar_dropdown_background' => ['less' => 'navbar-dropdown-background', 'css' => '--tb-live-navbar-dropdown-background', 'type' => 'color', 'group' => 'navbar', 'section' => 'navigation'],
+        'navbar_dropdown_width' => ['less' => 'navbar-dropdown-width', 'css' => '--tb-live-navbar-dropdown-width', 'type' => 'size', 'group' => 'navbar', 'section' => 'navigation'],
     ];
 
     /**
-     * Eingeloggter Redakteur mit Zugriff auf den privaten Draft (Admin oder info_center[]-Recht,
-     * identisch zur Berechtigung, die info_center selbst für die Frontend-Ausgabe verlangt).
+     * Grundrecht: darf das Live-Theme-Editor-Widget überhaupt sehen/öffnen (Admins immer).
+     * Eigenes Recht statt info_center[] - das war nur ein Platzhalter, bevor der Editor
+     * eigene Rechte hatte, und hätte jedem Info-Center-Nutzer automatisch Zugriff gegeben.
+     */
+    public static function canUseEditor(\rex_user $user): bool
+    {
+        return $user->isAdmin() || $user->hasPerm('uikit_theme_builder[live_editor]');
+    }
+
+    /** Darf die Stil-Akkordeons (Typografie/Farben/Maße/Navigation) bearbeiten. */
+    public static function canStyle(\rex_user $user): bool
+    {
+        return $user->isAdmin() || $user->hasPerm('uikit_theme_builder[live_editor_style]');
+    }
+
+    /** Darf die Theme-Auswahl live vorschauen (das dauerhafte Übernehmen bleibt Admin-only). */
+    public static function canSwitchTheme(\rex_user $user): bool
+    {
+        return $user->isAdmin() || $user->hasPerm('uikit_theme_builder[live_editor_theme]');
+    }
+
+    /**
+     * Eingeloggter Redakteur mit Zugriff auf den privaten Draft.
      *
      * @throws \Exception
      */
     public static function requireUser(): \rex_user
     {
         $user = \rex_backend_login::createUser();
-        if (!$user || !($user->isAdmin() || $user->hasPerm('info_center[]'))) {
+        if (!$user || !self::canUseEditor($user)) {
             throw new \Exception('Keine Berechtigung.');
         }
 
@@ -73,7 +108,8 @@ class LiveThemeState
     }
 
     /**
-     * Für Aktionen mit Wirkung auf alle Besucher (Go Live / Stop / Save) reicht Admin.
+     * Für Aktionen mit Wirkung auf alle Besucher (Go Live / Stop / Save / Theme dauerhaft
+     * übernehmen) reicht Admin.
      *
      * @throws \Exception
      */
@@ -256,7 +292,7 @@ class LiveThemeState
 
         if ('draft' === $mode) {
             $user = \rex_backend_login::createUser();
-            if (!$user || !($user->isAdmin() || $user->hasPerm('info_center[]'))) {
+            if (!$user || !self::canUseEditor($user)) {
                 http_response_code(403);
                 return;
             }

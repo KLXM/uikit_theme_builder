@@ -47,6 +47,14 @@
   --tb-live-container-width-large: unset;
   --tb-live-font-family: unset;
   --tb-live-heading-font-family: unset;
+  --tb-live-navbar-background: unset;
+  --tb-live-navbar-item-color: unset;
+  --tb-live-navbar-item-hover-color: unset;
+  --tb-live-navbar-item-height: unset;
+  --tb-live-navbar-dropdown-background: unset;
+  --tb-live-navbar-dropdown-color: unset;
+  --tb-live-navbar-dropdown-hover-color: unset;
+  --tb-live-navbar-dropdown-width: unset;
 }
 
 html,
@@ -221,4 +229,38 @@ h4,
 
 .uk-container-large {
   max-width: var(--tb-live-container-width-large, inherit) !important;
+}
+
+/* Navigation - Selektoren entsprechen 1:1 sources/uikit/less/components/navbar.less
+   (.uk-navbar-container nutzt @navbar-background, .uk-navbar-nav > li > a etc.). */
+.uk-navbar-container:not(.uk-navbar-transparent) {
+  background: var(--tb-live-navbar-background, inherit) !important;
+}
+
+.uk-navbar-nav > li > a,
+.uk-navbar-item {
+  min-height: var(--tb-live-navbar-item-height, inherit) !important;
+}
+
+.uk-navbar-nav > li > a {
+  color: var(--tb-live-navbar-item-color, inherit) !important;
+}
+
+.uk-navbar-nav > li:hover > a,
+.uk-navbar-nav > li > a[aria-expanded="true"] {
+  color: var(--tb-live-navbar-item-hover-color, inherit) !important;
+}
+
+.uk-navbar-dropdown {
+  width: var(--tb-live-navbar-dropdown-width, inherit) !important;
+  background: var(--tb-live-navbar-dropdown-background, inherit) !important;
+  color: var(--tb-live-navbar-dropdown-color, inherit) !important;
+}
+
+.uk-navbar-dropdown-nav > li > a {
+  color: var(--tb-live-navbar-dropdown-color, inherit) !important;
+}
+
+.uk-navbar-dropdown-nav > li > a:hover {
+  color: var(--tb-live-navbar-dropdown-hover-color, inherit) !important;
 }
