@@ -174,6 +174,11 @@
     var colorInputs = {};
     var sizeInputs = {};
     var fontInputs = {};
+    // Siehe es.onmessage weiter unten: verhindert eine Echo-Schleife, wenn ein per SSE
+    // empfangener Wert programmatisch in die Eingabefelder geschrieben wird (z.B.
+    // picker.setColor(...) - Pickit Color ruft dabei synchron seinen eigenen onChange auf,
+    // der sonst scheduleSync() erneut auslösen und den Wert postwendend zurückpushen würde).
+    var applyingRemoteUpdate = false;
 
     // Muss vor dem Aufbau der Felder stehen: Pickit Color ruft onChange bereits synchron
     // während der Konstruktion auf (initiale Anzeige), also bevor der Rest dieser Funktion
@@ -395,6 +400,9 @@
               compact: true,
               language: "de",
               onChange: function (value) {
+                if (applyingRemoteUpdate) {
+                  return;
+                }
                 state[key] = value;
                 applyLocal(key, value);
                 scheduleSync();
@@ -421,6 +429,9 @@
           row.appendChild(select);
           fontInputs[key] = select;
           select.addEventListener("change", function () {
+            if (applyingRemoteUpdate) {
+              return;
+            }
             state[key] = select.value;
             applyLocal(key, select.value);
             ensureFontLoaded(select.value, config.fontsBaseUrl);
@@ -442,6 +453,9 @@
           row.appendChild(numLabel);
           sizeInputs[key] = { input: numInput, valueLabel: numLabel, unit: "" };
           numInput.addEventListener("input", function () {
+            if (applyingRemoteUpdate) {
+              return;
+            }
             numLabel.textContent = numInput.value;
             state[key] = numInput.value;
             applyLocal(key, numInput.value);
@@ -471,6 +485,9 @@
 
           sizeInputs[key] = { input: input, valueLabel: valueLabel, unit: parsed.unit };
           input.addEventListener("input", function () {
+            if (applyingRemoteUpdate) {
+              return;
+            }
             var newValue = input.value + parsed.unit;
             valueLabel.textContent = newValue;
             state[key] = newValue;
@@ -621,29 +638,34 @@
               themeSwitchSelect.value = currentTheme;
             }
           }
-          Object.keys(values).forEach(function (key) {
-            if ("_switch_theme" === key) {
-              return;
-            }
-            state[key] = values[key];
-            applyLocal(key, values[key]);
-            if (colorInputs[key]) {
-              colorInputs[key].input.value = values[key];
-              if (colorInputs[key].picker) {
-                colorInputs[key].picker.setColor(values[key]);
+          applyingRemoteUpdate = true;
+          try {
+            Object.keys(values).forEach(function (key) {
+              if ("_switch_theme" === key) {
+                return;
               }
-            }
-            if (sizeInputs[key]) {
-              var parsedVal = parseFloat(values[key]);
-              var displayValue = isNaN(parsedVal) ? values[key] : parsedVal + (sizeInputs[key].unit || "");
-              sizeInputs[key].input.value = String(parsedVal);
-              sizeInputs[key].valueLabel.textContent = displayValue;
-            }
-            if (fontInputs[key]) {
-              fontInputs[key].value = values[key];
-              ensureFontLoaded(values[key], config.fontsBaseUrl);
-            }
-          });
+              state[key] = values[key];
+              applyLocal(key, values[key]);
+              if (colorInputs[key]) {
+                colorInputs[key].input.value = values[key];
+                if (colorInputs[key].picker) {
+                  colorInputs[key].picker.setColor(values[key]);
+                }
+              }
+              if (sizeInputs[key]) {
+                var parsedVal = parseFloat(values[key]);
+                var displayValue = isNaN(parsedVal) ? values[key] : parsedVal + (sizeInputs[key].unit || "");
+                sizeInputs[key].input.value = String(parsedVal);
+                sizeInputs[key].valueLabel.textContent = displayValue;
+              }
+              if (fontInputs[key]) {
+                fontInputs[key].value = values[key];
+                ensureFontLoaded(values[key], config.fontsBaseUrl);
+              }
+            });
+          } finally {
+            applyingRemoteUpdate = false;
+          }
         } catch (e) {
           /* ignore malformed payload */
         }
