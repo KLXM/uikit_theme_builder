@@ -693,7 +693,9 @@ class TypographyWidget extends AbstractWidget
                             $input .= '    \'Times New Roman\', \'Times\', \'Georgia\', \'Garamond\',';
                             $input .= '    \'Courier New\', \'Courier\', \'Monaco\', \'Consolas\',';
                             $input .= '    \'system-ui\', \'BlinkMacSystemFont\', \'-apple-system\', \'Segoe UI\',';
-                            $input .= '    \'Roboto\', \'Ubuntu\', \'Cantarell\', \'Helvetica Neue\', \'sans-serif\', \'serif\', \'monospace\'';
+                            $input .= '    \'Roboto\', \'Ubuntu\', \'Cantarell\', \'Helvetica Neue\',';
+                            $input .= '    \'Palatino\', \'Bookman\', \'Comic Sans MS\', \'Arial Black\', \'Impact\',';
+                            $input .= '    \'sans-serif\', \'serif\', \'monospace\', \'cursive\', \'fantasy\'';
                             $input .= '  ];';
                             $input .= '  function extractFirstFont(fontFamily) {';
                             $input .= '    if (!fontFamily) return \'\';';
@@ -709,9 +711,12 @@ class TypographyWidget extends AbstractWidget
                             $input .= '    if (firstFont && firstFont !== \'inherit\') {';
                             $input .= '      preview.style.fontFamily = fullFont;';
                             $input .= '      if (!isSystemFont(firstFont)) {';
+                            // NIE live fonts.googleapis.com kontaktieren - nur lokal bereits
+                            // heruntergeladene Fonts (siehe GoogleFontsManager). Fehlt die lokale
+                            // Datei, bleibt es beim Fallback-Stack.
                             $input .= '        const link = document.createElement(\'link\');';
                             $input .= '        link.rel = \'stylesheet\';';
-                            $input .= '        link.href = \'https://fonts.googleapis.com/css2?family=\' + encodeURIComponent(firstFont) + \'&display=swap\';';
+                            $input .= '        link.href = ' . json_encode(\rex_url::addonAssets('uikit_theme_builder', 'fonts/')) . ' + firstFont.replace(/[^a-zA-Z0-9_-]/g, \'_\') + \'.css\';';
                             $input .= '        document.head.appendChild(link);';
                             $input .= '      }';
                             $input .= '    } else {';

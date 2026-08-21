@@ -2,27 +2,26 @@
 
 Diese Widgets erweitern das REDAXO Backend um moderne UI-Komponenten mit UIKit-Integration.
 
-## 🎨 Pickr Color Picker Widget
+## 🎨 Pickit Color Picker Widget
 
-Ein eleganter Color Picker basierend auf Pickr.js mit Button-Group Layout.
+Ein eleganter Color Picker basierend auf [Pickit Color](https://github.com/skerbis/pickit_color).
 
 ### Features
-- ✅ Sauberes Button-Group Design (Input + Color Button)
+- ✅ Input Preview Mode (Swatch direkt im Textfeld)
 - ✅ UIKit-kompatibles Styling
-- ✅ HTML5 Color Input Fallback
-- ✅ Hex, RGB, HSL Farbformate
+- ✅ Manuelle Eingabe (Hex/Hex8/RGB/RGBA/HSL/HSLA)
 - ✅ Globale Asset-Verwaltung (über boot.php)
 
 ### Verwendung
 
 #### Basic Usage
 ```php
-echo PickrColorPickerWidget::render('primary_color', '#1e87f0');
+echo PickitColorPickerWidget::render('primary_color', '#1e87f0');
 ```
 
 #### Mit Optionen
 ```php
-echo PickrColorPickerWidget::render('accent_color', '#f0506e', [
+echo PickitColorPickerWidget::render('accent_color', '#f0506e', [
     'format' => 'rgb',        // hex, rgb, hsl
     'alpha' => true,          // Alpha-Channel aktivieren
     'placeholder' => 'Wähle eine Farbe...'
@@ -33,7 +32,7 @@ echo PickrColorPickerWidget::render('accent_color', '#f0506e', [
 ```php
 // MForm
 $mform->addText('background_color', ['label' => 'Hintergrundfarbe'])
-      ->setNote(PickrColorPickerWidget::render('background_color', '#ffffff'));
+      ->setNote(PickitColorPickerWidget::render('background_color', '#ffffff'));
 
 // YForm
 $yform->addField('text', 'brand_color', 'Brand-Farbe');

@@ -1,5 +1,5 @@
 package: uikit_theme_builder
-version: '2.0.0'
+version: '2.2.0'
 author: KLXM Crossmedia GmbH
 license: MIT
 supportpage: https://github.com/klxm/
@@ -70,6 +70,7 @@ requires:
 default_config:
     google_fonts_api_key: ''
     backend_theme: ''
+    live_editor_available_themes: ''
 
 permissions:
     uikit_theme_builder[]: translate:perm_uikit_theme_builder
@@ -83,6 +84,9 @@ permissions:
     uikit_theme_builder[custom-widgets]: translate:perm_uikit_theme_builder_custom_widgets
     uikit_theme_builder[settings]: translate:perm_uikit_theme_builder_settings
     uikit_theme_builder[debug]: translate:perm_uikit_theme_builder_debug
+    uikit_theme_builder[live_editor]: translate:perm_uikit_theme_builder_live_editor
+    uikit_theme_builder[live_editor_style]: translate:perm_uikit_theme_builder_live_editor_style
+    uikit_theme_builder[live_editor_theme]: translate:perm_uikit_theme_builder_live_editor_theme
 
 conflicts:
     versions:

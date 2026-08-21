@@ -1,0 +1,184 @@
+/**
+ * Live Theme Editor - Inhalt eines normalen Info-Center-Widgets (siehe
+ * LiveThemeEditorWidget::render(), wrapContent()). Kein eigenes Floating-Panel mehr -
+ * das Widget lebt innerhalb von .info-center-widget-content und übernimmt dessen
+ * Farben/Dark-Mode, nur Layout-Details (Zeilen, Slider, Buttons) werden hier ergänzt.
+ */
+/* Overlay für "Bearbeitbare Elemente markieren" - wird direkt in <body> gehängt (nicht ins
+   Widget), daher unscoped. position:absolute relativ zum Dokument (nicht zum Viewport), damit
+   die Labels beim Scrollen einfach mitwandern statt neu berechnet werden zu müssen. */
+#tb-live-inspect-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  z-index: 2147483000;
+  pointer-events: none;
+}
+
+/* Pickit Color hängt sein Popup an document.body (appendTo-Default) und setzt dabei inline
+   z-index:9999 - das läge UNTER dem Info-Center-Overlay (2147483000 s.o.) und wäre dahinter
+   verborgen, wie zuvor bei Pickr. !important schlägt den inline-Wert zuverlässig. */
+.colorpicker-container {
+  z-index: 2147483001 !important;
+}
+
+.tb-live-inspect-badge {
+  position: absolute;
+  transform: translateY(-100%);
+  background: #1e87f0;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 3px 3px 3px 0;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.tb-live-body .tb-live-theme-badge {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #1e87f0;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.tb-live-body .tb-live-section {
+  margin-bottom: 6px;
+  border: 1px solid rgba(128, 128, 128, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.tb-live-body .tb-live-section summary {
+  padding: 8px 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  opacity: 0.8;
+  list-style: none;
+}
+
+.tb-live-body .tb-live-section summary::-webkit-details-marker {
+  display: none;
+}
+
+.tb-live-body .tb-live-section-icon {
+  margin-right: 6px;
+}
+
+.tb-live-body button.tb-live-btn .uk-icon {
+  margin-right: 4px;
+}
+
+.tb-live-body .tb-live-section summary::before {
+  content: "▸ ";
+}
+
+.tb-live-body .tb-live-section[open] summary::before {
+  content: "▾ ";
+}
+
+.tb-live-body .tb-live-section-body {
+  padding: 8px 10px 10px;
+}
+
+.tb-live-body .tb-live-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.tb-live-body .tb-live-row label {
+  flex: 1;
+}
+
+.tb-live-body .tb-live-row-font {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tb-live-body select {
+  width: 100%;
+  padding: 5px 6px;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+}
+
+/* Pickit Color im Compact-Modus: Swatch-Button statt eines nativen input[type=color] -
+   Größe an die kompakte Widget-Zeile angeglichen (vorher 32x28px). */
+.tb-live-body .colorpicker-compact-button {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-color: rgba(128, 128, 128, 0.3);
+}
+
+.tb-live-body input[type="range"] {
+  flex: 1;
+  margin: 0 8px;
+}
+
+.tb-live-body .tb-live-size-value {
+  width: 44px;
+  text-align: right;
+  opacity: 0.7;
+  flex-shrink: 0;
+  font-size: 12px;
+}
+
+.tb-live-body .tb-live-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+.tb-live-body button.tb-live-btn {
+  flex: 1 1 auto;
+  padding: 7px 10px;
+  border-radius: 5px;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.tb-live-body button.tb-live-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.tb-live-body button.tb-live-btn-primary {
+  background: #1e87f0;
+  border-color: #1e87f0;
+  color: #fff;
+}
+
+.tb-live-body .tb-live-status {
+  margin-top: 10px;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.tb-live-body .tb-live-loading {
+  opacity: 0.6;
+  font-size: 12px;
+}

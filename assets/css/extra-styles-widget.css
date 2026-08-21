@@ -2,22 +2,6 @@
  * Extra Styles Widget CSS
  */
 
-/* Pickr-Button in Widget-Kontext */
-.extra-styles-widget .pickr-el .pcr-button {
-    width: 40px !important;
-    height: 40px !important;
-    border-radius: 4px !important;
-    border: 2px solid #b0b0b0 !important;
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08) !important;
-    cursor: pointer !important;
-}
-
-.extra-styles-widget .pickr-el .pcr-button:hover {
-    border-color: #666 !important;
-    transform: scale(1.05) !important;
-    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.15) !important;
-}
-
 /* Neues Item Animation */
 .extra-style-item.new-item {
     animation: fadeInDown 0.3s ease;
