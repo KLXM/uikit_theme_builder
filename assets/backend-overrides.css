@@ -11,7 +11,7 @@
  * im Live-Test bestätigt als ausreichend.
  */
 html {
-  background: none;
+  background: none!important;
 }
 
 pre {
