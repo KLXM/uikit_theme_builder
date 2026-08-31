@@ -10,8 +10,10 @@
  * bzw. den Browser-Standard durchscheinen, statt selbst eine Farbe zu erzwingen –
  * im Live-Test bestätigt als ausreichend.
  */
-html {
-  background: none!important;
+html, body {
+    height: auto !important;
+    min-height: 100% !important;
+    background-color: #1b232c !important; /* Farbe deines Dark-Theme-Body */
 }
 
 pre {
