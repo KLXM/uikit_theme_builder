@@ -634,30 +634,18 @@ $content .= '
                 <label class="uk-form-label">Grundfarben</label>
                 <div class="uk-grid-small uk-child-width-1-1 uk-child-width-1-3@s" uk-grid>
                     <div>
-                        <label class="uk-form-label" for="qs_color_primary_text">Primaerfarbe</label>
-                        <div class="qs-color-row">
-                            <div class="pickr-el qs-pickr" id="qs-color-primary-pickr"></div>
-                            <input class="uk-input qs-color-input" id="qs_color_primary_text" type="text" value="#1e87f0" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$">
-                            <input type="hidden" name="qs_color_primary" id="qs_color_primary" value="#1e87f0">
-                        </div>
+                        <label class="uk-form-label" for="qs_color_primary">Primaerfarbe</label>
+                        <input class="uk-input tb-color-input" id="qs_color_primary" name="qs_color_primary" type="text" value="#1e87f0" autocomplete="off">
                         <div class="uk-text-meta">Hauptfarbe fuer Buttons und Highlights.</div>
                     </div>
                     <div>
-                        <label class="uk-form-label" for="qs_color_secondary_text">Sekundaerfarbe</label>
-                        <div class="qs-color-row">
-                            <div class="pickr-el qs-pickr" id="qs-color-secondary-pickr"></div>
-                            <input class="uk-input qs-color-input" id="qs_color_secondary_text" type="text" value="#324050" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$">
-                            <input type="hidden" name="qs_color_secondary" id="qs_color_secondary" value="#324050">
-                        </div>
+                        <label class="uk-form-label" for="qs_color_secondary">Sekundaerfarbe</label>
+                        <input class="uk-input tb-color-input" id="qs_color_secondary" name="qs_color_secondary" type="text" value="#324050" autocomplete="off">
                         <div class="uk-text-meta">Fuer Flaechen, Header und Kontraste.</div>
                     </div>
                     <div>
-                        <label class="uk-form-label" for="qs_color_accent_text">Akzentfarbe</label>
-                        <div class="qs-color-row">
-                            <div class="pickr-el qs-pickr" id="qs-color-accent-pickr"></div>
-                            <input class="uk-input qs-color-input" id="qs_color_accent_text" type="text" value="#1e87f0" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$">
-                            <input type="hidden" name="qs_color_accent" id="qs_color_accent" value="#1e87f0">
-                        </div>
+                        <label class="uk-form-label" for="qs_color_accent">Akzentfarbe</label>
+                        <input class="uk-input tb-color-input" id="qs_color_accent" name="qs_color_accent" type="text" value="#1e87f0" autocomplete="off">
                         <div class="uk-text-meta">Fuer Links und besondere Hinweise.</div>
                     </div>
                 </div>
@@ -756,26 +744,6 @@ $content .= '
     display: inline-block;
 }
 
-.qs-color-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.qs-pickr {
-    flex: 0 0 auto;
-}
-
-.qs-color-input {
-    flex: 1 1 auto;
-    min-width: 120px;
-}
-
-@media (max-width: 639px) {
-    .qs-color-row {
-        gap: 6px;
-    }
-}
 </style>
 ';
 
@@ -908,7 +876,7 @@ body.rex-backend #preview-modal .uk-modal-dialog {
 let currentTheme = "";
 const QUICKSTART_PREVIEW_THEME = ' . json_encode($previewThemeFromRequest) . ';
 const QUICKSTART_FONT_PRESETS = ' . json_encode($fontPresetValues) . ';
-const QUICKSTART_PICKR_INSTANCES = {};
+const QUICKSTART_COLORPICKER_INSTANCES = {};
 
 // Theme kopieren
 function copyTheme(themeName) {
@@ -998,33 +966,28 @@ function initQuickstartPresetCards() {
     refreshGroup("font-preset");
 }
 
-function syncQuickstartPickrColor(hiddenId, colorValue) {
-    const pickr = QUICKSTART_PICKR_INSTANCES[hiddenId];
-    if (!pickr || typeof pickr.setColor !== "function") {
+function syncQuickstartColor(fieldId, colorValue) {
+    const picker = QUICKSTART_COLORPICKER_INSTANCES[fieldId];
+    if (!picker || typeof picker.setColor !== "function") {
         return;
     }
 
     try {
-        pickr.setColor(colorValue);
-        if (typeof pickr.applyColor === "function") {
-            pickr.applyColor(true);
-        }
+        picker.setColor(colorValue);
     } catch (error) {
-        console.warn("Quickstart Pickr konnte nicht synchronisiert werden:", error);
+        console.warn("Quickstart Colorpicker konnte nicht synchronisiert werden:", error);
     }
 }
 
-function setQuickstartColorFields(hiddenId, textId, value) {
-    const hiddenInput = document.getElementById(hiddenId);
-    const textInput = document.getElementById(textId);
-    if (!hiddenInput || !textInput) {
+function setQuickstartColorFields(fieldId, _textIdUnused, value) {
+    const input = document.getElementById(fieldId);
+    if (!input) {
         return;
     }
 
-    const normalized = normalizeQuickstartHex(value, hiddenInput.value || "#1e87f0");
-    hiddenInput.value = normalized;
-    textInput.value = normalized;
-    syncQuickstartPickrColor(hiddenId, normalized);
+    const normalized = normalizeQuickstartHex(value, input.value || "#1e87f0");
+    input.value = normalized;
+    syncQuickstartColor(fieldId, normalized);
 }
 
 function applyQuickstartPalettePreset(presetKey) {
@@ -1039,9 +1002,9 @@ function applyQuickstartPalettePreset(presetKey) {
         return;
     }
 
-    setQuickstartColorFields("qs_color_primary", "qs_color_primary_text", preset.primary);
-    setQuickstartColorFields("qs_color_secondary", "qs_color_secondary_text", preset.secondary);
-    setQuickstartColorFields("qs_color_accent", "qs_color_accent_text", preset.accent);
+    setQuickstartColorFields("qs_color_primary", null, preset.primary);
+    setQuickstartColorFields("qs_color_secondary", null, preset.secondary);
+    setQuickstartColorFields("qs_color_accent", null, preset.accent);
 }
 
 function applyQuickstartFontPreset(presetKey) {
@@ -1060,74 +1023,28 @@ function applyQuickstartFontPreset(presetKey) {
     }
 }
 
-function initQuickstartPickr(pickrId, hiddenId, textId, fallbackColor) {
-    const pickrElement = document.getElementById(pickrId);
-    const hiddenInput = document.getElementById(hiddenId);
-    const textInput = document.getElementById(textId);
-
-    if (!pickrElement || !hiddenInput || !textInput) {
+function initQuickstartColorPicker(fieldId, fallbackColor) {
+    const input = document.getElementById(fieldId);
+    if (!input || typeof window.colorpicker === "undefined") {
         return;
     }
 
-    const applyColor = (value) => {
-        const normalized = normalizeQuickstartHex(value, fallbackColor);
-        hiddenInput.value = normalized;
-        textInput.value = normalized;
-    };
+    input.value = normalizeQuickstartHex(input.value, fallbackColor);
 
-    applyColor(hiddenInput.value || fallbackColor);
-
-    textInput.addEventListener("change", () => {
-        applyColor(textInput.value);
-    });
-
-    if (typeof Pickr === "undefined") {
-        return;
-    }
-
-    const pickr = Pickr.create({
-        el: pickrElement,
-        theme: "nano",
-        default: hiddenInput.value || fallbackColor,
-        swatches: [
+    const picker = new window.colorpicker.ColorPicker(input, {
+        format: "hex",
+        compact: true,
+        language: "de",
+        presetColors: [
             "#1e87f0", "#324050", "#d86a36", "#2f8f66", "#f0506e",
             "#222222", "#666666", "#999999", "#cccccc", "#ffffff"
         ],
-        components: {
-            preview: true,
-            opacity: false,
-            hue: true,
-            interaction: {
-                hex: true,
-                rgba: false,
-                hsla: false,
-                input: true,
-                clear: false,
-                save: true
-            }
-        },
-        strings: {
-            save: "OK",
-            cancel: "Abbrechen"
+        onChange: (value) => {
+            input.value = normalizeQuickstartHex(value, fallbackColor);
         }
     });
 
-    const updateFromPickr = (color) => {
-        if (!color) {
-            return;
-        }
-
-        const value = color.toHEXA().toString().slice(0, 7).toLowerCase();
-        applyColor(value);
-    };
-
-    pickr.on("change", updateFromPickr);
-    pickr.on("save", (color) => {
-        updateFromPickr(color);
-        pickr.hide();
-    });
-
-    QUICKSTART_PICKR_INSTANCES[hiddenId] = pickr;
+    QUICKSTART_COLORPICKER_INSTANCES[fieldId] = picker;
 }
 
 function setPreviewSize(size) {
@@ -1190,9 +1107,9 @@ UIkit.util.on("#preview-modal", "shown", function() {
 
 document.addEventListener("DOMContentLoaded", function() {
     initQuickstartPresetCards();
-    initQuickstartPickr("qs-color-primary-pickr", "qs_color_primary", "qs_color_primary_text", "#1e87f0");
-    initQuickstartPickr("qs-color-secondary-pickr", "qs_color_secondary", "qs_color_secondary_text", "#324050");
-    initQuickstartPickr("qs-color-accent-pickr", "qs_color_accent", "qs_color_accent_text", "#1e87f0");
+    initQuickstartColorPicker("qs_color_primary", "#1e87f0");
+    initQuickstartColorPicker("qs_color_secondary", "#324050");
+    initQuickstartColorPicker("qs_color_accent", "#1e87f0");
 
     const palettePresetInputs = document.querySelectorAll("input[name=\"qs_palette_preset\"]");
     palettePresetInputs.forEach((input) => {

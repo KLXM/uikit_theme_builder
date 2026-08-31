@@ -6,7 +6,7 @@
  */
 
 // Widget-Klassen laden
-require_once rex_addon::get('uikit_theme_builder')->getPath('lib/CustomWidgets/PickrColorPickerWidget.php');
+require_once rex_addon::get('uikit_theme_builder')->getPath('lib/CustomWidgets/PickitColorPickerWidget.php');
 
 $content = '';
 
@@ -33,21 +33,21 @@ $content .= '<header class="uk-section uk-section-small">
 $content .= '<section class="uk-section">
     <div class="uk-container uk-container-large">
         
-        <!-- Pickr Color Picker Demo -->
+        <!-- Pickit Color Picker Demo -->
         <div class="uk-card uk-card-default uk-card-body uk-margin-large">
             <h2 class="uk-card-title">
-                🎨 Pickr Color Picker Widget
-                <span class="uk-badge uk-badge-success uk-margin-small-left">v2.0</span>
+                🎨 Pickit Color Picker Widget
+                <span class="uk-badge uk-badge-success uk-margin-small-left">v3.0</span>
             </h2>
             
             <div class="uk-grid uk-child-width-1-2@m" uk-grid>
                 <div>
                     <h4>Basic Color Picker</h4>
-                    ' . PickrColorPickerWidget::render('demo_color1', '#1e87f0') . '
+                    ' . PickitColorPickerWidget::render('demo_color1', '#1e87f0') . '
                 </div>
                 <div>
                     <h4>Mit Alpha-Channel</h4>
-                    ' . PickrColorPickerWidget::render('demo_color2', '#f0506e', ['alpha' => true]) . '
+                    ' . PickitColorPickerWidget::render('demo_color2', '#f0506e', ['alpha' => true]) . '
                 </div>
             </div>
             
@@ -56,10 +56,10 @@ $content .= '<section class="uk-section">
                     <span uk-icon="icon: code; ratio: 0.8"></span> Code-Snippet anzeigen
                 </summary>
                 <pre class="uk-background-muted uk-padding-small uk-margin-small-top"><code>// Basic Usage
-echo PickrColorPickerWidget::render(\'field_name\', \'#1e87f0\');
+echo PickitColorPickerWidget::render(\'field_name\', \'#1e87f0\');
 
 // Mit Optionen  
-echo PickrColorPickerWidget::render(\'field_name\', \'#f0506e\', [
+echo PickitColorPickerWidget::render(\'field_name\', \'#f0506e\', [
     \'alpha\' => true,
     \'format\' => \'rgb\'
 ]);</code></pre>
@@ -133,13 +133,13 @@ echo PickrColorPickerWidget::render(\'field_name\', \'#f0506e\', [
                 <div>
                     <h4 class="uk-text-white">MForm</h4>
                     <pre class="uk-background-white uk-text-dark uk-padding-small"><code>$mform->addText(\'color\')
-      ->setNote(PickrColorPickerWidget::render(
+      ->setNote(PickitColorPickerWidget::render(
           \'color\', \'#1e87f0\'
       ));</code></pre>
                 </div>
                 <div>
                     <h4 class="uk-text-white">Direkt in Modulen</h4>
-                    <pre class="uk-background-white uk-text-dark uk-padding-small"><code>echo PickrColorPickerWidget::render(
+                    <pre class="uk-background-white uk-text-dark uk-padding-small"><code>echo PickitColorPickerWidget::render(
     \'brand_color\', 
     $this->getValue(\'color\')
 );</code></pre>

@@ -6,81 +6,30 @@ let extraStyleIndex = 0;
 let activeColorPicker = null;
 
 /**
- * Initialisiert einen Pickr Color Picker für Extra Style Farbfelder
- * Exakt gleiche Konfiguration wie AbstractWidget::renderColorPicker()
+ * Initialisiert Pickit Color (https://github.com/skerbis/pickit_color) auf einem der
+ * Extra-Style-Farbfelder. Das Feld ist ein normales <input type="text"> mit dem echten
+ * Formular-Namen - kein separates Hidden-Input mehr nötig, Pickit schreibt direkt in
+ * input.value. onChange triggert die Live-Vorschau der Karte.
  */
-function initExtraStylePickr(pickrId, defaultValue, styleIndex) {
-    if (typeof Pickr === 'undefined') {
-        setTimeout(() => initExtraStylePickr(pickrId, defaultValue, styleIndex), 100);
+function initExtraStyleColorPicker(inputId, styleIndex) {
+    if (typeof window.colorpicker === 'undefined') {
+        setTimeout(() => initExtraStyleColorPicker(inputId, styleIndex), 100);
         return;
     }
-    const el = document.getElementById(pickrId);
-    const hiddenInput = document.getElementById(pickrId + '-value');
-    if (!el || !hiddenInput) {
-        setTimeout(() => initExtraStylePickr(pickrId, defaultValue, styleIndex), 100);
+    const el = document.getElementById(inputId);
+    if (!el) {
+        setTimeout(() => initExtraStyleColorPicker(inputId, styleIndex), 100);
         return;
     }
-    if (el.dataset.pickrInitialized) return;
-    el.dataset.pickrInitialized = 'true';
+    if (el.dataset.pickitInitialized) return;
+    el.dataset.pickitInitialized = 'true';
 
-    const pickr = Pickr.create({
-        el: el,
-        theme: 'classic',
-        default: defaultValue || '#ffffff',
-        defaultRepresentation: 'RGBA',
-        swatches: [
-            'transparent',
-            '#ffffff',
-            '#000000',
-            '#1e87f0',
-            '#f0506e',
-            '#32d296',
-            '#faa05a',
-            '#664dc6',
-            '#222222',
-            '#666666',
-            '#999999',
-            '#cccccc',
-            '#e5e5e5',
-            '#f8f9fa'
-        ],
-        components: {
-            preview: true,
-            opacity: true,
-            hue: true,
-            interaction: {
-                hex: true,
-                rgba: true,
-                hsla: true,
-                hsva: true,
-                input: true,
-                save: true
-            }
-        }
-    });
-
-    const updateColor = (color) => {
-        try {
-            const rgba = color.toRGBA();
-            let colorString;
-            if (rgba[3] >= 0.99) {
-                colorString = color.toHEXA().toString().slice(0, 7);
-            } else {
-                colorString = color.toRGBA().toString();
-            }
-            hiddenInput.value = colorString;
-            hiddenInput.dispatchEvent(new Event('change'));
-            updatePreview(styleIndex);
-        } catch(e) {
-            console.warn('Fehler bei Farbkonvertierung:', e);
-        }
-    };
-
-    pickr.on('change', updateColor);
-    pickr.on('changestop', updateColor);
-    pickr.on('save', (color) => {
-        updateColor(color);
-        pickr.hide();
+    new window.colorpicker.ColorPicker(el, {
+        format: 'hex',
+        showAlpha: true,
+        compact: true,
+        language: 'de',
+        onChange: () => updatePreview(styleIndex)
     });
 }
 
@@ -107,12 +56,9 @@ function initializeExtraStyles() {
             realMaxIndex = index;
         }
         
-        // Pickr für alle Farbfelder in diesem Item initialisieren
+        // Colorpicker für alle Farbfelder in diesem Item initialisieren
         ['background-color', 'text-color', 'link-color', 'border-color'].forEach(fieldSlug => {
-            const pickrId = `extrastyle-${index}-${fieldSlug}`;
-            const hiddenInput = document.getElementById(pickrId + '-value');
-            const defaultValue = hiddenInput ? (hiddenInput.value || '#ffffff') : '#ffffff';
-            initExtraStylePickr(pickrId, defaultValue, index);
+            initExtraStyleColorPicker(`extrastyle-${index}-${fieldSlug}`, index);
         });
         
         // Event-Handler für alle Input-Felder hinzufügen
@@ -147,15 +93,15 @@ function addExtraStyle() {
     // Animation
     newElement.classList.add("new-item");
     
-    // Preview, Event-Handler und Pickr initialisieren
+    // Preview, Event-Handler und Colorpicker initialisieren
     setTimeout(function() {
         console.log(`Initializing new style item ${extraStyleIndex}`);
         
-        // Pickr für die neuen Farbfelder initialisieren
-        initExtraStylePickr(`extrastyle-${extraStyleIndex}-background-color`, '#ffffff', extraStyleIndex);
-        initExtraStylePickr(`extrastyle-${extraStyleIndex}-text-color`, '#333333', extraStyleIndex);
-        initExtraStylePickr(`extrastyle-${extraStyleIndex}-link-color`, '#1e87f0', extraStyleIndex);
-        initExtraStylePickr(`extrastyle-${extraStyleIndex}-border-color`, '#e5e5e5', extraStyleIndex);
+        // Colorpicker für die neuen Farbfelder initialisieren
+        initExtraStyleColorPicker(`extrastyle-${extraStyleIndex}-background-color`, extraStyleIndex);
+        initExtraStyleColorPicker(`extrastyle-${extraStyleIndex}-text-color`, extraStyleIndex);
+        initExtraStyleColorPicker(`extrastyle-${extraStyleIndex}-link-color`, extraStyleIndex);
+        initExtraStyleColorPicker(`extrastyle-${extraStyleIndex}-border-color`, extraStyleIndex);
         
         // Event-Handler für alle Input-Felder hinzufügen
         const newItemElement = container.querySelector(`[data-index="${extraStyleIndex}"]`);
@@ -221,26 +167,22 @@ function generateStyleItemHTML(index) {
                         
                         <div>
                             <label class="uk-form-label">Hintergrundfarbe</label>
-                            <div class="pickr-el" id="extrastyle-${index}-background-color"></div>
-                            <input type="hidden" id="extrastyle-${index}-background-color-value" name="extra_styles[styles][${index}][background_color]" value="#ffffff">
+                            <input type="text" id="extrastyle-${index}-background-color" name="extra_styles[styles][${index}][background_color]" value="#ffffff" class="uk-input tb-color-input" autocomplete="off">
                         </div>
-                        
+
                         <div>
                             <label class="uk-form-label">Textfarbe <small class="uk-text-meta">(optional)</small></label>
-                            <div class="pickr-el" id="extrastyle-${index}-text-color"></div>
-                            <input type="hidden" id="extrastyle-${index}-text-color-value" name="extra_styles[styles][${index}][text_color]" value="#333333">
+                            <input type="text" id="extrastyle-${index}-text-color" name="extra_styles[styles][${index}][text_color]" value="#333333" class="uk-input tb-color-input" autocomplete="off">
                         </div>
-                        
+
                         <div>
                             <label class="uk-form-label">Linkfarbe <small class="uk-text-meta">(optional)</small></label>
-                            <div class="pickr-el" id="extrastyle-${index}-link-color"></div>
-                            <input type="hidden" id="extrastyle-${index}-link-color-value" name="extra_styles[styles][${index}][link_color]" value="#1e87f0">
+                            <input type="text" id="extrastyle-${index}-link-color" name="extra_styles[styles][${index}][link_color]" value="#1e87f0" class="uk-input tb-color-input" autocomplete="off">
                         </div>
-                        
+
                         <div>
                             <label class="uk-form-label">Rahmenfarbe</label>
-                            <div class="pickr-el" id="extrastyle-${index}-border-color"></div>
-                            <input type="hidden" id="extrastyle-${index}-border-color-value" name="extra_styles[styles][${index}][border_color]" value="#e5e5e5">
+                            <input type="text" id="extrastyle-${index}-border-color" name="extra_styles[styles][${index}][border_color]" value="#e5e5e5" class="uk-input tb-color-input" autocomplete="off">
                         </div>
                         
                         <div>

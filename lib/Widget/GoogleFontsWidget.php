@@ -597,23 +597,34 @@ class GoogleFontsWidget extends AbstractWidget
     public function generateLess(array $data): string
     {
         $less = '';
-        
-        // Google Fonts Import hinzufügen
+
+        // Google Fonts Import hinzufügen - NUR lokal gehostete Dateien (siehe GoogleFontsManager/
+        // TemplateHelper::includeGoogleFonts()). Früher stand hier ein direkter @import auf
+        // fonts.googleapis.com - das hätte bei jedem Seitenaufruf für JEDEN Besucher eine externe
+        // Verbindung ausgelöst, sobald diese Auswahl mal befüllt wird. Fonts, die (noch) nicht
+        // über die Fontverwaltung heruntergeladen wurden, werden hier bewusst übersprungen statt
+        // extern nachgeladen - dann greift nur der Fallback-Stack.
         if (!empty($data['selected_fonts'])) {
-            $less .= "// Google Fonts Import\n";
-            
-            $fontFamilies = [];
+            $imports = [];
             foreach ($data['selected_fonts'] as $font) {
-                $fontFamily = str_replace(' ', '+', $font['family']);
-                $fontFamilies[] = $fontFamily . ':wght@300;400;500;600;700';
+                if (empty($font['family'])) {
+                    continue;
+                }
+                $sanitized = preg_replace('/[^a-zA-Z0-9_-]/', '_', $font['family']);
+                $localPath = \rex_path::addonAssets('uikit_theme_builder', 'fonts/' . $sanitized . '.css');
+                if (!file_exists($localPath)) {
+                    continue;
+                }
+                $localUrl = \rex_url::addonAssets('uikit_theme_builder', 'fonts/' . $sanitized . '.css');
+                $imports[] = "@import url('{$localUrl}');";
             }
-            
-            if (!empty($fontFamilies)) {
-                $googleFontsUrl = 'https://fonts.googleapis.com/css2?family=' . implode('&family=', $fontFamilies) . '&display=swap';
-                $less .= "@import url('{$googleFontsUrl}');\n\n";
+
+            if (!empty($imports)) {
+                $less .= "// Google Fonts Import (lokal gehostet)\n";
+                $less .= implode("\n", $imports) . "\n\n";
             }
         }
-        
+
         return $less;
     }
 }

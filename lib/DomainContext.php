@@ -514,7 +514,33 @@ class DomainContext
         
         return $themes;
     }
-    
+
+    /**
+     * Auf die im Settings-Multiselect ("Live Theme Editor: wählbare Themes") freigegebenen
+     * Themes eingeschränkte Liste für das "Theme wechseln"-Dropdown des Live Theme Editors.
+     * Leere Auswahl = keine Einschränkung (alle Themes, wie bisher). Das aktuell zugewiesene
+     * Theme bleibt immer enthalten, damit das Dropdown nie ohne den eigenen Ist-Zustand dasteht.
+     *
+     * Gespeichert wird das Multiselect wie bei REDAXO-Config-Forms üblich als
+     * pipe-separierter String ("|theme-a|theme-b|"), nicht als Array - siehe rex_form_element::setValue().
+     */
+    public static function getLiveEditorAvailableThemes(string $currentTheme): array
+    {
+        $all = self::getAvailableThemes();
+
+        $raw = (string) \rex_config::get('uikit_theme_builder', 'live_editor_available_themes', '');
+        $allowed = array_filter(explode('|', trim($raw, '|')), static fn ($v) => '' !== $v);
+
+        if (empty($allowed)) {
+            return $all;
+        }
+
+        $allowed = array_flip($allowed);
+        $allowed[$currentTheme] = true;
+
+        return array_intersect_key($all, $allowed);
+    }
+
     /**
      * Cache zurücksetzen (z.B. nach Theme-Wechsel)
      */

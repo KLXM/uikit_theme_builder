@@ -1,0 +1,286 @@
+/**
+ * Live Theme Editor - CSS-Custom-Property-Brücke.
+ *
+ * Wird NUR für eingeloggte Redakteure mit Editor-Recht geladen (siehe boot.php,
+ * LiveThemeState::canUseEditor()) - NICHT für normale Frontend-Besucher. Das war anfangs
+ * anders (unconditional auf jeder Seite, mit der Annahme "wirkungslos ohne aktive Live-
+ * Session"), das stimmt aber NICHT: var(--tb-live-x, inherit) fällt zurück auf "inherit",
+ * sobald die Custom Property nicht gesetzt ist (der Normalfall) - auf html/body (kein
+ * Elternelement) ist "inherit" gleichbedeutend mit "initial" und überschreibt dort IMMER
+ * Hintergrund/Farbe/Schrift des echten Themes; auf allen anderen Selektoren übernimmt es
+ * den Wert des Elternelements statt den vom Theme vorgesehenen. Beides macht die Seite
+ * kaputt, auch ganz ohne aktive Bearbeitung - deshalb jetzt strikt editor-only geladen.
+ *
+ * Das JS (live-theme-editor.js) setzt die Properties per
+ * documentElement.style.setProperty(...), wodurch die Seite ohne Reload sofort neu malt -
+ * ausschließlich in der eigenen Redakteurs-Session sichtbar (kein Broadcast an andere
+ * Besucher, siehe boot.php).
+ *
+ * Schutz des Info Centers vor diesen Regeln sitzt bewusst NICHT hier (ein früherer Versuch,
+ * --tb-live-* innerhalb von .info-center-container per "unset" zurückzusetzen, war wirkungslos -
+ * Custom Properties sind IMMER vererbend, "unset" bedeutet für sie "vom Elternteil erben", ein
+ * No-Op). Der wirksame Schutz sitzt in info_center/assets/css/info-center.css mit eigenen
+ * !important-Regeln + mindestens klassenbasierter Spezifität, die die hier folgenden, nur
+ * typ-/universalselektor-basierten Regeln zuverlässig schlagen.
+ */
+:root {
+  --tb-live-primary: unset;
+  --tb-live-secondary: unset;
+  --tb-live-success: unset;
+  --tb-live-warning: unset;
+  --tb-live-danger: unset;
+  --tb-live-background: unset;
+  --tb-live-color: unset;
+  --tb-live-emphasis: unset;
+  --tb-live-muted: unset;
+  --tb-live-link: unset;
+  --tb-live-link-hover: unset;
+  --tb-live-inverse: unset;
+  --tb-live-border: unset;
+  --tb-live-muted-background: unset;
+  --tb-live-heading-color: unset;
+  --tb-live-font-size: unset;
+  --tb-live-line-height: unset;
+  --tb-live-heading-line-height: unset;
+  --tb-live-h1-size: unset;
+  --tb-live-h2-size: unset;
+  --tb-live-h3-size: unset;
+  --tb-live-h4-size: unset;
+  --tb-live-margin: unset;
+  --tb-live-gutter: unset;
+  --tb-live-gutter-small: unset;
+  --tb-live-gutter-large: unset;
+  --tb-live-container-width: unset;
+  --tb-live-container-width-small: unset;
+  --tb-live-container-width-large: unset;
+  --tb-live-font-family: unset;
+  --tb-live-heading-font-family: unset;
+  --tb-live-navbar-background: unset;
+  --tb-live-navbar-item-color: unset;
+  --tb-live-navbar-item-hover-color: unset;
+  --tb-live-navbar-item-height: unset;
+  --tb-live-navbar-dropdown-background: unset;
+  --tb-live-navbar-dropdown-color: unset;
+  --tb-live-navbar-dropdown-hover-color: unset;
+  --tb-live-navbar-dropdown-width: unset;
+}
+
+html,
+body {
+  background: var(--tb-live-background, inherit) !important;
+  color: var(--tb-live-color, inherit) !important;
+  font-size: var(--tb-live-font-size, inherit) !important;
+  font-family: var(--tb-live-font-family, inherit) !important;
+  line-height: var(--tb-live-line-height, inherit) !important;
+}
+
+h1, h2, h3, h4, h5, h6,
+.uk-h1, .uk-h2, .uk-h3, .uk-h4, .uk-h5, .uk-h6 {
+  font-family: var(--tb-live-heading-font-family, inherit) !important;
+  color: var(--tb-live-heading-color, inherit) !important;
+  line-height: var(--tb-live-heading-line-height, inherit) !important;
+}
+
+a,
+.uk-link {
+  color: var(--tb-live-link, inherit) !important;
+}
+
+a:hover,
+.uk-link:hover {
+  color: var(--tb-live-link-hover, inherit) !important;
+}
+
+.uk-button-primary,
+.uk-badge,
+.uk-text-primary,
+.uk-background-primary,
+.uk-section-primary,
+.uk-card-primary {
+  background-color: var(--tb-live-primary, inherit) !important;
+}
+.uk-text-primary {
+  color: var(--tb-live-primary, inherit) !important;
+  background-color: transparent !important;
+}
+.uk-card-primary,
+.uk-card-primary .uk-card-title {
+  color: var(--tb-live-inverse, inherit) !important;
+}
+
+.uk-button-secondary,
+.uk-text-secondary,
+.uk-background-secondary,
+.uk-section-secondary,
+.uk-card-secondary {
+  background-color: var(--tb-live-secondary, inherit) !important;
+}
+.uk-text-secondary {
+  color: var(--tb-live-secondary, inherit) !important;
+  background-color: transparent !important;
+}
+.uk-card-secondary,
+.uk-card-secondary .uk-card-title {
+  color: var(--tb-live-inverse, inherit) !important;
+}
+
+.uk-background-default,
+.uk-section-default,
+.uk-card-default {
+  background-color: var(--tb-live-background, inherit) !important;
+}
+.uk-card-default {
+  color: var(--tb-live-color, inherit) !important;
+}
+
+.uk-alert-success,
+.uk-label-success,
+.uk-text-success {
+  background-color: var(--tb-live-success, inherit) !important;
+}
+.uk-text-success {
+  color: var(--tb-live-success, inherit) !important;
+  background-color: transparent !important;
+}
+
+.uk-alert-warning,
+.uk-label-warning,
+.uk-text-warning {
+  background-color: var(--tb-live-warning, inherit) !important;
+}
+.uk-text-warning {
+  color: var(--tb-live-warning, inherit) !important;
+  background-color: transparent !important;
+}
+
+.uk-alert-danger,
+.uk-label-danger,
+.uk-text-danger {
+  background-color: var(--tb-live-danger, inherit) !important;
+}
+.uk-text-danger {
+  color: var(--tb-live-danger, inherit) !important;
+  background-color: transparent !important;
+}
+
+.uk-text-emphasis {
+  color: var(--tb-live-emphasis, inherit) !important;
+}
+
+.uk-text-muted {
+  color: var(--tb-live-muted, inherit) !important;
+}
+
+.uk-text-inverse {
+  color: var(--tb-live-inverse, inherit) !important;
+}
+
+.uk-border,
+[class*="uk-border-"] {
+  border-color: var(--tb-live-border, inherit) !important;
+}
+
+.uk-background-muted,
+.uk-section-muted {
+  background-color: var(--tb-live-muted-background, inherit) !important;
+}
+
+h1,
+.uk-h1 {
+  font-size: var(--tb-live-h1-size, inherit) !important;
+}
+
+h2,
+.uk-h2 {
+  font-size: var(--tb-live-h2-size, inherit) !important;
+}
+
+h3,
+.uk-h3 {
+  font-size: var(--tb-live-h3-size, inherit) !important;
+}
+
+h4,
+.uk-h4 {
+  font-size: var(--tb-live-h4-size, inherit) !important;
+}
+
+/* Entspricht UIkits eigener Spacing-Rhythmik (siehe "* + figure { margin-top: ... }" etc.
+   in components/base.less) - deckt die typischen aufeinanderfolgenden Block-Elemente ab.
+   :not(.info-center-container *) schließt das Info-Center-Widget aus: als eingeloggter
+   Redakteur ist dessen eigene Sidebar (die dieses Bridge-CSS selbst mit einbindet) immer
+   Teil der Seite, und diese universalselektor-basierte !important-Regel würde sonst dessen
+   eigene, nicht-!important margin-top-Regeln überall zerschießen (per !important gewinnt
+   diese Regel kategorisch, unabhängig von Spezifität - das führte zu sichtbar
+   "ineinandergeschobenen" Abständen im Info Center). Vorher wurde versucht, das umgekehrt in
+   info_center per "margin-top: revert !important" zu kontern - das hat dasselbe Problem nur
+   verlagert (revert fällt auf den Browser-Default zurück und überschreibt damit ebenfalls
+   info_centers eigene, beabsichtigte margin-top-Werte). Der Ausschluss hier an der Quelle
+   ist der richtige Ort dafür. */
+* + h1:not(.info-center-container *), * + h2:not(.info-center-container *), * + h3:not(.info-center-container *),
+* + h4:not(.info-center-container *), * + h5:not(.info-center-container *), * + h6:not(.info-center-container *),
+* + p:not(.info-center-container *), * + ul:not(.info-center-container *), * + ol:not(.info-center-container *),
+* + dl:not(.info-center-container *), * + pre:not(.info-center-container *), * + blockquote:not(.info-center-container *),
+* + figure:not(.info-center-container *), * + hr:not(.info-center-container *), * + .uk-margin:not(.info-center-container *) {
+  margin-top: var(--tb-live-margin, inherit) !important;
+}
+
+.uk-container {
+  padding-left: var(--tb-live-gutter, inherit) !important;
+  padding-right: var(--tb-live-gutter, inherit) !important;
+  max-width: var(--tb-live-container-width, inherit) !important;
+}
+
+.uk-padding {
+  padding: var(--tb-live-gutter, inherit) !important;
+}
+
+.uk-padding-small {
+  padding: var(--tb-live-gutter-small, inherit) !important;
+}
+
+.uk-padding-large {
+  padding: var(--tb-live-gutter-large, inherit) !important;
+}
+
+.uk-container-small {
+  max-width: var(--tb-live-container-width-small, inherit) !important;
+}
+
+.uk-container-large {
+  max-width: var(--tb-live-container-width-large, inherit) !important;
+}
+
+/* Navigation - Selektoren entsprechen 1:1 sources/uikit/less/components/navbar.less
+   (.uk-navbar-container nutzt @navbar-background, .uk-navbar-nav > li > a etc.). */
+.uk-navbar-container:not(.uk-navbar-transparent) {
+  background: var(--tb-live-navbar-background, inherit) !important;
+}
+
+.uk-navbar-nav > li > a,
+.uk-navbar-item {
+  min-height: var(--tb-live-navbar-item-height, inherit) !important;
+}
+
+.uk-navbar-nav > li > a {
+  color: var(--tb-live-navbar-item-color, inherit) !important;
+}
+
+.uk-navbar-nav > li:hover > a,
+.uk-navbar-nav > li > a[aria-expanded="true"] {
+  color: var(--tb-live-navbar-item-hover-color, inherit) !important;
+}
+
+.uk-navbar-dropdown {
+  width: var(--tb-live-navbar-dropdown-width, inherit) !important;
+  background: var(--tb-live-navbar-dropdown-background, inherit) !important;
+  color: var(--tb-live-navbar-dropdown-color, inherit) !important;
+}
+
+.uk-navbar-dropdown-nav > li > a {
+  color: var(--tb-live-navbar-dropdown-color, inherit) !important;
+}
+
+.uk-navbar-dropdown-nav > li > a:hover {
+  color: var(--tb-live-navbar-dropdown-hover-color, inherit) !important;
+}

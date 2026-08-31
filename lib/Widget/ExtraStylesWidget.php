@@ -49,9 +49,9 @@ class ExtraStylesWidget extends AbstractWidget
         $styles = $values['styles'] ?? $this->getDefaultValues()['styles'];
         $output = '';
         
-        // Widget-CSS und Pickr einbinden
+        // Widget-CSS einbinden - Pickit Color selbst kommt bereits global aus boot.php
+        // (Backend), ein zweites Include würde dessen Auto-Init doppelt laufen lassen.
         $output .= '<link rel="stylesheet" href="' . \rex_url::addonAssets('uikit_theme_builder', 'css/extra-styles-widget.css') . '">';
-        $output .= $this->renderPickrAssets();
         
         // Container mit UIKit
         $output .= '<div class="extra-styles-widget uk-margin-medium">';
@@ -157,29 +157,25 @@ class ExtraStylesWidget extends AbstractWidget
         // Hintergrundfarbe
         $output .= '<div>';
         $output .= '<label class="uk-form-label">Hintergrundfarbe</label>';
-        $output .= '<div class="pickr-el" id="extrastyle-' . $index . '-background-color"></div>';
-        $output .= '<input type="hidden" id="extrastyle-' . $index . '-background-color-value" name="extra_styles[styles][' . $index . '][background_color]" value="' . \rex_escape($backgroundColor) . '">';
+        $output .= '<input type="text" id="extrastyle-' . $index . '-background-color" name="extra_styles[styles][' . $index . '][background_color]" value="' . \rex_escape($backgroundColor) . '" class="uk-input tb-color-input" autocomplete="off">';
         $output .= '</div>';
-        
+
         // Textfarbe
         $output .= '<div>';
         $output .= '<label class="uk-form-label">Textfarbe <small class="uk-text-meta">(optional)</small></label>';
-        $output .= '<div class="pickr-el" id="extrastyle-' . $index . '-text-color"></div>';
-        $output .= '<input type="hidden" id="extrastyle-' . $index . '-text-color-value" name="extra_styles[styles][' . $index . '][text_color]" value="' . \rex_escape($textColor ?: '#333333') . '">';
+        $output .= '<input type="text" id="extrastyle-' . $index . '-text-color" name="extra_styles[styles][' . $index . '][text_color]" value="' . \rex_escape($textColor ?: '#333333') . '" class="uk-input tb-color-input" autocomplete="off">';
         $output .= '</div>';
-        
+
         // Linkfarbe
         $output .= '<div>';
         $output .= '<label class="uk-form-label">Linkfarbe <small class="uk-text-meta">(optional)</small></label>';
-        $output .= '<div class="pickr-el" id="extrastyle-' . $index . '-link-color"></div>';
-        $output .= '<input type="hidden" id="extrastyle-' . $index . '-link-color-value" name="extra_styles[styles][' . $index . '][link_color]" value="' . \rex_escape($linkColor ?: '#1e87f0') . '">';
+        $output .= '<input type="text" id="extrastyle-' . $index . '-link-color" name="extra_styles[styles][' . $index . '][link_color]" value="' . \rex_escape($linkColor ?: '#1e87f0') . '" class="uk-input tb-color-input" autocomplete="off">';
         $output .= '</div>';
-        
+
         // Rahmenfarbe
         $output .= '<div>';
         $output .= '<label class="uk-form-label">Rahmenfarbe</label>';
-        $output .= '<div class="pickr-el" id="extrastyle-' . $index . '-border-color"></div>';
-        $output .= '<input type="hidden" id="extrastyle-' . $index . '-border-color-value" name="extra_styles[styles][' . $index . '][border_color]" value="' . \rex_escape($borderColor) . '">';
+        $output .= '<input type="text" id="extrastyle-' . $index . '-border-color" name="extra_styles[styles][' . $index . '][border_color]" value="' . \rex_escape($borderColor) . '" class="uk-input tb-color-input" autocomplete="off">';
         $output .= '</div>';
         
         // Rahmenstärke

@@ -35,6 +35,16 @@ if (is_dir($themesDir)) {
     }
 }
 
+// Live Theme Editor - welche Themes im "Theme wechseln"-Dropdown wählbar sind
+$liveThemesField = $form->addSelectField('live_editor_available_themes', null, ['class' => 'form-control', 'multiple' => 'multiple', 'size' => 6]);
+$liveThemesField->setLabel('Live Theme Editor: wählbare Themes');
+$liveThemesField->setNotice('Nichts ausgewählt = alle Themes wählbar. Mehrfachauswahl mit Strg/Cmd. Das jeweils aktuell zugewiesene Theme bleibt immer wählbar.');
+$liveThemesSelect = $liveThemesField->getSelect();
+$liveThemesSelect->setMultiple(true);
+foreach (\UikitThemeBuilder\DomainContext::getAvailableThemes() as $themeName => $label) {
+    $liveThemesSelect->addOption($label, $themeName);
+}
+
 $fragment = new rex_fragment();
 $fragment->setVar('class', 'edit', false);
 $fragment->setVar('title', 'Einstellungen', false);

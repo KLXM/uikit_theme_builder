@@ -43,165 +43,44 @@ abstract class AbstractWidget
     protected function renderColorPicker(string $name, string $value = '#000000', array $attributes = []): string
     {
         $id = 'color-picker-' . str_replace('_', '-', $name);
-        
-        $html = '<div class="uk-inline uk-width-1-1">';
-        
-        // Color Preview Button für Pickr
-        $html .= '<div class="color-picker-wrapper" style="position: relative;">';
-        $html .= '<div class="' . $id . '" style="width: 40px; height: 40px; border-radius: 4px; border: 2px solid #b0b0b0; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08); cursor: pointer; background-color: ' . rex_escape($value) . ';"></div>';
-        $html .= '</div>';
-        
-        // Hidden Input für Form-Submit
-        $html .= '<input type="hidden" id="' . $id . '-input" name="' . rex_escape($name) . '" value="' . rex_escape($value) . '">';
-        
-        $html .= '</div>';
-        
-        // CSS und JS für Pickr (statisch einmalig eingebunden)
-        static $pickrAssetsIncluded = false;
-        if (!$pickrAssetsIncluded) {
-            $html .= $this->renderPickrAssets();
-            $pickrAssetsIncluded = true;
-        }
-        
-        // Eindeutige Picker-ID generieren
-        $pickerId = 'pickr_' . uniqid();
-        
-        // Individuelle Picker-Initialisierung mit Standard-Swatches
-        $html .= '
-        <script>
-        (function() {
-            function init' . $pickerId . '() {
-                if (typeof Pickr === "undefined") {
-                    console.warn("Pickr not loaded yet, retrying...");
-                    setTimeout(init' . $pickerId . ', 100);
-                    return;
-                }
-                
-                // Prüfen ob Element existiert
-                const element = document.querySelector(".' . $id . '");
-                if (!element) {
-                    setTimeout(init' . $pickerId . ', 100);
-                    return;
-                }
-                
-                // Prüfen ob schon initialisiert
-                if (element.dataset.pickrInitialized) {
-                    return;
-                }
-                
-                const ' . $pickerId . ' = Pickr.create({
-                    el: ".' . $id . '",
-                    theme: "classic",
-                    default: "' . \rex_escape($value) . '",
-                    defaultRepresentation: "RGBA",
-                    
-                    swatches: [
-                        "transparent",  // Transparent
-                        "#ffffff",      // Weiß
-                        "#000000",      // Schwarz
-                        "#1e87f0",      // UIKit Primary Blue
-                        "#f0506e",      // UIKit Danger Red
-                        "#32d296",      // UIKit Success Green
-                        "#faa05a",      // UIKit Warning Orange
-                        "#664dc6",      // UIKit Purple
-                        "#222222",      // Dark Gray
-                        "#666666",      // Medium Gray
-                        "#999999",      // Light Gray
-                        "#cccccc",      // Very Light Gray
-                        "#e5e5e5",      // Border Gray
-                        "#f8f9fa"       // Background Gray
-                    ],
-                    
-                    components: {
-                        preview: true,
-                        opacity: true,
-                        hue: true,
-                        interaction: {
-                            hex: true,
-                            rgba: true,
-                            hsla: true,
-                            hsva: true,
-                            input: true,
-                            save: true
-                        }
-                    }
-                });
-                
-                // Als initialisiert markieren
-                element.dataset.pickrInitialized = "true";
-                
-                // Funktion zur Farbübernahme
-                const updateColor = (color) => {
-                    try {
-                        const rgba = color.toRGBA();
-                        let colorString;
-                        // Bei voll-opaken Farben: 6-stelliges Hex (LESS-kompatibel)
-                        // Bei Transparenz: rgba() (ebenfalls LESS-kompatibel)
-                        if (rgba[3] >= 0.99) {
-                            colorString = color.toHEXA().toString().slice(0, 7);
-                        } else {
-                            colorString = color.toRGBA().toString();
-                        }
-                        
-                        // Update hidden input
-                        const input = document.getElementById("' . $id . '-input");
-                        if (input) {
-                            input.value = colorString;
-                        }
-                        
-                        // Update preview
-                        const preview = document.querySelector(".' . $id . '");
-                        if (preview) {
-                            preview.style.backgroundColor = colorString;
-                        }
-                        
-                    } catch (e) {
-                        console.warn("Fehler bei Farbkonvertierung:", e);
-                    }
-                };
-                
-                // Events für verschiedene Pickr-Interaktionen
-                ' . $pickerId . '.on("change", updateColor);
-                ' . $pickerId . '.on("changestop", updateColor);
-                ' . $pickerId . '.on("save", (color) => {
-                    updateColor(color);
-                    ' . $pickerId . '.hide();
-                });
-            }
-            
-            // Initialisierung starten
-            if (document.readyState === "loading") {
-                document.addEventListener("DOMContentLoaded", init' . $pickerId . ');
-            } else {
-                init' . $pickerId . '();
-            }
-        })();
-        </script>';
-        
-        return $html;
+
+        // Alpha nur wenn der Aufrufer es explizit erlaubt (['alpha' => true]) - z.B.
+        // ColorsWidget::generateLessVariables() entfernt den Alpha-Kanal beim Speichern
+        // wieder, dort würde ein Alpha-Regler nur eine Auswahl vortäuschen, die nicht
+        // ankommt. NavbarWidget behält Alpha dagegen unverändert bei.
+        //
+        // Format bewusst NICHT einheitlich "hex": Pickit kodiert Transparenz bei format:hex
+        // als 8-stelliges Hex (#rrggbbaa). Das alte Pickr-Setup hat nie 8-stelliges Hex
+        // erzeugt (Grund: wikimedia/less.php hatte damit Probleme, siehe ColorsWidget::
+        // generateLessVariables(), das Alpha-Hex bis heute vorsichtshalber wieder entfernt),
+        // sondern bei Transparenz stattdessen rgba() - genau das liefert format:rgb hier
+        // (rgb() wenn deckend, rgba() bei Transparenz), NavbarWidget::validateFormData()
+        // akzeptiert beides über "rgba?\(...\)". Bei alpha:false bleibt es bei Hex wie zuvor.
+        $dataOptions = !empty($attributes['alpha'])
+            ? 'format:rgb,alpha:true,compact:true,language:de'
+            : 'format:hex,compact:true,language:de';
+
+        // Kein eigenes Asset-Include hier - Pickit Color wird global für jede eingeloggte
+        // Backend-Session über boot.php geladen. Ein zweites <script>-Tag würde das UMD-Bundle
+        // erneut ausführen und dessen Auto-Init (initColorPickers() bei DOMContentLoaded) ein
+        // zweites Mal über die Seite laufen lassen - das würde bereits initialisierte Felder
+        // doppelt instanziieren. Felder initialisieren sich selbst über das data-colorpicker-
+        // Attribut, siehe https://github.com/skerbis/pickit_color.
+        return '<input type="text" id="' . $id . '" name="' . rex_escape($name) . '" value="' . rex_escape($value) . '" class="uk-input tb-color-input" autocomplete="off" data-colorpicker="' . $dataOptions . '">';
     }
 
     /**
-     * Lädt Pickr CSS und JS (einmalig) - Standard-Swatches für alle Widgets
+     * Lädt Pickit Color CSS/JS explizit - nur für Kontexte nötig, die NICHT bereits über
+     * boot.php versorgt werden (z.B. das Live-Theme-Editor-Widget im Frontend). Innerhalb des
+     * Backends NICHT zusätzlich aufrufen, siehe Hinweis in renderColorPicker().
      */
-    protected function renderPickrAssets(): string
+    protected function renderColorPickerAssets(): string
     {
-        $cssUrl = \rex_url::addonAssets('uikit_theme_builder', 'pickr/classic.min.css');
-        $jsUrl  = \rex_url::addonAssets('uikit_theme_builder', 'pickr/pickr.min.js');
+        $cssUrl = \rex_url::addonAssets('uikit_theme_builder', 'pickit-color/colorpicker.min.css');
+        $jsUrl  = \rex_url::addonAssets('uikit_theme_builder', 'pickit-color/colorpicker.min.js');
         return '
         <link rel="stylesheet" href="' . $cssUrl . '">
         <script src="' . $jsUrl . '"></script>
-        <style>
-        .pickr .pcr-button {
-            border: 2px solid #b0b0b0 !important;
-            border-radius: 4px !important;
-            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08) !important;
-        }
-        .pickr .pcr-button:hover,
-        .pickr .pcr-button:focus {
-            border-color: #555 !important;
-        }
-        </style>
         ';
     }
     
