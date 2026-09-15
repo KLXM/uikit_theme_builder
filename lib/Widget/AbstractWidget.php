@@ -69,21 +69,6 @@ abstract class AbstractWidget
         return '<input type="text" id="' . $id . '" name="' . rex_escape($name) . '" value="' . rex_escape($value) . '" class="uk-input tb-color-input" autocomplete="off" data-colorpicker="' . $dataOptions . '">';
     }
 
-    /**
-     * Lädt Pickit Color CSS/JS explizit - nur für Kontexte nötig, die NICHT bereits über
-     * boot.php versorgt werden (z.B. das Live-Theme-Editor-Widget im Frontend). Innerhalb des
-     * Backends NICHT zusätzlich aufrufen, siehe Hinweis in renderColorPicker().
-     */
-    protected function renderColorPickerAssets(): string
-    {
-        $cssUrl = \rex_url::addonAssets('uikit_theme_builder', 'pickit-color/colorpicker.min.css');
-        $jsUrl  = \rex_url::addonAssets('uikit_theme_builder', 'pickit-color/colorpicker.min.js');
-        return '
-        <link rel="stylesheet" href="' . $cssUrl . '">
-        <script src="' . $jsUrl . '"></script>
-        ';
-    }
-    
     protected function renderNumberInput(string $name, int $value = 0, array $attributes = []): string
     {
         $attrs = '';

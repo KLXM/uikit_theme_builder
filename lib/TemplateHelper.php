@@ -9,15 +9,6 @@ namespace UikitThemeBuilder;
 class TemplateHelper
 {
     /**
-     * Merkt sich, für welches Theme diese Klasse tatsächlich CSS in die aktuell laufende
-     * Anfrage eingebunden hat - NICHT jedes Template ruft includeAllStyles() auf (z.B. das
-     * "Default"-Template bindet eine eigene statische CSS-Datei ein und nutzt den Theme
-     * Builder gar nicht). LiveThemeEditorWidget nutzt das, um sich selbst nur dort anzuzeigen,
-     * wo eine Bearbeitung überhaupt sichtbar würde.
-     */
-    private static ?string $includedThemeName = null;
-
-    /**
      * Komplette UIKit Assets einbinden (CSS + Icons)
      *
      * @param string|null $themeName Theme-Name (optional)
@@ -30,7 +21,6 @@ class TemplateHelper
 
         // Wenn Theme angegeben: Theme CSS laden
         if ($themeName) {
-            self::$includedThemeName = $themeName;
             $html .= self::includeThemeCSS($themeName, $minified);
             $html .= self::includeGoogleFonts($themeName);
         } else {
@@ -41,15 +31,6 @@ class TemplateHelper
         return $html;
     }
 
-    /**
-     * Wurde für $themeName in dieser Anfrage bereits echtes Theme-CSS eingebunden (via
-     * includeAllStyles())? Siehe $includedThemeName oben.
-     */
-    public static function isThemeIncluded(string $themeName): bool
-    {
-        return self::$includedThemeName === $themeName;
-    }
-    
     /**
      * UIKit CSS einbinden (aus compiled_uikit)
      */

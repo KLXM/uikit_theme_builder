@@ -248,64 +248,6 @@ if (rex_request('previewtheme', 'string')) {
     exit; // Normale REDAXO-Verarbeitung stoppen
 }
 
-// Live Theme Editor: SSE-Stream, ausschließlich private Vorschau der eigenen Session (z.B. um
-// mehrere eigene Tabs synchron zu halten). Kein Broadcast an normale Besucher (bewusst entfernt -
-// zu fehleranfällig/riskant für die echte, öffentliche Website).
-$themeLiveStreamMode = rex_request('theme_live_stream', 'string', '');
-if ('' !== $themeLiveStreamMode) {
-    $themeLiveStreamTheme = rex_request('theme', 'string', '');
-    UikitThemeBuilder\LiveThemeState::streamSse($themeLiveStreamMode, $themeLiveStreamTheme);
-    exit;
-}
-
-// Live Theme Editor: Bridge-CSS NUR für eingeloggte Redakteure mit Editor-Recht (eigene private
-// Vorschau) - NIE für normale Besucher. Die Bridge-Regeln nutzen var(--tb-live-x, inherit)
-// !important - "inherit" ist auf html/body (kein Elternelement) gleichbedeutend mit "initial"
-// und überschreibt dort IMMER Hintergrund/Farbe/Schrift des echten Themes, auch ganz ohne aktive
-// Live-Vorschau. Unconditional laden hätte also jede Seite für jeden Besucher kaputt gemacht.
-// Zusätzlich nur, wenn das aktuelle Template das Domain-Theme auch tatsächlich per
-// TemplateHelper::includeAllStyles() eingebunden hat (siehe LiveThemeEditorWidget) - sonst würde
-// die Bridge-CSS die Seite kaputt machen, obwohl das Widget dort gar nicht angezeigt wird
-// (z.B. Templates mit eigener statischer CSS-Datei).
-if (rex::isFrontend()) {
-    rex_extension::register('OUTPUT_FILTER', function (rex_extension_point $ep) {
-        $theme = UikitThemeBuilder\DomainContext::getCurrentTheme();
-        if (!$theme || !UikitThemeBuilder\TemplateHelper::isThemeIncluded($theme)) {
-            return;
-        }
-
-        $user = rex_backend_login::createUser();
-        if (!$user || !UikitThemeBuilder\LiveThemeState::canUseEditor($user)) {
-            return;
-        }
-
-        $content = $ep->getSubject();
-        $addon = rex_addon::get('uikit_theme_builder');
-
-        // Cache-Buster manuell anhängen (Filemtime) - dieser Tag geht direkt raus statt über
-        // rex_view::addCssFile(), das das sonst automatisch übernehmen würde.
-        $bridgeCssPath = rex_path::addonAssets('uikit_theme_builder', 'live-editor/live-theme-editor-bridge.css');
-        $bridgeCssMtime = @filemtime($bridgeCssPath);
-        $bridgeCssUrl = $addon->getAssetsUrl('live-editor/live-theme-editor-bridge.css') . ($bridgeCssMtime ? '?buster=' . $bridgeCssMtime : '');
-        $bridgeCssTag = '<link rel="stylesheet" href="' . $bridgeCssUrl . '"></head>';
-        $content = str_ireplace('</head>', $bridgeCssTag, $content);
-
-        $ep->setSubject($content);
-    });
-}
-
-// Live Theme Editor Widget im Info Center registrieren - dem in info_center/README.md
-// dokumentierten Muster folgend: Registrierung vom konsumierenden Addon aus, verzögert bis
-// PACKAGES_INCLUDED (rex_extension::LATE), damit alle Addons inkl. info_center sicher
-// fertig gebootet sind. info_center selbst muss dafür NICHT verändert werden.
-if (rex_addon::get('info_center')->isAvailable()) {
-    rex_extension::register('PACKAGES_INCLUDED', function () {
-        $infoCenter = \KLXM\InfoCenter\InfoCenter::getInstance();
-        $widget = new UikitThemeBuilder\InfoCenterWidgets\LiveThemeEditorWidget();
-        $infoCenter->registerWidget($widget);
-    }, rex_extension::LATE);
-}
-
 // Template Manager Integration - installiere verfügbare Templates beim Boot
 if (rex::isBackend() && rex::getUser()) {
     // Optionale automatische Installation: Nur einmalig triggern

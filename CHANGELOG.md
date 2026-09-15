@@ -1,5 +1,34 @@
 # Changelog
 
+## [2.3.0] – 2026-09-15
+
+### Removed
+
+- **Live Theme Editor** (Info-Center-Widget aus 2.2.0) komplett entfernt. Das Feature band
+  eine Bridge-CSS-Datei mit `var(--tb-live-x, inherit) !important`-Regeln auf JEDER
+  Frontend-Seite ein, sobald der aktuelle Besucher irgendeine gültige Backend-Login-Session
+  hatte - unabhängig davon, ob der Editor gerade geöffnet war. Verließ ein Redakteur den
+  Editor ohne aktiv "Verwerfen" zu klicken (Tab wechseln, Fenster schließen, wegnavigieren),
+  blieben sowohl der Server-Draft als auch die per Inline-Style auf `<html>` gesetzten
+  Testwerte dauerhaft bestehen - inklusive versehentlich eingegebener Werte. In der Praxis
+  führte das dazu, dass die komplette öffentliche Website für jeden Request mit vorhandenem
+  Backend-Login-Cookie dauerhaft falsch eingefärbt blieb, obwohl die eigentliche kompilierte
+  Theme-CSS-Datei die ganze Zeit korrekt war. Das Feature war strukturell zu riskant für den
+  produktiven Einsatz und wurde ersatzlos gestrichen (kein Feature-Flag, kein
+  Deprecation-Pfad).
+  - Entfernt: `assets/live-editor/` (JS/CSS des Frontend-Overlays und der Bridge-CSS),
+    `lib/LiveThemeState.php`, `lib/InfoCenterWidgets/LiveThemeEditorWidget.php`,
+    `lib/rex_api_uikit_theme_live_{push,save,discard,switch_theme}.php`
+  - Entfernt: SSE-Stream-Handler, `OUTPUT_FILTER`-Registrierung der Bridge-CSS und die
+    Info-Center-Widget-Registrierung aus `boot.php`
+  - Entfernt: die Rechte `uikit_theme_builder[live_editor]`,
+    `uikit_theme_builder[live_editor_style]`, `uikit_theme_builder[live_editor_theme]` sowie
+    die zugehörige Themeauswahl-Einstellung ("Live Theme Editor: wählbare Themes")
+  - Update-Routine räumt beim Update auf diese Version vorhandene alte Draft-Dateien
+    (`data/live/`) automatisch auf
+  - Die normale, formularbasierte Theme-Bearbeitung im Backend, der LESS-Compiler und die
+    Domain-Theme-Zuordnung sind von dieser Entfernung nicht betroffen
+
 ## [2.2.0] – 2026-08-20
 
 ### Added

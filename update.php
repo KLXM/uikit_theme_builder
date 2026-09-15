@@ -72,3 +72,14 @@ try {
 if (rex_addon::exists('template_manager')) {
     rex_logger::factory()->info('UIKit Theme Builder: Template Manager Addon erkannt');
 }
+
+// Aufräumen: Das entfernte "Live Theme Editor"-Feature legte pro Nutzer/Theme Draft-Dateien
+// unter data/live/ ab (LiveThemeState::draftPath()). Diese enthielten u.a. testweise gesetzte
+// Farb-/Typografie-Overrides, die beim erneuten Öffnen automatisch wieder als Inline-Styles
+// angewendet wurden. Das Feature selbst ist entfernt, aber ohne diesen Cleanup-Schritt würden
+// bereits bestehende Draft-Dateien auf Bestandsinstallationen einfach ungenutzt liegen bleiben.
+$liveDraftDir = rex_path::addonData('uikit_theme_builder', 'live/');
+if (is_dir($liveDraftDir)) {
+    rex_dir::delete($liveDraftDir);
+    rex_logger::factory()->info('UIKit Theme Builder: Alte Live-Theme-Editor-Draft-Dateien entfernt (' . $liveDraftDir . ')');
+}

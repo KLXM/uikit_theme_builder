@@ -617,9 +617,9 @@ class UikitThemeBuilderManager
         foreach ($array as $key => $value) {
             if (is_array($value)) {
                 // Für Widget-Kategorien: Direkt die Werte ohne Kategorie-Präfix verarbeiten
-                // "spacing" wird vom Live Theme Editor für global-margin/global-gutter genutzt
-                // (siehe LiveThemeState::FIELDS) - ohne Whitelist-Eintrag würde daraus
-                // "spacing-global-margin" statt der von UIkit erwarteten "@global-margin".
+                // "spacing" enthält z.B. global-margin/global-gutter - ohne Whitelist-Eintrag
+                // würde daraus "spacing-global-margin" statt der von UIkit erwarteten
+                // "@global-margin".
                 $widgetCategories = ['colors', 'typography', 'breakpoints', 'borders', 'shadows', 'spacing'];
                 
                 if ($prefix === '' && in_array($key, $widgetCategories)) {
