@@ -810,3 +810,9 @@ Dieses Projekt steht unter der MIT-Lizenz. Siehe [LICENSE](LICENSE) für Details
 ---
 
 Erstellt mit ❤️ für die REDAXO Community
+
+## Komponenten-Auswahl (kleineres CSS)
+
+Im Theme-Editor gibt es den Abschnitt **Komponenten-Auswahl**: Dort lassen sich UIkit-Komponenten abwählen, die das Projekt nicht verwendet (z. B. Table, Form, Tab, Notification, Sortable). Abgewählte Komponenten werden beim Kompilieren weder aus `components/` noch aus `theme/` importiert – das fertige CSS wird entsprechend kleiner. Grundbausteine (variables, mixin, base, utility, flex, margin, padding, width, height, visibility, text, position, transition) bleiben immer enthalten.
+
+Vor dem Abwählen prüfen, welche `uk-*`-Klassen und Attribute in Templates, Modulen, Inhalten und eigenen Skripten vorkommen – inklusive der Klassen, die UIkit-JS zur Laufzeit setzt (`uk-open`, `uk-active`, `uk-animation-*`, `uk-sticky-*`, `uk-offcanvas-*`). Die Auswahl wird mit dem Theme gespeichert (`component_selection.disabled`).

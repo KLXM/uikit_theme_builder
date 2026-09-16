@@ -59,6 +59,7 @@ if ($themeData) {
         'container' => new \UikitThemeBuilder\Widget\ContainerWidget(),
         'navbar' => new \UikitThemeBuilder\Widget\NavbarWidget(),
         'components' => new \UikitThemeBuilder\Widget\ComponentsWidget(),
+        'component_selection' => new \UikitThemeBuilder\Widget\ComponentSelectionWidget(),
         'style_sets' => new \UikitThemeBuilder\Widget\StyleSetSelectionWidget(),
     ];
     

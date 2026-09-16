@@ -22,6 +22,7 @@ $widgets = [
     'container' => new \UikitThemeBuilder\Widget\ContainerWidget(),
     'navbar' => new \UikitThemeBuilder\Widget\NavbarWidget(),
     'components' => new \UikitThemeBuilder\Widget\ComponentsWidget(),
+    'component_selection' => new \UikitThemeBuilder\Widget\ComponentSelectionWidget(),
     'custom_styles' => new \UikitThemeBuilder\Widget\CustomStylesWidget(),
     'style_sets' => new \UikitThemeBuilder\Widget\StyleSetSelectionWidget()
 ];
@@ -283,6 +284,7 @@ foreach ($widgets as $key => $widget) {
         case 'container': $icon = 'grid'; break;
         case 'navbar': $icon = 'menu'; break;
         case 'components': $icon = 'cog'; break;
+        case 'component_selection': $icon = 'list'; break;
         case 'extra_styles': $icon = 'star'; break;
         case 'custom_styles': $icon = 'code'; break;
         case 'google_fonts': $icon = 'font'; break;

@@ -144,6 +144,18 @@ rex_extension::register('PACKAGES_INCLUDED', function() {
         // Theme CSS laden
         $themeFile = rex_path::addonAssets('uikit_theme_builder', 'themes/compiled/' . $backendTheme . '.css');
         if (file_exists($themeFile)) {
+            // Theme mit Komponenten-Auswahl: dem Backend fehlen dann Komponenten (Form, Table, Tab ...).
+            // Deshalb zuerst das vollstaendige UIkit laden, das Theme ueberschreibt danach Farben/Typografie.
+            try {
+                $manager = new \UikitThemeBuilder\UikitThemeBuilderManager();
+                $themeData = $manager->loadTheme($backendTheme);
+                $disabled = \UikitThemeBuilder\Widget\ComponentSelectionWidget::disabledFrom((array) ($themeData['data'] ?? []));
+                if ($disabled !== [] && file_exists(rex_path::addonAssets('uikit_theme_builder', 'compiled_uikit/css/uikit.min.css'))) {
+                    rex_view::addCssFile(rex_url::addonAssets('uikit_theme_builder', 'compiled_uikit/css/uikit.min.css'));
+                }
+            } catch (\Throwable $e) {
+                // ohne Theme-Daten: wie bisher nur das Theme-CSS
+            }
             $themeUrl = rex_url::addonAssets('uikit_theme_builder', 'themes/compiled/' . $backendTheme . '.css');
             rex_view::addCssFile($themeUrl);
 

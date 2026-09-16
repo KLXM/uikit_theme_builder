@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Widget „Komponenten-Auswahl“: nicht benötigte UIkit-Komponenten abwählen; sie werden beim Kompilieren nicht importiert (kleineres CSS). Gespeichert als `component_selection.disabled` im Theme, Grundbausteine bleiben immer enthalten.
+
 ## [2.3.0] – 2026-09-15
 
 ### Removed
