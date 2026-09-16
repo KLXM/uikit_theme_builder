@@ -223,6 +223,7 @@ if ($func === 'quickstart' && rex_request::post('quickstart_create', 'bool') && 
             'container' => new \UikitThemeBuilder\Widget\ContainerWidget(),
             'navbar' => new \UikitThemeBuilder\Widget\NavbarWidget(),
             'components' => new \UikitThemeBuilder\Widget\ComponentsWidget(),
+            'component_selection' => new \UikitThemeBuilder\Widget\ComponentSelectionWidget(),
             'custom_styles' => new \UikitThemeBuilder\Widget\CustomStylesWidget(),
             'style_sets' => new \UikitThemeBuilder\Widget\StyleSetSelectionWidget(),
         ];

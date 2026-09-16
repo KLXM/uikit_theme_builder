@@ -79,7 +79,7 @@ class UikitThemeBuilderManager
             }
             
             // Temporäre LESS-Datei erstellen
-            $tempLessFile = $this->createTempLessFile($lessVariables, $customLess, $themeName);
+            $tempLessFile = $this->createTempLessFile($lessVariables, $customLess, $themeName, \UikitThemeBuilder\Widget\ComponentSelectionWidget::disabledFrom($themeData));
             
             // LESS kompilieren
             $compilationStart = microtime(true);
@@ -317,7 +317,7 @@ class UikitThemeBuilderManager
     /**
      * Temporäre LESS-Datei erstellen
      */
-    private function createTempLessFile(string $lessVariables, string $customLess, string $themeName): string
+    private function createTempLessFile(string $lessVariables, string $customLess, string $themeName, array $disabledComponents = []): string
     {
         $tempFile = $this->tempDir . '/theme_' . $themeName . '_' . time() . '.less';
         
@@ -328,8 +328,13 @@ class UikitThemeBuilderManager
         
         // UIkit Methode: Import Core + Theme, DANN Variablen überschreiben
         $lessContent .= "// Step 1: Import UIKit Core + Theme\n";
-        $lessContent .= '@import "' . $this->uikitLessPath . '/components/_import.less";' . "\n";
-        $lessContent .= '@import "' . $this->uikitLessPath . '/theme/_import.less";' . "\n\n";
+        if ($disabledComponents !== []) {
+            // Komponenten-Auswahl: nur die benoetigten Komponenten importieren
+            $lessContent .= \UikitThemeBuilder\Widget\ComponentSelectionWidget::buildImports($this->uikitLessPath, $disabledComponents) . "\n";
+        } else {
+            $lessContent .= '@import "' . $this->uikitLessPath . '/components/_import.less";' . "\n";
+            $lessContent .= '@import "' . $this->uikitLessPath . '/theme/_import.less";' . "\n\n";
+        }
         
         // DANN: Theme-Variablen definieren (überschreibt UIKit-Defaults)
         // In Less werden später definierte Variablen bevorzugt
