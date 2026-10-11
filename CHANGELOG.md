@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.5.0] – 2026-10-11
+
+### Changed
+
+- **Überschriften ohne `!important`**: Das Typografie-Widget schreibt keinen globalen Block `h1 … h6, .uk-heading-* { font-family …
+  !important }` mehr. UIkit setzt Schrift, Gewicht und Schreibweise der Überschriften bereits über `@base-heading-*`; der Block
+  verhinderte, dass Themes einzelne Überschriften (z. B. `.uk-heading-*` oder Kartentitel) per Hook anders gestalten.
+- Eigene Farben je Überschrift (`base-h1-color` …) entstehen jetzt über die UIkit-Hooks `.hook-base-h1()` … statt über eigene
+  Regeln – sie gelten damit wie in UIkit vorgesehen für `h1` und `.uk-h1` und lassen sich in eigenen Hooks ergänzen.
+
+### Fixed
+
+- Icon-Buttons: Setzt ein Theme `icon-button-background`, gilt dieser Wert; der feste Ersatzwert `#f8f8f8` greift nur noch ohne eigene Angabe.
+- Kompilieren meldete „Extra Styles Integration Fehler … Unknown column 'css_styles'“: Der Rückwärtsweg für die alte
+  Extra-Styles-Tabelle greift nur noch, wenn diese Spalte existiert (Tabellenpräfix wird beachtet).
+- Kompilieren schrieb bei jedem Lauf „UIKit Breakpoint variable allowed …“ ins PHP-Fehlerprotokoll (bzw. auf die Konsole); jetzt nur
+  noch bei aktivem `debug_log` (`UikitThemeBuilder\Log`).
+
 ## [2.4.0] – 2026-10-11
 
 ### Fixed
