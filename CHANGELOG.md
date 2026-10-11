@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.1] – 2026-10-11
+
+### Fixed
+
+- `.min.css` entsteht direkt aus der LESS-Quelle (`compress`), statt das fertige CSS erneut durch LESS zu schicken. Das
+  scheiterte an CSS-Funktionen wie `min()`/`max()`/`clamp()` mit gemischten Einheiten, und die komprimierte Fassung fehlte.
+
 ## [2.6.0] – 2026-10-11
 
 ### Added

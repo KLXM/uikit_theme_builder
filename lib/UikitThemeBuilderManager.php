@@ -88,11 +88,23 @@ class UikitThemeBuilderManager
             
             // Absolute Dateisystempfade in relative Web-Pfade umwandeln
             $css = $this->fixAssetPaths($css);
+
+            // Komprimierte Fassung direkt aus derselben LESS-Quelle (das fertige CSS erneut durch LESS zu schicken
+            // scheitert an CSS-Funktionen wie min()/max()/clamp() mit gemischten Einheiten)
+            try {
+                $minCss = $this->fixAssetPaths($this->compileLess($tempLessFile, true));
+            } catch (\Throwable $e) {
+                Log::debug('Theme-CSS nicht komprimiert: ' . $e->getMessage());
+                $minCss = null;
+            }
             
             // Extra Styles CSS hinzufügen (falls verfügbar und für dieses Theme konfiguriert)
             $extraStylesCss = $this->getExtraStylesCss($themeName, $themeData);
             if ($extraStylesCss) {
                 $css .= "\n\n/* Extra Styles Integration */\n" . $extraStylesCss;
+                if (null !== $minCss) {
+                    $minCss .= "\n" . $extraStylesCss;
+                }
                 if (\rex::isDebugMode()) {
                     $debugOutput .= '<div style="background: #d4edda; border: 1px solid #c3e6cb; padding: 10px; margin: 10px 0; border-radius: 5px;">';
                     $debugOutput .= '<h5 style="color: #155724;">✅ Extra Styles Integration</h5>';
@@ -107,7 +119,7 @@ class UikitThemeBuilderManager
             }
             
             // CSS-Datei speichern
-            $cssFile = $this->saveCssFile($themeName, $css);
+            $cssFile = $this->saveCssFile($themeName, $css, $minCss);
             
             // Google Fonts Cache für dieses Theme erstellen
             $this->saveThemeGoogleFonts($themeName, $themeData);
@@ -362,7 +374,7 @@ class UikitThemeBuilderManager
     /**
      * LESS zu CSS kompilieren
      */
-    private function compileLess(string $lessFile): string
+    private function compileLess(string $lessFile, bool $compress = false): string
     {
         $importDirs = [
             dirname($lessFile) => '',
@@ -370,7 +382,7 @@ class UikitThemeBuilderManager
             $this->uikitLessPath => ''
         ];
         
-        $parser = new Less_Parser(['compress' => false, 'import_dirs' => $importDirs]);
+        $parser = new Less_Parser(['compress' => $compress, 'import_dirs' => $importDirs]);
         $parser->parseFile($lessFile);
         
         return $parser->getCss();
@@ -434,7 +446,7 @@ class UikitThemeBuilderManager
     /**
      * CSS-Datei speichern
      */
-    private function saveCssFile(string $themeName, string $css): string
+    private function saveCssFile(string $themeName, string $css, ?string $minCss = null): string
     {
         // Header hinzufügen
         $header = "/*\n * UIKit Theme Builder - Compiled CSS\n";
@@ -459,7 +471,6 @@ class UikitThemeBuilderManager
 
         // Komprimierte Fassung für die Website (TemplateHelper::includeThemeCSS nutzt sie, wenn vorhanden)
         $minFile = $assetsDir . '/' . $themeName . '.min.css';
-        $minCss = $this->minifyCss($css);
         if (null !== $minCss) {
             file_put_contents($minFile, '/* UIkit Theme Builder: ' . $themeName . ' */' . "\n" . $minCss);
         } elseif (file_exists($minFile)) {
@@ -469,21 +480,6 @@ class UikitThemeBuilderManager
         return $assetsFile;
     }
 
-    /**
-     * CSS komprimieren (über den LESS-Parser, CSS ist gültiges LESS). Null, wenn das nicht gelingt.
-     */
-    private function minifyCss(string $css): ?string
-    {
-        try {
-            $parser = new Less_Parser(['compress' => true]);
-            $parser->parse($css);
-            return $parser->getCss();
-        } catch (\Throwable $e) {
-            Log::debug('Theme-CSS nicht komprimiert: ' . $e->getMessage());
-            return null;
-        }
-    }
-    
     /**
      * Theme speichern
      */
