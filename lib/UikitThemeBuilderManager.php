@@ -456,8 +456,32 @@ class UikitThemeBuilderManager
         
         $assetsFile = $assetsDir . '/' . $themeName . '.css';
         file_put_contents($assetsFile, $cssWithHeader);
-        
+
+        // Komprimierte Fassung für die Website (TemplateHelper::includeThemeCSS nutzt sie, wenn vorhanden)
+        $minFile = $assetsDir . '/' . $themeName . '.min.css';
+        $minCss = $this->minifyCss($css);
+        if (null !== $minCss) {
+            file_put_contents($minFile, '/* UIkit Theme Builder: ' . $themeName . ' */' . "\n" . $minCss);
+        } elseif (file_exists($minFile)) {
+            unlink($minFile); // keine veraltete Fassung ausliefern
+        }
+
         return $assetsFile;
+    }
+
+    /**
+     * CSS komprimieren (über den LESS-Parser, CSS ist gültiges LESS). Null, wenn das nicht gelingt.
+     */
+    private function minifyCss(string $css): ?string
+    {
+        try {
+            $parser = new Less_Parser(['compress' => true]);
+            $parser->parse($css);
+            return $parser->getCss();
+        } catch (\Throwable $e) {
+            Log::debug('Theme-CSS nicht komprimiert: ' . $e->getMessage());
+            return null;
+        }
     }
     
     /**
@@ -598,7 +622,8 @@ class UikitThemeBuilderManager
         $files = [
             $this->dataPath . 'themes/saved/' . $themeName . '.json',
             $this->dataPath . 'themes/compiled/' . $themeName . '.css',
-            $this->assetsPath . 'themes/compiled/' . $themeName . '.css'
+            $this->assetsPath . 'themes/compiled/' . $themeName . '.css',
+            $this->assetsPath . 'themes/compiled/' . $themeName . '.min.css'
         ];
         
         $success = true;

@@ -54,14 +54,21 @@ class TemplateHelper
      */
     public static function includeThemeCSS(string $themeName, bool $minified = true): string
     {
-        // Theme CSS Pfad ermitteln (nur .css, keine .min.css)
-        $themePath = \rex_path::addonAssets('uikit_theme_builder', 'themes/compiled/' . $themeName . '.css');
-        
+        $file = 'themes/compiled/' . $themeName . '.css';
+        $themePath = \rex_path::addonAssets('uikit_theme_builder', $file);
+
         if (!file_exists($themePath)) {
             return '';
         }
-        
-        $url = \rex_url::addonAssets('uikit_theme_builder', 'themes/compiled/' . $themeName . '.css');
+
+        // komprimierte Fassung, sofern sie zum aktuellen Stand gehört
+        $minPath = \rex_path::addonAssets('uikit_theme_builder', 'themes/compiled/' . $themeName . '.min.css');
+        if ($minified && file_exists($minPath) && filemtime($minPath) >= filemtime($themePath)) {
+            $file = 'themes/compiled/' . $themeName . '.min.css';
+            $themePath = $minPath;
+        }
+
+        $url = \rex_url::addonAssets('uikit_theme_builder', $file);
         $version = filemtime($themePath);
         
         return '<link rel="stylesheet" href="' . $url . '?v=' . $version . '">' . "\n";

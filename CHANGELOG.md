@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.6.0] – 2026-10-11
+
+### Added
+
+- **Komprimiertes Theme-CSS**: Beim Kompilieren entsteht zusätzlich `themes/compiled/{name}.min.css` (über den LESS-Parser,
+  bei einem Fehler entfällt sie). `TemplateHelper::includeThemeCSS()` liefert sie aus, sofern sie zum aktuellen Stand
+  gehört; `$minified = false` liefert wie bisher die lesbare Datei. Beim Löschen eines Themes wird sie mit entfernt.
+
 ## [2.5.0] – 2026-10-11
 
 ### Changed
