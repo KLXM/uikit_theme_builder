@@ -627,7 +627,7 @@ class NavbarWidget extends AbstractWidget
         
         // Debug: Was kommt rein
         if (\rex::isDebugMode()) {
-            \rex_logger::factory()->debug('NavbarWidget::processFormData - Input: ' . print_r($formData, true));
+            \UikitThemeBuilder\Log::debug('NavbarWidget::processFormData - Input: ' . print_r($formData, true));
         }
         
         foreach ($this->getFields() as $key => $field) {
@@ -654,7 +654,7 @@ class NavbarWidget extends AbstractWidget
         
         // Debug: Was kommt raus
         if (\rex::isDebugMode()) {
-            \rex_logger::factory()->debug('NavbarWidget::processFormData - Output: ' . print_r($processed, true));
+            \UikitThemeBuilder\Log::debug('NavbarWidget::processFormData - Output: ' . print_r($processed, true));
         }
         
         return $processed;

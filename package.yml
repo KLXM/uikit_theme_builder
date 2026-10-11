@@ -1,5 +1,5 @@
 package: uikit_theme_builder
-version: '2.3.0'
+version: '2.4.0'
 author: KLXM Crossmedia GmbH
 license: MIT
 supportpage: https://github.com/klxm/
@@ -70,6 +70,7 @@ requires:
 default_config:
     google_fonts_api_key: ''
     backend_theme: ''
+    debug_log: false # Debug-Meldungen ins Systemlog (nur im REDAXO-Debug-Modus)
 
 permissions:
     uikit_theme_builder[]: translate:perm_uikit_theme_builder
