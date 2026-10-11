@@ -1,6 +1,13 @@
 # Changelog
 
-## Unreleased
+## [2.4.0] – 2026-10-11
+
+### Fixed
+
+- **Systemlog-Flut**: Debug-Meldungen (geladenes Standard-CSS, Backend-Fonts, PathManager-Konfiguration als `print_r`,
+  Google-Fonts) entstanden im REDAXO-Debug-Modus bei jedem Backend-/Frontend-Aufruf. Sie erscheinen jetzt nur noch, wenn
+  zusätzlich die AddOn-Einstellung `debug_log` aktiv ist (Standard: aus) – `UikitThemeBuilder\Log`.
+- Warnung „Backend Theme file not found“ wird je fehlender Datei nur noch einmal geschrieben statt bei jedem Aufruf.
 
 ### Added
 

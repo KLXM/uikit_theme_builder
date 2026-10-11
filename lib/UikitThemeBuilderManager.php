@@ -698,7 +698,7 @@ class UikitThemeBuilderManager
             if (empty($usedGoogleFonts)) {
                 // DEBUG-Log
                 if (\rex::isDebugMode()) {
-                    \rex_logger::factory()->debug("getGoogleFontsHtml - No Google Fonts found for theme '$themeName'");
+                    Log::debug("getGoogleFontsHtml - No Google Fonts found for theme '$themeName'");
                 }
                 return '';
             }
@@ -711,7 +711,7 @@ class UikitThemeBuilderManager
                 
                 // DEBUG-Log
                 if (\rex::isDebugMode()) {
-                    \rex_logger::factory()->debug("getGoogleFontsHtml - Adding font: $fontFamily -> $cssUrl");
+                    Log::debug("getGoogleFontsHtml - Adding font: $fontFamily -> $cssUrl");
                 }
             }
             
@@ -842,7 +842,7 @@ class UikitThemeBuilderManager
         
         // DEBUG: Heruntergeladene Fonts anzeigen
         if (\rex::isDebugMode()) {
-            \rex_logger::factory()->debug('extractUsedGoogleFonts - Downloaded Fonts: ' . print_r(array_keys($downloadedFonts), true));
+            Log::debug('extractUsedGoogleFonts - Downloaded Fonts: ' . print_r(array_keys($downloadedFonts), true));
         }
         
         // Alle Font-Werte aus den Theme-Daten sammeln
@@ -850,7 +850,7 @@ class UikitThemeBuilderManager
         
         // DEBUG: Alle flachen Theme-Daten anzeigen
         if (\rex::isDebugMode()) {
-            \rex_logger::factory()->debug('extractUsedGoogleFonts - Flat theme data: ' . print_r($flatData, true));
+            Log::debug('extractUsedGoogleFonts - Flat theme data: ' . print_r($flatData, true));
         }
         
         foreach ($flatData as $key => $value) {
@@ -858,7 +858,7 @@ class UikitThemeBuilderManager
             if (strpos($key, 'font') !== false && is_string($value) && !empty($value)) {
                 // DEBUG: Font-Key gefunden
                 if (\rex::isDebugMode()) {
-                    \rex_logger::factory()->debug("extractUsedGoogleFonts - Found font key: $key = $value");
+                    Log::debug("extractUsedGoogleFonts - Found font key: $key = $value");
                 }
                 
                 // Prüfen ob es eine heruntergeladene Google Font ist
@@ -866,7 +866,7 @@ class UikitThemeBuilderManager
                 
                 // DEBUG: Extrahierte Font-Familie
                 if (\rex::isDebugMode()) {
-                    \rex_logger::factory()->debug("extractUsedGoogleFonts - Extracted font family: '$fontFamily'");
+                    Log::debug("extractUsedGoogleFonts - Extracted font family: '$fontFamily'");
                 }
                 
                 if (isset($downloadedFonts[$fontFamily])) {
@@ -874,12 +874,12 @@ class UikitThemeBuilderManager
                     
                     // DEBUG: Font gefunden
                     if (\rex::isDebugMode()) {
-                        \rex_logger::factory()->debug("extractUsedGoogleFonts - Font found in downloaded fonts: '$fontFamily'");
+                        Log::debug("extractUsedGoogleFonts - Font found in downloaded fonts: '$fontFamily'");
                     }
                 } else {
                     // DEBUG: Font nicht gefunden
                     if (\rex::isDebugMode()) {
-                        \rex_logger::factory()->debug("extractUsedGoogleFonts - Font NOT found in downloaded fonts: '$fontFamily'");
+                        Log::debug("extractUsedGoogleFonts - Font NOT found in downloaded fonts: '$fontFamily'");
                     }
                 }
             }
@@ -887,7 +887,7 @@ class UikitThemeBuilderManager
         
         // DEBUG: Resultat
         if (\rex::isDebugMode()) {
-            \rex_logger::factory()->debug('extractUsedGoogleFonts - Result: ' . print_r($usedFonts, true));
+            Log::debug('extractUsedGoogleFonts - Result: ' . print_r($usedFonts, true));
         }
         
         return array_unique($usedFonts);
@@ -919,7 +919,7 @@ class UikitThemeBuilderManager
         
         // DEBUG-Log
         if (\rex::isDebugMode()) {
-            \rex_logger::factory()->debug("saveThemeGoogleFonts - Saved fonts for theme '$themeName': " . print_r($usedFonts, true));
+            Log::debug("saveThemeGoogleFonts - Saved fonts for theme '$themeName': " . print_r($usedFonts, true));
         }
     }
     
@@ -934,7 +934,7 @@ class UikitThemeBuilderManager
         if (!file_exists($filename)) {
             // DEBUG-Log
             if (\rex::isDebugMode()) {
-                \rex_logger::factory()->debug("getThemeGoogleFonts - No font cache found for theme '$themeName'");
+                Log::debug("getThemeGoogleFonts - No font cache found for theme '$themeName'");
             }
             return [];
         }
@@ -944,7 +944,7 @@ class UikitThemeBuilderManager
         
         // DEBUG-Log
         if (\rex::isDebugMode()) {
-            \rex_logger::factory()->debug("getThemeGoogleFonts - Loaded fonts for theme '$themeName': " . print_r($fonts, true));
+            Log::debug("getThemeGoogleFonts - Loaded fonts for theme '$themeName': " . print_r($fonts, true));
         }
         
         return $fonts;
@@ -1134,7 +1134,7 @@ class UikitThemeBuilderManager
         
         // DEBUG-Log
         if (\rex::isDebugMode()) {
-            \rex_logger::factory()->debug("cacheThemeColors - Cached " . count($colorMap) . " colors for theme '$themeName'");
+            Log::debug("cacheThemeColors - Cached " . count($colorMap) . " colors for theme '$themeName'");
         }
     }
 }

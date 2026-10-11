@@ -117,7 +117,7 @@ class BreakpointsWidget extends AbstractWidget
         
         // Debug: Schauen was ankommt
         if (\rex::isDebugMode()) {
-            \rex_logger::factory()->debug('BreakpointsWidget::processFormData - Input data: ' . print_r($formData, true));
+            \UikitThemeBuilder\Log::debug('BreakpointsWidget::processFormData - Input data: ' . print_r($formData, true));
         }
         
         foreach ($this->getFields() as $key => $field) {
@@ -134,7 +134,7 @@ class BreakpointsWidget extends AbstractWidget
         
         // Debug: Schauen was rausgeht
         if (\rex::isDebugMode()) {
-            \rex_logger::factory()->debug('BreakpointsWidget::processFormData - Output data: ' . print_r($processed, true));
+            \UikitThemeBuilder\Log::debug('BreakpointsWidget::processFormData - Output data: ' . print_r($processed, true));
         }
         
         return $processed;
@@ -192,7 +192,7 @@ class BreakpointsWidget extends AbstractWidget
         
         // Debug: Was kommt rein
         if (\rex::isDebugMode()) {
-            \rex_logger::factory()->debug('BreakpointsWidget::generateLessVariables - Input: ' . print_r($data, true));
+            \UikitThemeBuilder\Log::debug('BreakpointsWidget::generateLessVariables - Input: ' . print_r($data, true));
         }
         
         foreach ($data as $key => $value) {
@@ -204,7 +204,7 @@ class BreakpointsWidget extends AbstractWidget
         
         // Debug: Was kommt raus
         if (\rex::isDebugMode()) {
-            \rex_logger::factory()->debug('BreakpointsWidget::generateLessVariables - Output: ' . print_r($variables, true));
+            \UikitThemeBuilder\Log::debug('BreakpointsWidget::generateLessVariables - Output: ' . print_r($variables, true));
         }
         
         return $variables;

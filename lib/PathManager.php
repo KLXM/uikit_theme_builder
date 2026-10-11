@@ -39,15 +39,15 @@ class PathManager
             }
             
             // DEBUG: Config anzeigen
-            if (\rex::isDebugMode()) {
-                \rex_logger::factory()->debug('PathManager Config loaded: ' . print_r($config, true), [], 'uikit_theme_builder');
+            if (Log::enabled()) {
+                Log::debug('PathManager Config loaded: ' . print_r($config, true));
             }
             
             self::$paths = array_merge($defaults, $config);
             
             // DEBUG: Merged Paths anzeigen
-            if (\rex::isDebugMode()) {
-                \rex_logger::factory()->debug('PathManager Final Paths: ' . print_r(self::$paths, true), [], 'uikit_theme_builder');
+            if (Log::enabled()) {
+                Log::debug('PathManager Final Paths: ' . print_r(self::$paths, true));
             }
         }
         

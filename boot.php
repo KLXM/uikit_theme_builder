@@ -134,9 +134,7 @@ rex_extension::register('PACKAGES_INCLUDED', function() {
             if (file_exists($defaultCss)) {
                 $defaultUrl = rex_url::addonAssets('uikit_theme_builder', 'compiled_uikit/css/uikit.min.css');
                 rex_view::addCssFile($defaultUrl);
-                if (rex::isDebugMode()) {
-                    rex_logger::factory()->debug('Backend: Default UIKit CSS loaded from compiled_uikit', [], 'uikit_theme_builder');
-                }
+                \UikitThemeBuilder\Log::debug('Backend: Default UIKit CSS loaded from compiled_uikit');
             }
             return;
         }
@@ -184,14 +182,13 @@ rex_extension::register('PACKAGES_INCLUDED', function() {
                         }
 
                         rex_view::addCssFile($fontUrl);
-                        if (rex::isDebugMode()) {
-                            rex_logger::factory()->debug('Backend Font loaded: ' . $fontFamily . ' from ' . $fontUrl, [], 'uikit_theme_builder');
-                        }
+                        \UikitThemeBuilder\Log::debug('Backend Font loaded: ' . $fontFamily . ' from ' . $fontUrl);
                     }
                 }
             }
         } else {
-            rex_logger::factory()->log('warning', 'Backend Theme file not found: ' . $themeFile . ' - Loading default UIKit CSS', [], 'uikit_theme_builder');
+            // einmal je fehlender Datei warnen, nicht bei jedem Backend-Aufruf
+            \UikitThemeBuilder\Log::warningOnce('missing_theme:' . $themeFile, 'Backend Theme file not found: ' . $themeFile . ' - Loading default UIKit CSS');
             
             // Fallback: Standard UIKit CSS laden
             $defaultCss = rex_path::addonAssets('uikit_theme_builder', 'compiled_uikit/css/uikit.min.css');

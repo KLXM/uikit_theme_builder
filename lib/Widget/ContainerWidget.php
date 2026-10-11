@@ -137,7 +137,7 @@ class ContainerWidget extends AbstractWidget
         
         // Debug: Was kommt rein
         if (\rex::isDebugMode()) {
-            \rex_logger::factory()->debug('ContainerWidget::processFormData - Input: ' . print_r($formData, true));
+            \UikitThemeBuilder\Log::debug('ContainerWidget::processFormData - Input: ' . print_r($formData, true));
         }
         
         foreach ($this->getFields() as $key => $field) {
@@ -154,7 +154,7 @@ class ContainerWidget extends AbstractWidget
         
         // Debug: Was kommt raus
         if (\rex::isDebugMode()) {
-            \rex_logger::factory()->debug('ContainerWidget::processFormData - Output: ' . print_r($processed, true));
+            \UikitThemeBuilder\Log::debug('ContainerWidget::processFormData - Output: ' . print_r($processed, true));
         }
         
         return $processed;
@@ -212,7 +212,7 @@ class ContainerWidget extends AbstractWidget
         
         // Debug: Was kommt rein
         if (\rex::isDebugMode()) {
-            \rex_logger::factory()->debug('ContainerWidget::generateLessVariables - Input: ' . print_r($data, true));
+            \UikitThemeBuilder\Log::debug('ContainerWidget::generateLessVariables - Input: ' . print_r($data, true));
         }
         
         foreach ($data as $key => $value) {
@@ -224,7 +224,7 @@ class ContainerWidget extends AbstractWidget
         
         // Debug: Was kommt raus
         if (\rex::isDebugMode()) {
-            \rex_logger::factory()->debug('ContainerWidget::generateLessVariables - Output: ' . print_r($variables, true));
+            \UikitThemeBuilder\Log::debug('ContainerWidget::generateLessVariables - Output: ' . print_r($variables, true));
         }
         
         return $variables;
