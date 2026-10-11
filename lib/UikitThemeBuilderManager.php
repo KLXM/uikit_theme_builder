@@ -265,11 +265,13 @@ class UikitThemeBuilderManager
             $lessContent .= "\n";
         }
         
-        // Fix für Icon Button Variables - direkt nach den Variablen
-        $lessContent .= "// Icon Button Fix - explizite Werte statt Variable-Referenzen\n";
-        $lessContent .= '@icon-button-background: #f8f8f8;' . "\n";
-        $lessContent .= '@icon-button-hover-background: darken(#f8f8f8, 5%);' . "\n";
-        $lessContent .= '@icon-button-active-background: darken(#f8f8f8, 10%);' . "\n\n";
+        // Icon-Button: explizite Werte (Altbestand), außer das Theme setzt sie selbst – dann gilt dessen Wert
+        if (!isset($allGeneratedVars['icon-button-background'])) {
+            $lessContent .= "// Icon Button Fix - explizite Werte statt Variable-Referenzen\n";
+            $lessContent .= '@icon-button-background: #f8f8f8;' . "\n";
+            $lessContent .= '@icon-button-hover-background: darken(#f8f8f8, 5%);' . "\n";
+            $lessContent .= '@icon-button-active-background: darken(#f8f8f8, 10%);' . "\n\n";
+        }
         
         return $lessContent;
     }
@@ -662,14 +664,14 @@ class UikitThemeBuilderManager
         foreach ($excludePatterns as $pattern) {
             if (strpos($varName, $pattern) !== false) {
                 // Debug: Was wird ausgeschlossen
-                error_log("UIKit Variable excluded: $varName (matches pattern: $pattern)");
+                Log::debug("UIKit Variable excluded: $varName (matches pattern: $pattern)");
                 return false;
             }
         }
         
         // Debug: Was wird durchgelassen
         if (strpos($varName, 'breakpoint') !== false) {
-            error_log("UIKit Breakpoint variable allowed: $varName");
+            Log::debug("UIKit Breakpoint variable allowed: $varName");
         }
         
         return true; // Alle anderen durchlassen
@@ -1024,9 +1026,14 @@ class UikitThemeBuilderManager
         // Prüfen ob rex_theme_builder_extra Tabelle existiert
         $sql = \rex_sql::factory();
         try {
-            $sql->setQuery("SHOW TABLES LIKE 'rex_theme_builder_extra'");
+            $sql->setQuery('SHOW TABLES LIKE ?', [\rex::getTable('theme_builder_extra')]);
             if (!$sql->getRows()) {
                 return null; // Tabelle existiert nicht
+            }
+            // Nur sehr alte Installationen haben fertiges CSS in der Tabelle (Spalte css_styles)
+            $sql->setQuery('SHOW COLUMNS FROM ' . \rex::getTable('theme_builder_extra') . " LIKE 'css_styles'");
+            if (!$sql->getRows()) {
+                return null;
             }
         } catch (\Exception $e) {
             return null;

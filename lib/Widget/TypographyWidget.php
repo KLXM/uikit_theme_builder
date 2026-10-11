@@ -868,52 +868,11 @@ class TypographyWidget extends AbstractWidget
     {
         $less = '';
         
-        // WICHTIG: Direkte CSS-Regeln statt Hooks, da UIKit die Hooks am Ende überschreibt
-        // Wir müssen die Selektoren direkt ansprechen
-        
-        // Font-Family und Text-Transform für ALLE Überschriften
-        // IMMER generieren, auch wenn Wert 'inherit' ist - LESS-Variablen werden separat definiert
-        $headingStyles = [];
-        
-        // Font-Family: Immer anwenden wenn im Theme definiert (auch 'inherit')
-        if (array_key_exists('base-heading-font-family', $data) && $data['base-heading-font-family'] !== 'inherit') {
-            $headingStyles[] = "font-family: @base-heading-font-family !important;";
-        }
-        
-        // Font-Weight: Immer anwenden wenn im Theme definiert (auch 'inherit')
-        if (array_key_exists('base-heading-font-weight', $data) && $data['base-heading-font-weight'] !== 'inherit') {
-            $headingStyles[] = "font-weight: @base-heading-font-weight;";
-        }
-        
-        // Text-Transform: Immer anwenden wenn im Theme definiert (auch 'inherit')
-        if (array_key_exists('base-heading-text-transform', $data) && $data['base-heading-text-transform'] !== 'inherit') {
-            $headingStyles[] = "text-transform: @base-heading-text-transform;";
-        }
-        
-        // Color: Immer anwenden wenn im Theme definiert (auch 'inherit')
-        if (array_key_exists('base-heading-color', $data) && $data['base-heading-color'] !== 'inherit') {
-            $headingStyles[] = "color: @base-heading-color;";
-        }
-        
-        if (!empty($headingStyles)) {
-            $less .= "// Typography Widget - Custom LESS\n";
-            $less .= "// Typography - Apply heading styles (override UIKit)\n";
-            $less .= "h1, .uk-h1,\n";
-            $less .= "h2, .uk-h2,\n";
-            $less .= "h3, .uk-h3,\n";
-            $less .= "h4, .uk-h4,\n";
-            $less .= "h5, .uk-h5,\n";
-            $less .= "h6, .uk-h6,\n";
-            $less .= ".uk-heading-small,\n";
-            $less .= ".uk-heading-medium,\n";
-            $less .= ".uk-heading-large,\n";
-            $less .= ".uk-heading-xlarge,\n";
-            $less .= ".uk-heading-2xlarge,\n";
-            $less .= ".uk-heading-3xlarge {\n";
-            $less .= "    " . implode("\n    ", $headingStyles) . "\n";
-            $less .= "}\n\n";
-        }
-        
+        // Schrift, Gewicht, Großschreibung und Farbe der Überschriften setzt UIkit selbst über die Variablen
+        // (@base-heading-font-family, -font-weight, -text-transform, -color in components/base.less). Früher stand hier
+        // zusätzlich eine Regel mit !important für alle Überschriften – sie war doppelt und verhinderte Anpassungen über
+        // Hooks (z. B. eine eigene Schrift für .uk-heading-small). Ergebnis ohne sie: gleiche Darstellung.
+
         // Individual Heading Colors
         $headingColors = [];
         foreach (['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as $heading) {
@@ -924,9 +883,10 @@ class TypographyWidget extends AbstractWidget
         }
         
         if (!empty($headingColors)) {
-            $less .= "// Typography - Individual Heading Colors\n";
+            // über die UIkit-Hooks (.hook-base-h1() …) statt eigener Regeln – gilt für h1 und .uk-h1 gleichermaßen
+            $less .= "// Typography - Individual Heading Colors (UIkit-Hooks)\n";
             foreach ($headingColors as $heading => $color) {
-                $less .= "{$heading}, .uk-{$heading} { color: {$color}; }\n";
+                $less .= ".hook-base-{$heading}() { color: {$color}; }\n";
             }
             $less .= "\n";
         }
