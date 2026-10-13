@@ -197,6 +197,10 @@ Unter **Einstellungen → Theme im Backend** legst du fest, ob und wie ein Theme
   auf REDAXO zurück.
 - **Vorschau-Bereiche**: eigene CSS-Selektoren (je Zeile einer) statt des Standards.
 
+In den Vorschauen gewinnt das Theme gegen Stile des Backends (auch im Dunkelmodus von REDAXO oder anderen AddOns):
+Die eingegrenzte Fassung erhält eine höhere Spezifität, Text erbt die Farbe und Tabellen sind durchsichtig – so sieht
+die Vorschau aus wie auf der Website, im Modul wie im YForm-Builder.
+
 Eigene Backend-Bereiche (z. B. in einem AddOn) bekommen das Theme einfach so:
 
 ```html

@@ -96,7 +96,7 @@ final class BackendIntegration
         }
         $target = $dir . $theme . '.backend.css';
         $scope = self::scope();
-        $stamp = '/* uikit_theme_builder backend: ' . md5($scope . '|' . filemtime($source) . '|' . filesize($source)) . ' */';
+        $stamp = '/* uikit_theme_builder backend: ' . md5(CssScoper::VERSION . '|' . $scope . '|' . filemtime($source) . '|' . filesize($source)) . ' */';
         if (is_file($target)) {
             $handle = fopen($target, 'r');
             $first = $handle ? rtrim((string) fgets($handle)) : '';
@@ -107,7 +107,7 @@ final class BackendIntegration
                 return $target;
             }
         }
-        $css = CssScoper::scope((string) file_get_contents($source), $scope);
+        $css = CssScoper::baseReset($scope) . CssScoper::scope((string) file_get_contents($source), $scope);
         \rex_file::put($target, $stamp . "\n" . $css);
 
         return $target;
