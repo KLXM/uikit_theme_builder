@@ -1,6 +1,7 @@
 /**
- * UIKit Icon Picker
- * Simple CSS-class based icon picker with UIKit Modal
+ * UIkit Icon Picker
+ * Simple CSS-class based icon picker with UIkit Modal
+ * Debug-Ausgaben: window.UIKIT_THEME_BUILDER_DEBUG = true
  * Usage: <input type="text" class="uk-iconpicker" />
  */
 
@@ -9,8 +10,17 @@
 
     const DEBUG_PREFIX = '[uikit-icon-picker]';
 
+    // Debug-Ausgaben nur mit window.UIKIT_THEME_BUILDER_DEBUG = true (Fehler werden immer gemeldet)
+    function isDebugEnabled() {
+        return !!window.UIKIT_THEME_BUILDER_DEBUG;
+    }
+
     function debugLog(level, message, payload) {
         if (typeof console === 'undefined') {
+            return;
+        }
+
+        if (level !== 'error' && !isDebugEnabled()) {
             return;
         }
 
@@ -23,6 +33,10 @@
     }
 
     function debugSnapshot(context) {
+        if (typeof console === 'undefined' || !isDebugEnabled()) {
+            return;
+        }
+
         const icons = Array.isArray(window.uikitAvailableIcons) ? window.uikitAvailableIcons : [];
         const categories = {};
 

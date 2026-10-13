@@ -16,7 +16,7 @@ class TypographyWidget extends AbstractWidget
     
     public function getName(): string
     {
-        return 'Typography';
+        return 'Typografie';
     }
 
     public function getKey(): string
@@ -164,7 +164,7 @@ class TypographyWidget extends AbstractWidget
             '"SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, monospace' => 'Monospace Stack'
         ]);
 
-        // Farboptionen für Headlines (UIKit Standardfarben + inherit)
+        // Farboptionen für Headlines (UIkit Standardfarben + inherit)
         $colorOptions = $this->getColorOptions();
 
         return [
@@ -963,7 +963,7 @@ class TypographyWidget extends AbstractWidget
             'inherit' => 'Erben (Standardfarbe verwenden)'
         ];
 
-        // UIKit Standardfarben als LESS-Variablen-Referenzen
+        // UIkit Standardfarben als LESS-Variablen-Referenzen
         $colorOptions['@global-primary-background'] = 'Primary';
         $colorOptions['@global-secondary-background'] = 'Secondary';
         $colorOptions['@global-emphasis-color'] = 'Emphasis (Standard)';

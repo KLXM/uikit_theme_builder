@@ -14,6 +14,13 @@ $iconBuilder = new CustomIconBuilder();
 $content = '';
 $message = '';
 
+// Seiten-Stile (hell/dunkel, mobil) – direkt eingebunden, da der Seitenkopf bereits ausgegeben ist
+$utbPageCss = rex_path::addonAssets('uikit_theme_builder', 'css/backend-pages.css');
+echo '<link rel="stylesheet" href="' . rex_url::addonAssets('uikit_theme_builder', 'css/backend-pages.css') . (is_file($utbPageCss) ? '?v=' . filemtime($utbPageCss) : '') . '">';
+
+// CSRF-Schutz für das Löschen von Icons (Link trägt den Token)
+$iconActionToken = rex_csrf_token::factory('uikit-icon-actions');
+
 // Action Handling
 $action = rex_request('action', 'string');
 
@@ -59,7 +66,7 @@ if ($action === 'import' && rex_post('submit_import', 'boolean')) {
             $message = rex_view::error($msg);
         }
     } else {
-        $message = rex_view::error('Bitte wählen Sie eine Datei aus (ZIP oder SVG)');
+        $message = rex_view::error('Bitte wähle eine Datei aus (ZIP oder SVG).');
     }
 }
 
@@ -96,7 +103,7 @@ if ($action === 'upload_code' && rex_post('submit_code', 'boolean')) {
             $message = rex_view::error($result['message']);
         }
     } else {
-        $message = rex_view::error('Bitte SVG-Code und Icon-Name eingeben');
+        $message = rex_view::error('Bitte gib SVG-Code und Icon-Namen ein.');
     }
 }
 
@@ -115,12 +122,14 @@ if ($action === 'upload' && rex_post('submit', 'boolean')) {
             $message = rex_view::error($result['message']);
         }
     } else {
-        $message = rex_view::error('Bitte wählen Sie eine SVG-Datei aus');
+        $message = rex_view::error('Bitte wähle eine SVG-Datei aus.');
     }
 }
 
 // Delete Icon
-if ($action === 'delete') {
+if ($action === 'delete' && !$iconActionToken->isValid()) {
+    $message = rex_view::error('Das Icon wurde nicht gelöscht: Sicherheitstoken ungültig oder abgelaufen. Bitte lade die Seite neu und versuche es noch einmal.');
+} elseif ($action === 'delete') {
     $name = rex_request('icon', 'string');
     if (!empty($name)) {
         $result = $iconManager->deleteIcon($name);
@@ -183,31 +192,25 @@ $stats = $iconManager->getStats();
 $customIcons = $iconManager->getCustomIcons();
 
 // Header
-$content .= '<header class="uk-section uk-section-small uk-background-muted">
+$content .= '<div class="utb-page utb-icons-page">';
+$content .= '<header class="utb-icons-header uk-section uk-section-small">
     <div class="uk-container uk-container-large">
-        <div class="uk-flex uk-flex-between uk-flex-middle">
+        <div class="utb-icons-header-inner">
             <div>
-                <h1 class="uk-heading-medium uk-margin-remove">
-                    <span uk-icon="icon: star; ratio: 1.2" class="uk-margin-small-right uk-text-primary"></span>
+                <h1 class="utb-icons-title">
+                    <span uk-icon="icon: star; ratio: 1.2" class="uk-margin-small-right utb-accent" aria-hidden="true"></span>
                     Custom Icons
                 </h1>
-                <p class="uk-text-lead uk-text-muted uk-margin-remove-top">Eigene SVG-Icons für UIkit</p>
+                <p class="utb-icons-lead">Eigene SVG-Icons für UIkit</p>
             </div>
-            <div>
-                <div class="uk-card uk-card-default uk-card-body uk-card-small">
-                    <div class="uk-grid-small uk-text-center" uk-grid>
-                        <div>
-                            <div class="uk-text-large uk-text-primary uk-text-bold">' . $stats['total'] . '</div>
-                            <div class="uk-text-meta">Custom Icons</div>
-                        </div>
-                        <div>
-                            <div class="uk-text-large uk-text-muted">|</div>
-                        </div>
-                        <div>
-                            <div class="uk-text-large uk-text-primary uk-text-bold">' . round($stats['total_size'] / 1024, 1) . ' KB</div>
-                            <div class="uk-text-meta">Gesamt</div>
-                        </div>
-                    </div>
+            <div class="utb-stats">
+                <div>
+                    <div class="utb-stat-value">' . (int) $stats['total'] . '</div>
+                    <div class="utb-stat-label">Custom Icons</div>
+                </div>
+                <div>
+                    <div class="utb-stat-value">' . round($stats['total_size'] / 1024, 1) . ' KB</div>
+                    <div class="utb-stat-label">Gesamt</div>
                 </div>
             </div>
         </div>
@@ -217,35 +220,35 @@ $content .= '<header class="uk-section uk-section-small uk-background-muted">
 // Info-Box
 $content .= '<section class="uk-section uk-section-small">
     <div class="uk-container uk-container-large">
-        <div class="uk-alert uk-alert-primary">
+        <div class="utb-info uk-alert">
             <div class="uk-grid-small" uk-grid>
-                <div class="uk-width-expand">
-                    <h3 class="uk-margin-remove"><span uk-icon="info"></span> So funktioniert es</h3>
+                <div class="uk-width-1-1 uk-width-expand@m">
+                    <h2 class="utb-info-title uk-margin-remove"><span uk-icon="info" aria-hidden="true"></span> So funktioniert es</h2>
                     <ol class="uk-margin-small-top">
                         <li>SVG-Icon hochladen (max. 50KB)</li>
                         <li>Icon wird automatisch normalisiert (width/height 20, originale viewBox bleibt erhalten)</li>
                         <li>Icons werden zu UIkit hinzugefügt</li>
-                        <li>Verwendung: <code>&lt;span uk-icon="custom-mein-icon"&gt;&lt;/span&gt;</code></li>
+                        <li>Verwendung: <code class="utb-code">&lt;span uk-icon="custom-mein-icon"&gt;&lt;/span&gt;</code></li>
                     </ol>
                 </div>
-                <div class="uk-width-auto">
-                    <div class="uk-flex uk-flex-column uk-flex-right" style="gap: 10px;">
+                <div class="uk-width-1-1 uk-width-auto@m">
+                    <div class="utb-icon-actions">
                         <!-- Hauptfunktionen -->
                         <div class="uk-button-group">
-                            <a href="' . rex_url::currentBackendPage(['action' => 'rebuild']) . '" class="uk-button uk-button-primary">
-                                <span uk-icon="refresh"></span> Kompilieren
+                            <a href="' . rex_url::currentBackendPage(['action' => 'rebuild']) . '" class="utb-btn-primary uk-button uk-button-primary">
+                                <span uk-icon="refresh" aria-hidden="true"></span> Kompilieren
                             </a>
-                            <a href="' . rex_url::currentBackendPage(['action' => 'renormalize']) . '" class="uk-button uk-button-primary">
-                                <span uk-icon="cog"></span> Normalisieren
+                            <a href="' . rex_url::currentBackendPage(['action' => 'renormalize']) . '" class="utb-btn-primary uk-button uk-button-primary">
+                                <span uk-icon="cog" aria-hidden="true"></span> Normalisieren
                             </a>
                         </div>
                         
                         <!-- Import/Export -->
                         <div class="uk-button-group">
-                            <button class="uk-button uk-button-default uk-button-small" type="button" onclick="UIkit.modal(\'#import-modal\').show()">
+                            <button class="utb-btn-default uk-button uk-button-default uk-button-small" type="button" onclick="UIkit.modal(\'#import-modal\').show()">
                                 <span uk-icon="cloud-upload"></span> Importieren
                             </button>
-                            <a href="' . rex_url::backendController(['rex-api-call' => 'uikit_icons_export']) . '" class="uk-button uk-button-default uk-button-small">
+                            <a href="' . rex_url::backendController(['rex-api-call' => 'uikit_icons_export']) . '" class="utb-btn-default uk-button uk-button-default uk-button-small">
                                 <span uk-icon="cloud-download"></span> Exportieren
                             </a>
                         </div>
@@ -260,30 +263,30 @@ $content .= '<section class="uk-section uk-section-small">
 $content .= '<section class="uk-section uk-section-small">
     <div class="uk-container uk-container-large">
         
-        <ul uk-tab>
+        <ul class="utb-tabs" uk-tab>
             <li><a href="#"><span uk-icon="upload"></span> Datei hochladen</a></li>
             <li><a href="#"><span uk-icon="code"></span> SVG-Code einfügen</a></li>
             <li><a href="#"><span uk-icon="world"></span> Icon-Quellen</a></li>
         </ul>
 
-        <ul class="uk-switcher">
+        <div class="uk-switcher">
             <!-- Tab 1: File Upload -->
-            <li>
-                <div class="uk-card uk-card-default">
+            <div>
+                <div class="utb-card uk-card uk-card-default">
                     <div class="uk-card-header">
-                        <h3 class="uk-card-title">
+                        <h2 class="uk-card-title utb-card-heading">
                             <span uk-icon="upload"></span> Icon-Datei hochladen
-                        </h3>
+                        </h2>
                     </div>
                     <div class="uk-card-body">
                         <form method="post" enctype="multipart/form-data">
                             <input type="hidden" name="action" value="upload" />
                             
                             <div class="uk-grid-small" uk-grid>
-                                <div class="uk-width-1-3@m">
-                                    <label class="uk-form-label">Icon-Datei (SVG)</label>
+                                <div class="uk-width-1-1 uk-width-1-3@m">
+                                    <label class="uk-form-label" for="utb-icon-file">Icon-Datei (SVG)</label>
                                     <div uk-form-custom>
-                                        <input type="file" name="icon_file" accept=".svg" required />
+                                        <input type="file" name="icon_file" id="utb-icon-file" accept=".svg" required />
                                         <button class="uk-button uk-button-default uk-width-1-1" type="button" tabindex="-1">
                                             <span uk-icon="cloud-upload"></span> Datei wählen
                                         </button>
@@ -291,16 +294,16 @@ $content .= '<section class="uk-section uk-section-small">
                                     <div class="uk-text-meta uk-margin-small-top">Max. 50KB, nur SVG</div>
                                 </div>
                                 
-                                <div class="uk-width-1-3@m">
-                                    <label class="uk-form-label">Icon-Name</label>
-                                    <input type="text" name="icon_name" class="uk-input" placeholder="z.B. my-logo" required 
+                                <div class="uk-width-1-1 uk-width-1-3@m">
+                                    <label class="uk-form-label" for="utb-icon-name">Icon-Name</label>
+                                    <input type="text" name="icon_name" id="utb-icon-name" class="uk-input" placeholder="z.B. my-logo" required 
                                            pattern="[a-z0-9-]+" title="Nur Kleinbuchstaben, Zahlen und Bindestriche" />
                                     <div class="uk-text-meta uk-margin-small-top">Nur a-z, 0-9, -</div>
                                 </div>
                                 
-                                <div class="uk-width-1-6@m">
-                                    <label class="uk-form-label">Kategorie</label>
-                                    <select name="icon_category" class="uk-select">
+                                <div class="uk-width-1-2@s uk-width-1-6@m">
+                                    <label class="uk-form-label" for="utb-icon-category">Kategorie</label>
+                                    <select name="icon_category" id="utb-icon-category" class="uk-select">
                                         <option value="custom">Custom</option>
                                         <option value="brands">Brands</option>
                                         <option value="interface">Interface</option>
@@ -308,9 +311,9 @@ $content .= '<section class="uk-section uk-section-small">
                                     </select>
                                 </div>
                                 
-                                <div class="uk-width-1-6@m">
-                                    <label class="uk-form-label">Tags (kommagetrennt)</label>
-                                    <input type="text" name="icon_tags" class="uk-input" placeholder="logo,brand" />
+                                <div class="uk-width-1-2@s uk-width-1-6@m">
+                                    <label class="uk-form-label" for="utb-icon-tags">Tags (kommagetrennt)</label>
+                                    <input type="text" name="icon_tags" id="utb-icon-tags" class="uk-input" placeholder="logo,brand" />
                                 </div>
                             </div>
                             
@@ -322,23 +325,23 @@ $content .= '<section class="uk-section uk-section-small">
                         </form>
                     </div>
                 </div>
-            </li>
+            </div>
             
             <!-- Tab 2: SVG Code -->
-            <li>
-                <div class="uk-card uk-card-default">
+            <div>
+                <div class="utb-card uk-card uk-card-default">
                     <div class="uk-card-header">
-                        <h3 class="uk-card-title">
+                        <h2 class="uk-card-title utb-card-heading">
                             <span uk-icon="code"></span> SVG-Code einfügen
-                        </h3>
+                        </h2>
                     </div>
                     <div class="uk-card-body">
                         <form method="post">
                             <input type="hidden" name="action" value="upload_code" />
                             
                             <div class="uk-margin">
-                                <label class="uk-form-label">SVG-Code</label>
-                                <textarea name="svg_code" class="uk-textarea" rows="8" required 
+                                <label class="uk-form-label" for="utb-svg-code">SVG-Code</label>
+                                <textarea name="svg_code" id="utb-svg-code" class="uk-textarea" rows="8" required 
                                           placeholder="<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 20 20&quot;>...</svg>"></textarea>
                                 <div class="uk-text-meta uk-margin-small-top">
                                     <span uk-icon="icon: info; ratio: 0.7"></span>
@@ -347,16 +350,16 @@ $content .= '<section class="uk-section uk-section-small">
                             </div>
                             
                             <div class="uk-grid-small" uk-grid>
-                                <div class="uk-width-1-2@m">
-                                    <label class="uk-form-label">Icon-Name</label>
-                                    <input type="text" name="icon_name_code" class="uk-input" placeholder="z.B. my-logo" required 
+                                <div class="uk-width-1-1 uk-width-1-2@m">
+                                    <label class="uk-form-label" for="utb-icon-name-code">Icon-Name</label>
+                                    <input type="text" name="icon_name_code" id="utb-icon-name-code" class="uk-input" placeholder="z.B. my-logo" required 
                                            pattern="[a-z0-9-]+" title="Nur Kleinbuchstaben, Zahlen und Bindestriche" />
                                     <div class="uk-text-meta uk-margin-small-top">Nur a-z, 0-9, -</div>
                                 </div>
                                 
-                                <div class="uk-width-1-4@m">
-                                    <label class="uk-form-label">Kategorie</label>
-                                    <select name="icon_category_code" class="uk-select">
+                                <div class="uk-width-1-2@s uk-width-1-4@m">
+                                    <label class="uk-form-label" for="utb-icon-category-code">Kategorie</label>
+                                    <select name="icon_category_code" id="utb-icon-category-code" class="uk-select">
                                         <option value="custom">Custom</option>
                                         <option value="brands">Brands</option>
                                         <option value="interface">Interface</option>
@@ -364,9 +367,9 @@ $content .= '<section class="uk-section uk-section-small">
                                     </select>
                                 </div>
                                 
-                                <div class="uk-width-1-4@m">
-                                    <label class="uk-form-label">Tags (kommagetrennt)</label>
-                                    <input type="text" name="icon_tags_code" class="uk-input" placeholder="logo,brand" />
+                                <div class="uk-width-1-2@s uk-width-1-4@m">
+                                    <label class="uk-form-label" for="utb-icon-tags-code">Tags (kommagetrennt)</label>
+                                    <input type="text" name="icon_tags_code" id="utb-icon-tags-code" class="uk-input" placeholder="logo,brand" />
                                 </div>
                             </div>
                             
@@ -378,96 +381,96 @@ $content .= '<section class="uk-section uk-section-small">
                         </form>
                     </div>
                 </div>
-            </li>
+            </div>
             
             <!-- Tab 3: Icon-Quellen -->
-            <li>
-                <div class="uk-card uk-card-default">
+            <div>
+                <div class="utb-card uk-card uk-card-default">
                     <div class="uk-card-header">
-                        <h3 class="uk-card-title">
+                        <h2 class="uk-card-title utb-card-heading">
                             <span uk-icon="world"></span> Kostenlose Icon-Bibliotheken
-                        </h3>
+                        </h2>
                     </div>
                     <div class="uk-card-body">
-                        <p class="uk-text-meta">Kostenlose SVG-Icon-Bibliotheken zum Download:</p>
+                        <p class="utb-muted">Kostenlose SVG-Icon-Bibliotheken zum Download:</p>
                         <div class="uk-grid-small uk-child-width-1-2@s uk-child-width-1-3@m" uk-grid>
                             <div>
-                                <a href="https://fontawesome.com/search?o=r&m=free" target="_blank" class="uk-link-reset">
-                                    <div class="uk-card uk-card-small uk-card-default uk-card-hover uk-card-body">
-                                        <h4 class="uk-margin-small-bottom">Font Awesome</h4>
-                                        <p class="uk-text-meta uk-margin-remove">2.000+ Icons (Free)</p>
+                                <a href="https://fontawesome.com/search?o=r&m=free" target="_blank" rel="noopener" class="uk-link-reset">
+                                    <div class="utb-card uk-card uk-card-small uk-card-default uk-card-hover uk-card-body">
+                                        <h3 class="utb-lib-title uk-margin-small-bottom">Font Awesome</h3>
+                                        <p class="utb-muted uk-text-small uk-margin-remove">2.000+ Icons (Free)</p>
                                         <p class="uk-text-small uk-margin-small-top">SVG-Download via Icon-Detail-Seite</p>
                                     </div>
                                 </a>
                             </div>
                             <div>
-                                <a href="https://heroicons.com" target="_blank" class="uk-link-reset">
-                                    <div class="uk-card uk-card-small uk-card-default uk-card-hover uk-card-body">
-                                        <h4 class="uk-margin-small-bottom">Heroicons</h4>
-                                        <p class="uk-text-meta uk-margin-remove">292 Icons (MIT)</p>
+                                <a href="https://heroicons.com" target="_blank" rel="noopener" class="uk-link-reset">
+                                    <div class="utb-card uk-card uk-card-small uk-card-default uk-card-hover uk-card-body">
+                                        <h3 class="utb-lib-title uk-margin-small-bottom">Heroicons</h3>
+                                        <p class="utb-muted uk-text-small uk-margin-remove">292 Icons (MIT)</p>
                                         <p class="uk-text-small uk-margin-small-top">Copy/Paste SVG direkt verfügbar</p>
                                     </div>
                                 </a>
                             </div>
                             <div>
-                                <a href="https://feathericons.com" target="_blank" class="uk-link-reset">
-                                    <div class="uk-card uk-card-small uk-card-default uk-card-hover uk-card-body">
-                                        <h4 class="uk-margin-small-bottom">Feather Icons</h4>
-                                        <p class="uk-text-meta uk-margin-remove">287 Icons (MIT)</p>
-                                        <p class="uk-text-small uk-margin-small-top">Minimalistische Icon-Set</p>
+                                <a href="https://feathericons.com" target="_blank" rel="noopener" class="uk-link-reset">
+                                    <div class="utb-card uk-card uk-card-small uk-card-default uk-card-hover uk-card-body">
+                                        <h3 class="utb-lib-title uk-margin-small-bottom">Feather Icons</h3>
+                                        <p class="utb-muted uk-text-small uk-margin-remove">287 Icons (MIT)</p>
+                                        <p class="uk-text-small uk-margin-small-top">Minimalistisches Icon-Set</p>
                                     </div>
                                 </a>
                             </div>
                             <div>
-                                <a href="https://remixicon.com" target="_blank" class="uk-link-reset">
-                                    <div class="uk-card uk-card-small uk-card-default uk-card-hover uk-card-body">
-                                        <h4 class="uk-margin-small-bottom">Remix Icon</h4>
-                                        <p class="uk-text-meta uk-margin-remove">2.800+ Icons (Apache)</p>
+                                <a href="https://remixicon.com" target="_blank" rel="noopener" class="uk-link-reset">
+                                    <div class="utb-card uk-card uk-card-small uk-card-default uk-card-hover uk-card-body">
+                                        <h3 class="utb-lib-title uk-margin-small-bottom">Remix Icon</h3>
+                                        <p class="utb-muted uk-text-small uk-margin-remove">2.800+ Icons (Apache)</p>
                                         <p class="uk-text-small uk-margin-small-top">Open-Source-Bibliothek</p>
                                     </div>
                                 </a>
                             </div>
                             <div>
-                                <a href="https://phosphoricons.com" target="_blank" class="uk-link-reset">
-                                    <div class="uk-card uk-card-small uk-card-default uk-card-hover uk-card-body">
-                                        <h4 class="uk-margin-small-bottom">Phosphor Icons</h4>
-                                        <p class="uk-text-meta uk-margin-remove">1.200+ Icons (MIT)</p>
+                                <a href="https://phosphoricons.com" target="_blank" rel="noopener" class="uk-link-reset">
+                                    <div class="utb-card uk-card uk-card-small uk-card-default uk-card-hover uk-card-body">
+                                        <h3 class="utb-lib-title uk-margin-small-bottom">Phosphor Icons</h3>
+                                        <p class="utb-muted uk-text-small uk-margin-remove">1.200+ Icons (MIT)</p>
                                         <p class="uk-text-small uk-margin-small-top">6 Gewichtsvarianten</p>
                                     </div>
                                 </a>
                             </div>
                             <div>
-                                <a href="https://lucide.dev" target="_blank" class="uk-link-reset">
-                                    <div class="uk-card uk-card-small uk-card-default uk-card-hover uk-card-body">
-                                        <h4 class="uk-margin-small-bottom">Lucide</h4>
-                                        <p class="uk-text-meta uk-margin-remove">1.400+ Icons (ISC)</p>
+                                <a href="https://lucide.dev" target="_blank" rel="noopener" class="uk-link-reset">
+                                    <div class="utb-card uk-card uk-card-small uk-card-default uk-card-hover uk-card-body">
+                                        <h3 class="utb-lib-title uk-margin-small-bottom">Lucide</h3>
+                                        <p class="utb-muted uk-text-small uk-margin-remove">1.400+ Icons (ISC)</p>
                                         <p class="uk-text-small uk-margin-small-top">Feather Icons Fork</p>
                                     </div>
                                 </a>
                             </div>
                             <div>
-                                <a href="https://tabler.io/icons" target="_blank" class="uk-link-reset">
-                                    <div class="uk-card uk-card-small uk-card-default uk-card-hover uk-card-body">
-                                        <h4 class="uk-margin-small-bottom">Tabler Icons</h4>
-                                        <p class="uk-text-meta uk-margin-remove">5.200+ Icons (MIT)</p>
+                                <a href="https://tabler.io/icons" target="_blank" rel="noopener" class="uk-link-reset">
+                                    <div class="utb-card uk-card uk-card-small uk-card-default uk-card-hover uk-card-body">
+                                        <h3 class="utb-lib-title uk-margin-small-bottom">Tabler Icons</h3>
+                                        <p class="utb-muted uk-text-small uk-margin-remove">5.200+ Icons (MIT)</p>
                                         <p class="uk-text-small uk-margin-small-top">Umfangreichste Sammlung</p>
                                     </div>
                                 </a>
                             </div>
                             <div>
-                                <a href="https://icons.getbootstrap.com" target="_blank" class="uk-link-reset">
-                                    <div class="uk-card uk-card-small uk-card-default uk-card-hover uk-card-body">
-                                        <h4 class="uk-margin-small-bottom">Bootstrap Icons</h4>
-                                        <p class="uk-text-meta uk-margin-remove">2.000+ Icons (MIT)</p>
+                                <a href="https://icons.getbootstrap.com" target="_blank" rel="noopener" class="uk-link-reset">
+                                    <div class="utb-card uk-card uk-card-small uk-card-default uk-card-hover uk-card-body">
+                                        <h3 class="utb-lib-title uk-margin-small-bottom">Bootstrap Icons</h3>
+                                        <p class="utb-muted uk-text-small uk-margin-remove">2.000+ Icons (MIT)</p>
                                         <p class="uk-text-small uk-margin-small-top">Framework-unabhängig</p>
                                     </div>
                                 </a>
                             </div>
                             <div>
-                                <a href="https://iconoir.com" target="_blank" class="uk-link-reset">
-                                    <div class="uk-card uk-card-small uk-card-default uk-card-hover uk-card-body">
-                                        <h4 class="uk-margin-small-bottom">Iconoir</h4>
-                                        <p class="uk-text-meta uk-margin-remove">1.500+ Icons (MIT)</p>
+                                <a href="https://iconoir.com" target="_blank" rel="noopener" class="uk-link-reset">
+                                    <div class="utb-card uk-card uk-card-small uk-card-default uk-card-hover uk-card-body">
+                                        <h3 class="utb-lib-title uk-margin-small-bottom">Iconoir</h3>
+                                        <p class="utb-muted uk-text-small uk-margin-remove">1.500+ Icons (MIT)</p>
                                         <p class="uk-text-small uk-margin-small-top">Elegantes Design</p>
                                     </div>
                                 </a>
@@ -475,8 +478,8 @@ $content .= '<section class="uk-section uk-section-small">
                         </div>
                     </div>
                 </div>
-            </li>
-        </ul>
+            </div>
+        </div>
         
     </div>
 </section>';
@@ -484,41 +487,42 @@ $content .= '<section class="uk-section uk-section-small">
 // Icon-Grid
 $content .= '<section class="uk-section">
     <div class="uk-container uk-container-large">
-        <div class="uk-card uk-card-default">
+        <div class="utb-card uk-card uk-card-default">
             <div class="uk-card-header">
-                <h3 class="uk-card-title">
+                <h2 class="uk-card-title utb-card-heading">
                     <span uk-icon="grid"></span> Custom Icons (' . count($customIcons) . ')
-                </h3>
+                </h2>
             </div>
             <div class="uk-card-body">';
 
 if (empty($customIcons)) {
     $content .= '<div class="uk-alert uk-alert-warning">
-                    <span uk-icon="warning"></span> Noch keine Custom Icons hochgeladen.
+                    <span uk-icon="warning" aria-hidden="true"></span> Noch keine Custom Icons hochgeladen.
                  </div>';
 } else {
-    $content .= '<div class="uk-grid-small uk-child-width-1-6@xl uk-child-width-1-5@l uk-child-width-1-4@m uk-child-width-1-3@s" uk-grid>';
+    $content .= '<div class="uk-grid-small uk-child-width-1-2 uk-child-width-1-3@s uk-child-width-1-4@m uk-child-width-1-5@l uk-child-width-1-6@xl" uk-grid>';
     
     foreach ($customIcons as $icon) {
-        $deleteUrl = rex_url::currentBackendPage(['action' => 'delete', 'icon' => $icon['name']]);
+        $deleteUrl = rex_url::currentBackendPage(['action' => 'delete', 'icon' => $icon['name']] + $iconActionToken->getUrlParams());
+        $deleteLabel = 'Icon „' . rex_escape($icon['name']) . '“ löschen';
         
         $content .= '<div>
-            <div class="uk-card uk-card-default uk-card-small uk-card-hover">
+            <div class="utb-card uk-card uk-card-default uk-card-small uk-card-hover">
                 <div class="uk-card-body uk-text-center">
                     <div class="uk-inline uk-width-1-1">
-                        <span uk-icon="icon: ' . rex_escape($icon['full_name']) . '; ratio: 2.5"></span>
+                        <span uk-icon="icon: ' . rex_escape($icon['full_name']) . '; ratio: 2.5" aria-hidden="true"></span>
                         <div class="uk-position-top-right uk-padding-small">
-                            <a href="' . $deleteUrl . '" class="uk-icon-button uk-button-danger" 
-                               uk-icon="trash" uk-tooltip="Löschen"
-                               onclick="return confirm(\'Icon \\\'' . rex_escape($icon['name']) . '\\\' wirklich löschen?\')"></a>
+                            <a href="' . $deleteUrl . '" class="uk-icon-button utb-icon-delete"
+                               uk-icon="trash" uk-tooltip="title: Löschen" aria-label="' . $deleteLabel . '"
+                               onclick="return confirm(' . htmlspecialchars(json_encode('Icon "' . $icon['name'] . '" wirklich löschen?'), ENT_QUOTES) . ')"></a>
                         </div>
                     </div>
                     <div class="uk-margin-small-top uk-text-small uk-text-bold">' . rex_escape($icon['name']) . '</div>
-                    <div class="uk-text-meta uk-text-small">' . rex_escape($icon['category']) . '</div>
-                    <div class="uk-text-meta uk-text-small">' . round($icon['size'] / 1024, 1) . ' KB</div>
+                    <div class="utb-muted uk-text-small">' . rex_escape($icon['category']) . '</div>
+                    <div class="utb-muted uk-text-small">' . round($icon['size'] / 1024, 1) . ' KB</div>
                 </div>
                 <div class="uk-card-footer uk-padding-small">
-                    <code class="uk-text-small" style="font-size: 10px;">custom-' . rex_escape($icon['name']) . '</code>
+                    <code class="utb-code utb-code-small">custom-' . rex_escape($icon['name']) . '</code>
                 </div>
             </div>
         </div>';
@@ -531,10 +535,11 @@ $content .= '    </div>
         </div>
     </div>
 </section>';
+$content .= '</div>'; // utb-page
 
 // Import Modal
 $content .= '
-<div id="import-modal" uk-modal>
+<div id="import-modal" class="utb-modal" uk-modal>
     <div class="uk-modal-dialog">
         <button class="uk-modal-close-default" type="button" uk-close></button>
         <div class="uk-modal-header">

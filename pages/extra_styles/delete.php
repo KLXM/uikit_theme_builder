@@ -51,7 +51,7 @@ $content .= '<div class="uk-card-body">';
 // Warnung
 $content .= '<div class="uk-alert uk-alert-warning">';
 $content .= '<h4><span uk-icon="icon: warning"></span> Achtung! Unwiderrufliche Aktion</h4>';
-$content .= '<p>Sie sind dabei, das Style-Set <strong>"' . rex_escape($styleSet['name']) . '"</strong> zu löschen.</p>';
+$content .= '<p>Du bist dabei, das Style-Set <strong>"' . rex_escape($styleSet['name']) . '"</strong> zu löschen.</p>';
 $content .= '</div>';
 
 // Style-Set Details
@@ -128,7 +128,7 @@ $content .= '<div class="uk-grid-small uk-flex-center" uk-grid>';
 $content .= '<div class="uk-width-auto">';
 $content .= '<button type="submit" name="delete" value="1" 
              class="uk-button uk-button-danger uk-button-large"
-             onclick="return confirm(\'Sind Sie sich wirklich sicher? Diese Aktion kann nicht rückgängig gemacht werden!\')">';
+             onclick="return confirm(\'Bist du dir wirklich sicher? Diese Aktion kann nicht rückgängig gemacht werden!\')">';
 $content .= '<span uk-icon="icon: trash"></span> Endgültig löschen';
 $content .= '</button>';
 $content .= '</div>';
@@ -147,7 +147,7 @@ $content .= '</div>';
 $content .= '<div class="uk-card uk-card-muted uk-margin">';
 $content .= '<div class="uk-card-body uk-text-center">';
 $content .= '<p class="uk-text-small uk-text-muted uk-margin-remove">';
-$content .= '<span uk-icon="icon: info"></span> Tipp: Verwenden Sie die "Duplizieren" Funktion, um eine Backup-Kopie zu erstellen, bevor Sie ein Style-Set löschen.';
+$content .= '<span uk-icon="icon: info"></span> Tipp: Verwende die Funktion „Duplizieren“, um eine Sicherungskopie zu erstellen, bevor du ein Style-Set löschst.';
 $content .= '</p>';
 $content .= '</div>';
 $content .= '</div>';

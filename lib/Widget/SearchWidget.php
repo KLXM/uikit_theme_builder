@@ -3,13 +3,13 @@
 namespace UikitThemeBuilder\Widget;
 
 /**
- * Search Widget - Einstellungen fuer Suchfelder
+ * Search Widget - Einstellungen für Suchfelder
  */
 class SearchWidget extends AbstractWidget
 {
     public function getName(): string
     {
-        return 'Search';
+        return 'Suche';
     }
 
     public function getKey(): string
@@ -19,7 +19,7 @@ class SearchWidget extends AbstractWidget
 
     public function getDescription(): string
     {
-        return 'Einstellungen fuer Suchfelder in Default-, Navbar- und Medium-Variante.';
+        return 'Einstellungen für Suchfelder in Default-, Navbar- und Medium-Variante.';
     }
 
     public function getDefaultValues(): array
@@ -57,10 +57,10 @@ class SearchWidget extends AbstractWidget
                 'type' => 'select',
                 'default' => '@global-border',
                 'options' => $colorOptions,
-                'help' => 'Rahmenfarbe fuer normale Suchfelder.'
+                'help' => 'Rahmenfarbe für normale Suchfelder.'
             ],
             'search-default-border-width' => [
-                'label' => 'Default Suche Rahmenstaerke',
+                'label' => 'Default Suche Rahmenstärke',
                 'type' => 'text',
                 'default' => '@global-border-width',
                 'placeholder' => 'z.B. 1px',
@@ -78,21 +78,21 @@ class SearchWidget extends AbstractWidget
                 'type' => 'select',
                 'default' => '@global-background',
                 'options' => $colorOptions,
-                'help' => 'Hintergrund fuer mittelgrosse Suche.'
+                'help' => 'Hintergrund für mittelgroße Suche.'
             ],
             'search-medium-border' => [
                 'label' => 'Medium Suche Rahmenfarbe',
                 'type' => 'select',
                 'default' => '@global-border',
                 'options' => $colorOptions,
-                'help' => 'Rahmenfarbe fuer mittelgrosse Suche.'
+                'help' => 'Rahmenfarbe für mittelgroße Suche.'
             ],
             'search-medium-border-width' => [
-                'label' => 'Medium Suche Rahmenstaerke',
+                'label' => 'Medium Suche Rahmenstärke',
                 'type' => 'text',
                 'default' => '@global-border-width',
                 'placeholder' => 'z.B. 1px',
-                'help' => 'Dicke des Rahmens bei mittelgrosser Suche.'
+                'help' => 'Dicke des Rahmens bei mittelgroßer Suche.'
             ],
             'search-medium-focus-border' => [
                 'label' => 'Medium Suche Fokus-Rahmen',
@@ -106,10 +106,10 @@ class SearchWidget extends AbstractWidget
                 'type' => 'select',
                 'default' => '@global-border',
                 'options' => $colorOptions,
-                'help' => 'Rahmenfarbe fuer Suchfeld in der Navigation.'
+                'help' => 'Rahmenfarbe für Suchfeld in der Navigation.'
             ],
             'search-navbar-border-width' => [
-                'label' => 'Navbar Suche Rahmenstaerke',
+                'label' => 'Navbar Suche Rahmenstärke',
                 'type' => 'text',
                 'default' => '@global-border-width',
                 'placeholder' => 'z.B. 1px',

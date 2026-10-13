@@ -1,9 +1,9 @@
 <?php
 
 /**
- * UIKit Theme Builder - Extra Styles Verwaltung
+ * UIkit Theme Builder - Extra Styles Verwaltung
  * 
- * Moderne UIKit-gestylte Seite für die Verwaltung wiederverwendbarer Style-Sets.
+ * Moderne UIkit-gestylte Seite für die Verwaltung wiederverwendbarer Style-Sets.
  * Style-Sets können erstellt, bearbeitet, dupliziert und gelöscht werden.
  */
 

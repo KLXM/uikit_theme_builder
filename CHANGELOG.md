@@ -1,5 +1,37 @@
 # Changelog
 
+## [2.7.0] – 2026-10-13
+
+### Added
+
+- **Theme im Backend eingegrenzt** (neuer Standard): Das Backend-Theme wirkt nur in Vorschauen – Inhalt der Artikel-Blöcke,
+  Builder-Vorschau und Bereiche mit der Klasse `uk-theme-scope`; REDAXO selbst bleibt unverändert (`CssScoper`,
+  `BackendIntegration`). Einstellungen: Modus „Nur in Vorschauen“ / „Im ganzen Backend“, eigene Vorschau-Bereiche,
+  „Theme der Domain“ als Backend-Theme.
+- Englische Sprachdatei (`lang/en_gb.lang`).
+- Theme-Liste: Kennzeichen „Backend“ und „Domain: …“ zeigen, wo ein Theme im Einsatz ist.
+
+### Changed
+
+- **Theme-Editor**: bleibt nach dem Speichern geöffnet (Meldung oben), Knopf „Speichern & veröffentlichen“ mit Hinweis,
+  Aktionsleiste immer sichtbar, geöffnete Bereiche werden gemerkt, Schlüssel bestehender Themes schreibgeschützt,
+  kein Überschreiben eines vorhandenen Themes beim Neuanlegen. CSS/JS des Editors werden jetzt wirklich geladen.
+- Vorschau-Adresse über `rex_url::frontend()` (auch in Unterordnern); Vorschau (`?previewtheme=`) nur für angemeldete Nutzer.
+- Domains: Checkboxen statt Mehrfachauswahl, Entwickler-Hinweise nur im Debug-Modus.
+- Dunkelmodus, Handy-Ansicht (390 px) und Barrierefreiheit (Labels, Kontraste, Knopf-Namen) auf allen Seiten.
+- Texte vereinheitlicht: „UIkit“, Umlaute, Anrede „du“, deutsche Widget-Namen.
+- Debug-Ausgaben in der Konsole nur mit `window.UIKIT_THEME_BUILDER_DEBUG`.
+
+### Fixed
+
+- `backend-overrides.css` färbte das Backend dunkel (`#1b232c !important`), Überschriften zentriert und Links in Theme-Farbe.
+- CSRF-Schutz für Löschen/Kompilieren von Themes, Löschen von Icons und das Editor-Formular.
+- `TemplateInstaller` liest `@name`/`@description` korrekt aus dem ersten DocBlock.
+
+### Removed
+
+- Altlasten: `uikit-icon-picker.js.backup`, `tinymce-debug-alert.js`, `compiled/ddd.css`, `compiled/uikit_default_copy.css`.
+
 ## [2.6.1] – 2026-10-11
 
 ### Fixed

@@ -117,7 +117,7 @@ class GoogleFontsWidget extends AbstractWidget
         // Font Variables Mapping
         $html .= '<hr class="uk-divider-small">';
         $html .= '<h5 class="uk-margin-small-bottom uk-light">LESS-Variablen Zuordnung</h5>';
-        $html .= '<div class="uk-margin-small uk-text-small uk-light">Ordne Fonts den UIKit-Variablen zu:</div>';
+        $html .= '<div class="uk-margin-small uk-text-small uk-light">Ordne Fonts den UIkit-Variablen zu:</div>';
         
         $commonVariables = [
             'global-font-family' => 'Standard Schriftart',

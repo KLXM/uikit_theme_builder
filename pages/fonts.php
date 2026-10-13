@@ -69,7 +69,7 @@ if (file_exists($cacheFile) && (time() - filemtime($cacheFile)) < $cacheTime) {
             'http' => [
                 'method' => 'GET',
                 'timeout' => 10,
-                'user_agent' => 'REDAXO UIKit Theme Builder'
+                'user_agent' => 'REDAXO UIkit Theme Builder'
             ]
         ]);
         
@@ -146,6 +146,7 @@ echo '<div class="uk-margin-bottom">';
 echo '<div class="uk-grid-small uk-flex-middle" uk-grid>';
 echo '<div class="uk-width-expand">';
 echo '<div class="uk-inline uk-width-1-1">';
+echo '<label class="sr-only" for="font-search">Google Fonts durchsuchen</label>';
 echo '<span class="uk-form-icon" uk-icon="icon: search"></span>';
 echo '<input class="uk-input" type="text" id="font-search" placeholder="Durchsuche ' . count($googleFonts) . ' Google Fonts..." onkeyup="searchGoogleFonts(this.value)">';
 echo '</div>';
@@ -155,19 +156,20 @@ echo '</div>'; // Schließt uk-margin-bottom
 
 // Category Filter
 echo '<div class="uk-margin-small-bottom">';
-echo '<div class="uk-button-group">';
-echo '<button class="uk-button uk-button-default uk-button-small uk-active" data-category="all" onclick="filterByCategory(\'all\', this)">Alle</button>';
-echo '<button class="uk-button uk-button-default uk-button-small" data-category="sans-serif" onclick="filterByCategory(\'sans-serif\', this)">Sans-Serif</button>';
-echo '<button class="uk-button uk-button-default uk-button-small" data-category="serif" onclick="filterByCategory(\'serif\', this)">Serif</button>';
-echo '<button class="uk-button uk-button-default uk-button-small" data-category="display" onclick="filterByCategory(\'display\', this)">Display</button>';
-echo '<button class="uk-button uk-button-default uk-button-small" data-category="handwriting" onclick="filterByCategory(\'handwriting\', this)">Handwriting</button>';
-echo '<button class="uk-button uk-button-default uk-button-small" data-category="monospace" onclick="filterByCategory(\'monospace\', this)">Monospace</button>';
+echo '<div class="uk-flex uk-flex-wrap" style="gap: 4px;" role="group" aria-label="Nach Kategorie filtern">';
+echo '<button type="button" class="uk-button uk-button-default uk-button-small uk-active" data-category="all" onclick="filterByCategory(\'all\', this)">Alle</button>';
+echo '<button type="button" class="uk-button uk-button-default uk-button-small" data-category="sans-serif" onclick="filterByCategory(\'sans-serif\', this)">Sans-Serif</button>';
+echo '<button type="button" class="uk-button uk-button-default uk-button-small" data-category="serif" onclick="filterByCategory(\'serif\', this)">Serif</button>';
+echo '<button type="button" class="uk-button uk-button-default uk-button-small" data-category="display" onclick="filterByCategory(\'display\', this)">Display</button>';
+echo '<button type="button" class="uk-button uk-button-default uk-button-small" data-category="handwriting" onclick="filterByCategory(\'handwriting\', this)">Handschrift</button>';
+echo '<button type="button" class="uk-button uk-button-default uk-button-small" data-category="monospace" onclick="filterByCategory(\'monospace\', this)">Monospace</button>';
 echo '</div>';
 echo '</div>';
 
 // Preview Text Input
 echo '<div class="uk-margin-small-bottom">';
 echo '<div class="uk-inline uk-width-1-1">';
+echo '<label class="sr-only" for="preview-text">Vorschau-Text</label>';
 echo '<span class="uk-form-icon" uk-icon="icon: pencil"></span>';
 echo '<input class="uk-input uk-form-small" type="text" id="preview-text" placeholder="Eigener Vorschau-Text..." value="The quick brown fox jumps over the lazy dog" onkeyup="updatePreviewText(this.value)">';
 echo '</div>';
@@ -178,11 +180,11 @@ echo '</div>';
 echo '<div class="uk-margin-small-bottom">';
 echo '<div class="uk-grid-small" uk-grid>';
 echo '<div class="uk-width-2-3@s">';
-echo '<label class="uk-form-label uk-text-small">Schriftgröße: <span id="font-size-value">14</span>px</label>';
+echo '<label class="uk-form-label uk-text-small" for="font-size-slider">Schriftgröße: <span id="font-size-value">14</span>px</label>';
 echo '<input class="uk-range" type="range" id="font-size-slider" min="10" max="32" value="14" step="1" oninput="updateFontSize(this.value)">';
 echo '</div>';
 echo '<div class="uk-width-1-3@s">';
-echo '<label class="uk-form-label uk-text-small">Schriftstärke</label>';
+echo '<label class="uk-form-label uk-text-small" for="font-weight-select">Schriftstärke</label>';
 echo '<select class="uk-select uk-form-small" id="font-weight-select" onchange="updateFontWeight(this.value)">';
 echo '<option value="300">Light (300)</option>';
 echo '<option value="400" selected>Regular (400)</option>';
@@ -220,7 +222,7 @@ if (empty($downloadedFonts)) {
     echo '<div class="uk-overflow-auto">';
     echo '<table class="uk-table uk-table-small uk-table-striped uk-margin-remove">';
     foreach ($downloadedFonts as $fontFamily => $fontData) {
-        echo '<tr style="cursor: pointer;" onclick="searchForFont(\'' . \rex_escape($fontFamily, 'js') . '\')" uk-tooltip="Klicken um in Suche zu übernehmen">';
+        echo '<tr style="cursor: pointer;" onclick="searchForFont(\'' . \rex_escape($fontFamily, 'js') . '\')" uk-tooltip="Klicken, um in die Suche zu übernehmen">';
         echo '<td>';
         echo '<div class="uk-grid-small uk-flex-middle" uk-grid>';
         echo '<div class="uk-width-expand">';
@@ -298,7 +300,9 @@ let currentSearchQuery = "";
 let currentFontSize = 14;
 let currentFontWeight = 400;
 
-console.log("Loaded " + allFontsCache.length + " fonts from PHP");
+if (window.UIKIT_THEME_BUILDER_DEBUG) {
+    console.log("Loaded " + allFontsCache.length + " fonts from PHP");
+}
 
 function updatePreviewText(text) {
     previewText = text || "The quick brown fox jumps over the lazy dog";
@@ -379,44 +383,6 @@ function searchGoogleFonts(query) {
     // Sortiere alphabetisch nach Family-Name
     filtered.sort((a, b) => a.family.localeCompare(b.family));
     
-    // Nur anzeigen wenn Query >= 2 Zeichen oder Category Filter aktiv
-    if ((!query || query.length < 2) && currentCategory === "all") {
-        resultsDiv.innerHTML = "<div class=\"uk-alert uk-alert-primary\">Bitte mindestens 2 Zeichen eingeben oder eine Kategorie wählen</div>";
-        return;
-    }
-    
-    const categoryText = currentCategory !== "all" ? ` in "${currentCategory}"` : "";
-    fontSearch.placeholder = filtered.length + " von " + allFontsCache.length + " Fonts gefunden" + categoryText;
-    
-    displaySearchResults(filtered);
-}
-// Search Google Fonts locally
-function searchGoogleFonts(query) {
-    currentSearchQuery = query;
-    const resultsDiv = document.getElementById("google-fonts-results");
-    const fontSearch = document.getElementById("font-search");
-    
-    if (!allFontsCache || allFontsCache.length === 0) {
-        UIkit.notification("Keine Fonts verfügbar", {status: "warning"});
-        return;
-    }
-    
-    // Filter nach Category
-    let filtered = allFontsCache;
-    if (currentCategory !== "all") {
-        filtered = filtered.filter(font => font.category === currentCategory);
-    }
-    
-    // Filter nach Suchtext
-    if (query && query.length >= 2) {
-        filtered = filtered.filter(font => 
-            font.family.toLowerCase().includes(query.toLowerCase())
-        );
-    }
-    
-    // Sortiere alphabetisch nach Family-Name
-    filtered.sort((a, b) => a.family.localeCompare(b.family));
-    
     // Zeige Ergebnisse wenn Category Filter aktiv ist ODER Query >= 2 Zeichen
     if ((!query || query.length < 2) && currentCategory === "all") {
         resultsDiv.innerHTML = "<div class=\"uk-alert uk-alert-primary\">Bitte mindestens 2 Zeichen eingeben oder eine Kategorie wählen</div>";
@@ -441,8 +407,8 @@ function displaySearchResults(fonts) {
     let html = "<table class=\"uk-table uk-table-striped uk-table-hover uk-table-middle\">";
     html += "<thead><tr>";
     html += "<th class=\"uk-width-expand\">Schriftart</th>";
-    html += "<th class=\"uk-width-medium uk-text-center\">Kategorie</th>";
-    html += "<th class=\"uk-width-small uk-text-center\">Aktion</th>";
+    html += "<th class=\"uk-text-center\">Kategorie</th>";
+    html += "<th class=\"uk-table-shrink uk-text-center\">Aktion</th>";
     html += "</tr></thead><tbody>";
     
     fonts.slice(0, 1000).forEach(font => {
@@ -556,7 +522,7 @@ function confirmDownload(fontFamily, category) {
     
     if (variants.length === 0) {
         UIkit.notification({
-            message: "Bitte wählen Sie mindestens eine Variante aus.",
+            message: "Bitte wähle mindestens eine Variante aus.",
             status: "warning",
             pos: "top-right"
         });
@@ -595,7 +561,7 @@ function confirmDownload(fontFamily, category) {
 }
 
 function deleteFont(fontFamily) {
-    UIkit.modal.confirm(`Möchten Sie den Font "${fontFamily}" wirklich löschen?`).then(function() {
+    UIkit.modal.confirm(`Möchtest du den Font "${fontFamily}" wirklich löschen?`).then(function() {
         const form = document.createElement("form");
         form.method = "POST";
         form.action = "' . \rex_url::currentBackendPage() . '";

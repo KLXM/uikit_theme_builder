@@ -95,6 +95,12 @@ if (rex::isBackend() && rex::getUser()) {
     rex_view::addCssFile(rex_url::addonAssets('uikit_theme_builder', 'pickit-color/colorpicker.min.css'));
     rex_view::addJsFile(rex_url::addonAssets('uikit_theme_builder', 'pickit-color/colorpicker.min.js'));
     
+    // Seiten des AddOns: lesbare Kontraste für UIkit-Texte im Backend (Meta, Hinweise, Links, Code) – nur auf eigenen Seiten
+    if (str_starts_with(rex_request('page', 'string', ''), 'uikit_theme_builder')) {
+        $a11y = rex_path::addonAssets('uikit_theme_builder', 'css/backend-a11y.css');
+        rex_view::addCssFile(rex_url::addonAssets('uikit_theme_builder', 'css/backend-a11y.css') . (is_file($a11y) ? '?v=' . filemtime($a11y) : ''));
+    }
+
     // UIKit Icon Picker
     rex_view::addJsFile(rex_url::addonAssets('uikit_theme_builder', 'js/uikit-icon-picker.js'));
     
@@ -123,80 +129,10 @@ if (rex::isBackend() && rex::getUser()) {
     }
 }
 
-// Backend Theme über Extension Point NACH allen anderen Packages laden
-rex_extension::register('PACKAGES_INCLUDED', function() {
+// Backend: UIkit und – je nach Einstellung – das Theme (nur in Vorschauen oder fürs ganze Backend), NACH allen Packages
+rex_extension::register('PACKAGES_INCLUDED', static function () {
     if (rex::isBackend() && rex::getUser()) {
-        $backendTheme = rex_config::get('uikit_theme_builder', 'backend_theme', '');
-        
-        // Wenn kein Theme konfiguriert: Standard UIKit CSS laden
-        if (empty($backendTheme)) {
-            $defaultCss = rex_path::addonAssets('uikit_theme_builder', 'compiled_uikit/css/uikit.min.css');
-            if (file_exists($defaultCss)) {
-                $defaultUrl = rex_url::addonAssets('uikit_theme_builder', 'compiled_uikit/css/uikit.min.css');
-                rex_view::addCssFile($defaultUrl);
-                \UikitThemeBuilder\Log::debug('Backend: Default UIKit CSS loaded from compiled_uikit');
-            }
-            return;
-        }
-        
-        // Theme CSS laden
-        $themeFile = rex_path::addonAssets('uikit_theme_builder', 'themes/compiled/' . $backendTheme . '.css');
-        if (file_exists($themeFile)) {
-            // Theme mit Komponenten-Auswahl: dem Backend fehlen dann Komponenten (Form, Table, Tab ...).
-            // Deshalb zuerst das vollstaendige UIkit laden, das Theme ueberschreibt danach Farben/Typografie.
-            try {
-                $manager = new \UikitThemeBuilder\UikitThemeBuilderManager();
-                $themeData = $manager->loadTheme($backendTheme);
-                $disabled = \UikitThemeBuilder\Widget\ComponentSelectionWidget::disabledFrom((array) ($themeData['data'] ?? []));
-                if ($disabled !== [] && file_exists(rex_path::addonAssets('uikit_theme_builder', 'compiled_uikit/css/uikit.min.css'))) {
-                    rex_view::addCssFile(rex_url::addonAssets('uikit_theme_builder', 'compiled_uikit/css/uikit.min.css'));
-                }
-            } catch (\Throwable $e) {
-                // ohne Theme-Daten: wie bisher nur das Theme-CSS
-            }
-            $themeUrl = rex_url::addonAssets('uikit_theme_builder', 'themes/compiled/' . $backendTheme . '.css');
-            rex_view::addCssFile($themeUrl);
-
-            // Backend-Overrides NACH dem Theme laden: setzt Basisstile (Code-Auszeichnungen,
-            // Body-Hintergrund etc.), die mit dem REDAXO-Backend kollidieren, wieder zurück
-            rex_view::addCssFile(rex_url::addonAssets('uikit_theme_builder', 'backend-overrides.css'));
-
-            // Google Fonts für Backend-Theme laden (direkt über Dateisystem)
-            $fontsDataFile = rex_path::addonData('uikit_theme_builder') . 'fonts.json';
-            if (file_exists($fontsDataFile)) {
-                $fontsData = json_decode(file_get_contents($fontsDataFile), true);
-                if (is_array($fontsData)) {
-                    foreach ($fontsData as $fontFamily => $fontInfo) {
-                        if (!isset($fontInfo['css_file']) || !file_exists($fontInfo['css_file'])) {
-                            continue;
-                        }
-
-                        if (isset($fontInfo['css_url']) && '' !== (string) $fontInfo['css_url']) {
-                            $fontUrl = (string) $fontInfo['css_url'];
-                        } elseif (str_starts_with((string) $fontInfo['css_file'], rex_path::assets())) {
-                            $relativePath = str_replace(rex_path::assets(), '', (string) $fontInfo['css_file']);
-                            $fontUrl = rex_url::assets($relativePath);
-                        } else {
-                            $relativePath = str_replace(rex_path::addonAssets('uikit_theme_builder'), '', (string) $fontInfo['css_file']);
-                            $fontUrl = rex_url::addonAssets('uikit_theme_builder', $relativePath);
-                        }
-
-                        rex_view::addCssFile($fontUrl);
-                        \UikitThemeBuilder\Log::debug('Backend Font loaded: ' . $fontFamily . ' from ' . $fontUrl);
-                    }
-                }
-            }
-        } else {
-            // einmal je fehlender Datei warnen, nicht bei jedem Backend-Aufruf
-            \UikitThemeBuilder\Log::warningOnce('missing_theme:' . $themeFile, 'Backend Theme file not found: ' . $themeFile . ' - Loading default UIKit CSS');
-            
-            // Fallback: Standard UIKit CSS laden
-            $defaultCss = rex_path::addonAssets('uikit_theme_builder', 'compiled_uikit/css/uikit.min.css');
-            if (file_exists($defaultCss)) {
-                $defaultUrl = rex_url::addonAssets('uikit_theme_builder', 'compiled_uikit/css/uikit.min.css');
-                rex_view::addCssFile($defaultUrl);
-            }
-        }
+        \UikitThemeBuilder\BackendIntegration::register();
     }
 });
 
@@ -227,6 +163,13 @@ if (!is_dir($uikitPath)) {
 if (rex_request('previewtheme', 'string')) {
     $themeName = rex_request('previewtheme', 'string');
     
+    // Nur für angemeldete Backend-Nutzer (Vorschau im Theme-Editor) – nicht öffentlich auf der Website
+    if (!rex_backend_login::hasSession()) {
+        http_response_code(403);
+        echo 'Preview only for logged-in backend users';
+        exit;
+    }
+
     // Sicherheitscheck
     if (empty($themeName) || !preg_match('/^[a-zA-Z0-9_-]+$/', $themeName)) {
         http_response_code(400);

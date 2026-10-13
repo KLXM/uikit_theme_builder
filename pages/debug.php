@@ -26,8 +26,8 @@ $content = '<div class="rex-form">';
 $content .= '<form method="get">';
 $content .= '<input type="hidden" name="page" value="uikit_theme_builder/debug" />';
 $content .= '<div class="form-group">';
-$content .= '<label class="control-label">Theme auswählen:</label>';
-$content .= '<select name="theme" class="form-control" onchange="this.form.submit()">';
+$content .= '<label class="control-label" for="utb-debug-theme">Theme auswählen:</label>';
+$content .= '<select name="theme" id="utb-debug-theme" class="form-control" onchange="this.form.submit()">';
 $content .= '<option value="">-- Theme wählen --</option>';
 foreach ($allThemes as $name => $info) {
     $selected = ($name === $themeName) ? ' selected' : '';
@@ -79,7 +79,7 @@ if ($themeData) {
     $content .= '<h3>Generierte LESS-Variablen (Format)</h3>';
     $content .= '<p class="text-muted">Dies zeigt, wie die Variablen in der LESS-Datei aussehen werden.</p>';
     
-    $lessOutput = "// UIKit Theme Builder - Generated Variables\n";
+    $lessOutput = "// UIkit Theme Builder - Generated Variables\n";
     $lessOutput .= "// Theme: {$themeName}\n";
     $lessOutput .= "// Generated at: " . date('Y-m-d H:i:s') . "\n\n";
     
@@ -173,10 +173,10 @@ if ($themeData) {
     
     // Simuliere createTempLessFile
     $uikitLessPath = rex_path::addon('uikit_theme_builder', 'sources/uikit/less');
-    $tempLessPreview = "// UIKit Theme Builder - Generated Theme\n";
+    $tempLessPreview = "// UIkit Theme Builder - Generated Theme\n";
     $tempLessPreview .= "// Theme: {$themeName}\n";
     $tempLessPreview .= "// Generated at: " . date('Y-m-d H:i:s') . "\n\n";
-    $tempLessPreview .= "// Step 1: Import UIKit Core + Theme\n";
+    $tempLessPreview .= "// Step 1: Import UIkit Core + Theme\n";
     $tempLessPreview .= '@import "' . $uikitLessPath . '/components/_import.less";' . "\n";
     $tempLessPreview .= '@import "' . $uikitLessPath . '/theme/_import.less";' . "\n\n";
     $tempLessPreview .= "// Step 2: Override Variables with Theme Settings\n";
@@ -184,8 +184,8 @@ if ($themeData) {
     $tempLessPreview .= $lessOutput . "\n\n";
     $tempLessPreview .= "// Step 3: Import Extra Styles\n";
     $tempLessPreview .= '@import "' . rex_path::addon('uikit_theme_builder', 'sources/extra.less') . '";' . "\n\n";
-    $tempLessPreview .= "// Step 4: Custom CSS Rules (Override UIKit)\n";
-    $tempLessPreview .= "// These CSS rules override UIKit's default styles\n";
+    $tempLessPreview .= "// Step 4: Custom CSS Rules (Override UIkit)\n";
+    $tempLessPreview .= "// These CSS rules override UIkit's default styles\n";
     if (!empty($customLess)) {
         $tempLessPreview .= $customLess . "\n";
     }
@@ -313,7 +313,7 @@ if ($themeData) {
     
 } else {
     $content .= '<div class="alert alert-warning">';
-    $content .= '<strong>Kein Theme ausgewählt.</strong> Bitte wählen Sie ein Theme aus dem Dropdown-Menü.';
+    $content .= '<strong>Kein Theme ausgewählt.</strong> Bitte wähle oben ein Theme aus.';
     $content .= '</div>';
 }
 

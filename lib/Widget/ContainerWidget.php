@@ -3,7 +3,7 @@
 namespace UikitThemeBuilder\Widget;
 
 /**
- * Container Widget - UIKit Container Größen
+ * Container Widget - UIkit Container Größen
  */
 class ContainerWidget extends AbstractWidget
 {
@@ -19,7 +19,7 @@ class ContainerWidget extends AbstractWidget
 
     public function getDescription(): string
     {
-        return 'Konfiguration der UIKit-Container-Größen für verschiedene Breakpoints';
+        return 'Konfiguration der UIkit-Container-Größen für verschiedene Breakpoints';
     }
 
     public function getFields(): array

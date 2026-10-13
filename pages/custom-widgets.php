@@ -21,7 +21,7 @@ $content .= '<header class="uk-section uk-section-small">
         
         <div class="uk-alert uk-alert-primary">
             <span uk-icon="icon: info" class="uk-margin-small-right"></span>
-            <strong>Dokumentation:</strong> Vollständige Anleitung und Code-Beispiele finden Sie in der 
+            <strong>Dokumentation:</strong> Vollständige Anleitung und Code-Beispiele findest du in der 
             <a href="' . rex_addon::get('uikit_theme_builder')->getAssetsUrl('') . '../lib/CustomWidgets/README.md" target="_blank">
                 README.md <span uk-icon="icon: external-link; ratio: 0.8"></span>
             </a>
@@ -66,42 +66,42 @@ echo PickitColorPickerWidget::render(\'field_name\', \'#f0506e\', [
             </details>
         </div>
 
-        <!-- UIKit Icon Picker Demo -->
+        <!-- UIkit Icon Picker Demo -->
         <div class="uk-card uk-card-default uk-card-body uk-margin-large">
             <h2 class="uk-card-title">
-                🎯 UIKit Icon Picker
+                🎯 UIkit Icon Picker
                 <span class="uk-badge uk-badge-success uk-margin-small-left">CSS-Klasse</span>
             </h2>
             
             <p class="uk-text-meta">
                 Einfach die Klasse <code>uk-iconpicker</code> verwenden - kein PHP nötig!<br>
-                Unterstützt alle UIKit Standard Icons + Custom Icons automatisch.
+                Unterstützt alle UIkit Standard Icons + Custom Icons automatisch.
             </p>
             
             <div class="uk-grid uk-child-width-1-3@m uk-grid-small" uk-grid>
                 <div>
-                    <label class="uk-form-label">Navigation Icon:</label>
-                    <input type="text" class="uk-iconpicker uk-input" name="nav_icon" value="menu" />
+                    <label class="uk-form-label" for="utb-demo-nav_icon">Navigation Icon:</label>
+                    <input type="text" class="uk-iconpicker uk-input" id="utb-demo-nav_icon" name="nav_icon" value="menu" />
                 </div>
                 <div>
-                    <label class="uk-form-label">Social Icon:</label>
-                    <input type="text" class="uk-iconpicker uk-input" name="social_icon" value="github" />
+                    <label class="uk-form-label" for="utb-demo-social_icon">Social Icon:</label>
+                    <input type="text" class="uk-iconpicker uk-input" id="utb-demo-social_icon" name="social_icon" value="github" />
                 </div>
                 <div>
-                    <label class="uk-form-label">Custom Icon:</label>
-                    <input type="text" class="uk-iconpicker uk-input" name="custom_icon" value="custom-person" />
+                    <label class="uk-form-label" for="utb-demo-custom_icon">Custom Icon:</label>
+                    <input type="text" class="uk-iconpicker uk-input" id="utb-demo-custom_icon" name="custom_icon" value="custom-person" />
                 </div>
                 <div>
-                    <label class="uk-form-label">Leer (kein Vorwert):</label>
-                    <input type="text" class="uk-iconpicker uk-input" name="empty_icon" value="" placeholder="Icon auswählen..." />
+                    <label class="uk-form-label" for="utb-demo-empty_icon">Leer (kein Vorwert):</label>
+                    <input type="text" class="uk-iconpicker uk-input" id="utb-demo-empty_icon" name="empty_icon" value="" placeholder="Icon auswählen..." />
                 </div>
                 <div>
-                    <label class="uk-form-label">Mit Placeholder:</label>
-                    <input type="text" class="uk-iconpicker uk-input" name="placeholder_icon" value="" placeholder="Wähle ein Icon..." />
+                    <label class="uk-form-label" for="utb-demo-placeholder_icon">Mit Placeholder:</label>
+                    <input type="text" class="uk-iconpicker uk-input" id="utb-demo-placeholder_icon" name="placeholder_icon" value="" placeholder="Wähle ein Icon..." />
                 </div>
                 <div>
-                    <label class="uk-form-label">Vorausgefüllt:</label>
-                    <input type="text" class="uk-iconpicker uk-input" name="prefilled_icon" value="heart" />
+                    <label class="uk-form-label" for="utb-demo-prefilled_icon">Vorausgefüllt:</label>
+                    <input type="text" class="uk-iconpicker uk-input" id="utb-demo-prefilled_icon" name="prefilled_icon" value="heart" />
                 </div>
             </div>
             
@@ -175,7 +175,7 @@ $mform->addTextField(\'icon\')
 $fragment = new rex_fragment();
 $fragment->setVar('title', 'Custom Widgets Demo');
 $fragment->setVar('breadcrumb', [
-    'UIKit Theme Builder' => rex_url::backendPage('uikit_theme_builder'),
+    'UIkit Theme Builder' => rex_url::backendPage('uikit_theme_builder'),
     'Custom Widgets' => ''
 ]);
 
@@ -195,10 +195,14 @@ echo '<script>window.uikitAvailableIcons = ' . json_encode($availableIcons) . ';
 // Icon Picker manuell initialisieren
 echo '<script>
 document.addEventListener("DOMContentLoaded", function() {
-    console.log("Available Icons:", window.uikitAvailableIcons);
+    if (window.UIKIT_THEME_BUILDER_DEBUG) {
+        console.log("Available Icons:", window.uikitAvailableIcons);
+    }
     if (window.UikitIconPicker) {
         window.UikitIconPicker.init();
-        console.log("Icon Picker initialized");
+        if (window.UIKIT_THEME_BUILDER_DEBUG) {
+            console.log("Icon Picker initialized");
+        }
     }
 });
 </script>';

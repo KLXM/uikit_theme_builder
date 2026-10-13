@@ -9,7 +9,7 @@ class ComponentsWidget extends AbstractWidget
 {
     public function getName(): string
     {
-        return 'Components';
+        return 'Komponenten';
     }
 
     public function getKey(): string

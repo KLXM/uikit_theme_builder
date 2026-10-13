@@ -32,7 +32,7 @@ if (empty($styleSets)) {
     $content .= '<div class="uk-card uk-card-default uk-card-body uk-text-center">
         <div uk-icon="icon: palette; ratio: 3" class="uk-text-muted uk-margin"></div>
         <h3>Keine Style-Sets vorhanden</h3>
-        <p class="uk-text-muted">Erstellen Sie Ihr erstes Style-Set, um loszulegen.</p>
+        <p class="uk-text-muted">Erstelle dein erstes Style-Set, um loszulegen.</p>
         <a href="' . rex_url::currentBackendPage(['func' => 'add']) . '" class="uk-button uk-button-primary">
             <span uk-icon="icon: plus"></span> Erstes Style-Set erstellen
         </a>
@@ -143,19 +143,11 @@ echo $content;
 
 ?>
 <script>
-function previewStyleSet(id) {
-    UIkit.modal.alert('Vorschau wird implementiert...');
-}
-
 function exportStyleSet(id) {
     window.location.href = '<?= rex_url::currentBackendPage() ?>&func=export&id=' + id;
 }
 
 function exportAllStyleSets() {
     window.location.href = '<?= rex_url::currentBackendPage() ?>&func=export_all';
-}
-
-function importStyleSets() {
-    UIkit.modal.alert('Import wird implementiert...');
 }
 </script>

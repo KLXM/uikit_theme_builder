@@ -1,13 +1,161 @@
-/* Builder-Aktionsleiste bewusst vom REDAXO-Standard absetzen */
+/* ==========================================================================
+   UIkit Theme Builder – Theme Editor
+   Aktionsleiste (sticky), Kopfbereich, Vorschau-Modal, Dunkelmodus, Mobil
+   ========================================================================== */
+
+/* Fokus nicht unter der Aktionsleiste verstecken */
+html:has(.utb-editor-actions) {
+    scroll-padding-bottom: 160px;
+}
+
+.utb-editor {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.utb-editor-back {
+    margin: 0 0 15px;
+}
+
+.utb-editor-back a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.utb-editor-card .uk-card-header code {
+    font-size: 0.85em;
+}
+
+/* Theme Key / Titel */
+.utb-editor-meta {
+    padding: 15px 20px;
+    border-radius: 6px;
+    background: #f8f8f8;
+    border: 1px solid #e5e5e5;
+}
+
+.utb-editor-meta .uk-input[readonly] {
+    background: #f1f3f5;
+    color: #555;
+    cursor: not-allowed;
+}
+
+/* Accordion-Köpfe */
+.utb-section-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    padding-right: 10px;
+}
+
+.utb-section-icon {
+    flex: 0 0 auto;
+}
+
+.utb-section-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.utb-section-title {
+    font-size: 1.15rem;
+    line-height: 1.4;
+    color: #333;
+}
+
+.utb-section-desc {
+    margin-top: 2px;
+}
+
+/* Widgets dürfen den Editor nicht verbreitern */
+.utb-editor .uk-accordion-content,
+.utb-editor .utb-section-body {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+.utb-editor .utb-section-body table {
+    max-width: 100%;
+}
+
+.utb-editor .utb-section-body .uk-overflow-auto,
+.utb-editor .utb-section-body pre {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.utb-editor .utb-section-body img,
+.utb-editor .utb-section-body iframe {
+    max-width: 100%;
+}
+
+.utb-editor-debug {
+    margin-top: 8px;
+}
+
+.utb-editor-debug-body {
+    margin-top: 8px;
+    max-height: 300px;
+    overflow: auto;
+    font-size: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   Aktionsleiste: klebt am unteren Rand des Fensters, solange der Editor
+   sichtbar ist. Sie steht im Fluss am Formularende – verdeckt also nichts.
+   -------------------------------------------------------------------------- */
 .utb-editor-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 970;
+    padding: 12px 20px;
     border-top: 1px solid #d7dee8;
-    background: linear-gradient(180deg, #f6f9fc 0%, #eef4fb 100%);
+    background: #eef4fb;
+    box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.utb-editor-actions-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 20px;
+}
+
+.utb-editor-actions-info {
+    min-width: 0;
+    flex: 1 1 260px;
+}
+
+.utb-editor-actions .utb-save-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.utb-editor-actions .utb-save-hint {
+    margin-top: 2px;
+    color: #555;
+}
+
+.utb-editor-actions .utb-action-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .utb-editor-actions .utb-action-group .uk-button {
-    border-radius: 10px;
+    margin: 0;
+    border-radius: 8px;
     font-weight: 600;
     letter-spacing: 0.01em;
+    white-space: nowrap;
 }
 
 .utb-editor-actions .utb-btn-save {
@@ -23,6 +171,15 @@
     color: #fff;
 }
 
+.utb-editor-actions .utb-btn-save[disabled] {
+    opacity: 0.7;
+    cursor: progress;
+}
+
+.utb-editor-actions .utb-btn-preview {
+    background: #fff;
+}
+
 .utb-editor-actions .utb-btn-cancel {
     border-color: #d14f4f;
     color: #a93434;
@@ -36,14 +193,8 @@
     background: #fff5f5;
 }
 
-.utb-editor-actions .utb-save-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 600;
-}
-
 .utb-editor-actions .utb-save-dot {
+    flex: 0 0 auto;
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -62,91 +213,612 @@
     box-shadow: 0 0 0 3px rgba(30, 135, 240, 0.2);
 }
 
-body.rex-theme-dark .utb-editor-actions {
-    background: linear-gradient(180deg, #2d3d4d 0%, #273340 100%);
-    border-top-color: #1f2a35;
+/* --------------------------------------------------------------------------
+   Vorschau-Modal
+   -------------------------------------------------------------------------- */
+#preview-modal.utb-preview-modal,
+body.rex-backend #preview-modal.utb-preview-modal {
+    z-index: 99999;
 }
 
+.utb-preview-modal .utb-preview-dialog {
+    width: 90vw;
+    height: 90vh;
+    max-width: none;
+    margin: 5vh auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #1e2832;
+}
+
+.utb-preview-header {
+    flex: 0 0 auto;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #324050 0%, #1e2832 100%);
+    color: #fff;
+}
+
+.utb-preview-titlebar,
+.utb-preview-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.utb-preview-toolbar {
+    margin-top: 12px;
+}
+
+.utb-preview-header .uk-modal-title {
+    color: #fff;
+    font-size: 1.4rem;
+}
+
+.utb-preview-theme-name {
+    margin-left: 8px;
+    font-size: 0.8em;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.utb-preview-note {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.utb-preview-header .uk-button {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    color: #fff;
+}
+
+.utb-preview-header .uk-button.is-active,
+.utb-preview-header .uk-button:hover,
+.utb-preview-header .uk-button:focus,
+.utb-preview-header .utb-preview-close {
+    background: rgba(255, 255, 255, 0.92);
+    border-color: #fff;
+    color: #222;
+}
+
+.utb-preview-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    background: #2a3440;
+}
+
+.utb-preview-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100%;
+    padding: 15px;
+}
+
+.utb-preview-frame {
+    flex: 0 0 auto;
+    max-width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    /* Hintergrund der Website selbst (die Vorschau zeigt das Frontend) */
+    background: #fff;
+    transition: width 0.3s ease, height 0.3s ease;
+}
+
+.utb-preview-frame iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #fff;
+}
+
+.utb-preview-frame.is-desktop {
+    width: 100%;
+    height: calc(90vh - 160px);
+}
+
+.utb-preview-frame.is-tablet {
+    width: 768px;
+    height: 1024px;
+}
+
+.utb-preview-frame.is-mobile {
+    width: 375px;
+    height: 812px;
+}
+
+/* --------------------------------------------------------------------------
+   Schmale Bildschirme
+   -------------------------------------------------------------------------- */
+@media (max-width: 959px) {
+    .utb-editor.uk-container {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .utb-editor-card > .uk-card-header,
+    .utb-editor-card .uk-card-body {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .utb-editor .utb-section-body.uk-card-body {
+        padding: 15px 12px;
+    }
+
+    .utb-editor-meta {
+        padding: 12px;
+    }
+
+    .utb-editor .uk-form-width-large {
+        width: 100%;
+    }
+}
+
+@media (max-width: 639px) {
+    .utb-editor-actions {
+        padding: 10px 12px;
+    }
+
+    .utb-editor-actions .utb-save-hint {
+        font-size: 12px;
+    }
+
+    .utb-editor-actions .utb-action-group {
+        width: 100%;
+    }
+
+    .utb-editor-actions .utb-action-group .uk-button {
+        flex: 1 1 0;
+        padding: 0 10px;
+    }
+
+    .utb-editor-actions .utb-action-group .utb-btn-save {
+        flex-basis: 100%;
+    }
+
+    .utb-preview-modal .utb-preview-dialog {
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .utb-preview-frame.is-desktop {
+        height: calc(100vh - 170px);
+    }
+
+    .utb-preview-header .uk-modal-title {
+        font-size: 1.1rem;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Dunkelmodus: REDAXO-Einstellung (body.rex-theme-dark) …
+   -------------------------------------------------------------------------- */
+body.rex-theme-dark .utb-editor {
+    color: rgba(255, 255, 255, 0.75);
+}
+body.rex-theme-dark .utb-editor .uk-card-default {
+    background: #202a35;
+    color: rgba(255, 255, 255, 0.75);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+body.rex-theme-dark .utb-editor .uk-card-default .uk-card-header,
+body.rex-theme-dark .utb-editor .uk-card-default .uk-card-footer {
+    border-color: #2f3c4a;
+}
+body.rex-theme-dark .utb-editor .utb-section-body.uk-card-default {
+    background: #1b232c;
+    box-shadow: none;
+    border: 1px solid #2f3c4a;
+}
+body.rex-theme-dark .utb-editor :is(h1, h2, h3, h4, h5, h6, .uk-h1, .uk-h2, .uk-h3, .uk-h4, .uk-h5, .uk-h6, .uk-card-title, .uk-accordion-title, .utb-section-title, .uk-form-label, legend, strong, b, label) {
+    color: #e0e0e0;
+}
+body.rex-theme-dark .utb-editor :is(.uk-text-muted, .uk-text-meta, .uk-text-meta a, .uk-form-help, small) {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+body.rex-theme-dark .utb-editor .uk-text-primary {
+    color: #5aa9f5 !important;
+}
+body.rex-theme-dark .utb-editor a:not(.uk-button):not(.uk-accordion-title):not(.uk-icon-button) {
+    color: #6bb3f7;
+}
+body.rex-theme-dark .utb-editor .uk-accordion-title::before {
+    filter: invert(1) brightness(0.85);
+}
+body.rex-theme-dark .utb-editor .uk-accordion > :nth-child(n+2) {
+    border-top: 1px solid #2f3c4a;
+}
+body.rex-theme-dark .utb-editor :is(.uk-input, .uk-select, .uk-textarea, input[type="text"], input[type="number"], input[type="url"], select, textarea) {
+    background-color: rgba(27, 35, 44, 0.8);
+    color: rgba(255, 255, 255, 0.85);
+    border-color: #3a4756;
+}
+body.rex-theme-dark .utb-editor :is(.uk-input, .uk-select, .uk-textarea):focus {
+    background-color: #1b232c;
+    border-color: #1e87f0;
+    color: #fff;
+}
+body.rex-theme-dark .utb-editor :is(.uk-input, .uk-textarea)::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+body.rex-theme-dark .utb-editor .uk-select:not([multiple]):not([size]) {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2224%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpolygon%20fill%3D%22%23aab4be%22%20points%3D%2212%201%209%206%2015%206%22%20%2F%3E%3Cpolygon%20fill%3D%22%23aab4be%22%20points%3D%2212%2013%209%208%2015%208%22%20%2F%3E%3C%2Fsvg%3E%0A");
+}
+body.rex-theme-dark .utb-editor .uk-select option {
+    background: #1b232c;
+    color: #e0e0e0;
+}
+body.rex-theme-dark .utb-editor .utb-editor-meta {
+    background: #1b232c;
+    border-color: #2f3c4a;
+}
+body.rex-theme-dark .utb-editor .utb-editor-meta .uk-input[readonly] {
+    background: #26313d;
+    color: rgba(255, 255, 255, 0.7);
+}
+body.rex-theme-dark .utb-editor :is(.uk-checkbox, .uk-radio):not(:checked):not(:indeterminate) {
+    background-color: transparent;
+    border-color: #6b7886;
+}
+body.rex-theme-dark .utb-editor .uk-range::-webkit-slider-runnable-track {
+    background: #3a4756;
+}
+body.rex-theme-dark .utb-editor .uk-range::-moz-range-track {
+    background: #3a4756;
+}
+body.rex-theme-dark .utb-editor .uk-button-default {
+    background: #2e3b4a;
+    color: rgba(255, 255, 255, 0.85);
+    border-color: #3a4756;
+}
+body.rex-theme-dark .utb-editor .uk-button-default:hover,
+body.rex-theme-dark .utb-editor .uk-button-default:focus {
+    background: #364556;
+    color: #fff;
+    border-color: #4a5a6c;
+}
+body.rex-theme-dark .utb-editor .uk-button-text {
+    color: rgba(255, 255, 255, 0.8);
+}
+body.rex-theme-dark .utb-editor .uk-background-muted {
+    background-color: #1b232c !important;
+}
+body.rex-theme-dark .utb-editor .uk-background-default {
+    background-color: #202a35 !important;
+}
+body.rex-theme-dark .utb-editor .uk-table th {
+    color: rgba(255, 255, 255, 0.6);
+}
+body.rex-theme-dark .utb-editor .uk-table td {
+    color: rgba(255, 255, 255, 0.75);
+}
+body.rex-theme-dark .utb-editor :is(.uk-table-divider > tr:not(:first-child), .uk-table-divider > :not(:first-child) > tr, .uk-table-divider > :first-child > tr:not(:first-child)) {
+    border-top-color: #2f3c4a;
+}
+body.rex-theme-dark .utb-editor .uk-table-striped > tr:nth-of-type(odd),
+body.rex-theme-dark .utb-editor .uk-table-striped tbody tr:nth-of-type(odd) {
+    background: #1b232c;
+    border-color: #2f3c4a;
+}
+body.rex-theme-dark .utb-editor .uk-table-hover > tr:hover,
+body.rex-theme-dark .utb-editor .uk-table-hover tbody tr:hover {
+    background: #26313d;
+}
+body.rex-theme-dark .utb-editor :is(.uk-tab > * > a, .uk-subnav > * > a) {
+    color: rgba(255, 255, 255, 0.6);
+}
+body.rex-theme-dark .utb-editor :is(.uk-tab > .uk-active > a, .uk-subnav > .uk-active > a, .uk-tab > * > a:hover, .uk-subnav > * > a:hover) {
+    color: #fff;
+}
+body.rex-theme-dark .utb-editor .uk-tab::before {
+    border-color: #2f3c4a;
+}
+body.rex-theme-dark .utb-editor .uk-subnav-pill > .uk-active > a {
+    background: #1e87f0;
+    color: #fff;
+}
+body.rex-theme-dark .utb-editor :not(pre) > code,
+body.rex-theme-dark .utb-editor pre {
+    background: #151c22;
+    color: #f08ba0;
+    border-color: #2f3c4a;
+}
+body.rex-theme-dark .utb-editor pre {
+    color: #d6dde4;
+}
+body.rex-theme-dark .utb-editor hr,
+body.rex-theme-dark .utb-editor .uk-divider-icon,
+body.rex-theme-dark .utb-editor .uk-hr {
+    border-top-color: #2f3c4a;
+}
+body.rex-theme-dark .utb-editor .uk-alert {
+    background: #26313d;
+    color: rgba(255, 255, 255, 0.8);
+}
+body.rex-theme-dark .utb-editor .uk-alert-primary {
+    background: #1d3550;
+    color: #9ccaf8;
+}
+body.rex-theme-dark .utb-editor .uk-alert-success {
+    background: #173b30;
+    color: #8be0bd;
+}
+body.rex-theme-dark .utb-editor .uk-alert-warning {
+    background: #45351a;
+    color: #f8c98a;
+}
+body.rex-theme-dark .utb-editor .uk-alert-danger {
+    background: #4a2028;
+    color: #f7a1b0;
+}
+body.rex-theme-dark .utb-editor .uk-placeholder {
+    border-color: #3a4756;
+}
+body.rex-theme-dark .utb-editor .uk-label:not([class*="uk-label-"]) {
+    background: #1e6fc2;
+}
+body.rex-theme-dark .utb-editor .uk-badge {
+    background: #1e6fc2;
+}
+body.rex-theme-dark .utb-editor .uk-tile-muted,
+body.rex-theme-dark .utb-editor .uk-section-muted {
+    background: #1b232c;
+}
+body.rex-theme-dark .utb-editor-actions {
+    background: #26313d;
+    border-top-color: #151c22;
+    box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.4);
+}
+body.rex-theme-dark .utb-editor-actions .utb-save-status {
+    color: #e0e0e0;
+}
+body.rex-theme-dark .utb-editor-actions .utb-save-hint {
+    color: rgba(255, 255, 255, 0.65);
+}
 body.rex-theme-dark .utb-editor-actions .utb-btn-save {
-    background: linear-gradient(135deg, #1fa889 0%, #1a7fa5 100%);
+    background: linear-gradient(135deg, #17866e 0%, #146a8a 100%);
     border-color: #1a7fa5;
     color: #fff;
     box-shadow: 0 4px 12px rgba(26, 127, 165, 0.35);
 }
-
 body.rex-theme-dark .utb-editor-actions .utb-btn-save:hover,
 body.rex-theme-dark .utb-editor-actions .utb-btn-save:focus {
     background: linear-gradient(135deg, #1a9579 0%, #147a93 100%);
     color: #fff;
 }
-
+body.rex-theme-dark .utb-editor-actions .utb-btn-preview {
+    background: #2e3b4a;
+    color: rgba(255, 255, 255, 0.85);
+    border-color: #3a4756;
+}
 body.rex-theme-dark .utb-editor-actions .utb-btn-cancel {
     border-color: #c75555;
-    color: #ff8b8b;
-    background: #1a1a1a;
+    color: #ff9b9b;
+    background: #1b232c;
 }
-
 body.rex-theme-dark .utb-editor-actions .utb-btn-cancel:hover,
 body.rex-theme-dark .utb-editor-actions .utb-btn-cancel:focus {
     border-color: #d66b6b;
-    color: #ffa3a3;
-    background: #2a1a1a;
+    color: #ffb3b3;
+    background: #2a1d22;
 }
 
-body.rex-theme-dark .utb-editor-actions .utb-save-status {
-    color: #c0cdd4;
-}
-
+/* … und Systemmodus, solange im Profil nicht „hell“ gewählt ist */
 @media (prefers-color-scheme: dark) {
-    body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions {
-        background: linear-gradient(180deg, #2d3d4d 0%, #273340 100%);
-        border-top-color: #1f2a35;
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor {
+        color: rgba(255, 255, 255, 0.75);
     }
-
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-card-default {
+        background: #202a35;
+        color: rgba(255, 255, 255, 0.75);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-card-default .uk-card-header,
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-card-default .uk-card-footer {
+        border-color: #2f3c4a;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .utb-section-body.uk-card-default {
+        background: #1b232c;
+        box-shadow: none;
+        border: 1px solid #2f3c4a;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor :is(h1, h2, h3, h4, h5, h6, .uk-h1, .uk-h2, .uk-h3, .uk-h4, .uk-h5, .uk-h6, .uk-card-title, .uk-accordion-title, .utb-section-title, .uk-form-label, legend, strong, b, label) {
+        color: #e0e0e0;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor :is(.uk-text-muted, .uk-text-meta, .uk-text-meta a, .uk-form-help, small) {
+        color: rgba(255, 255, 255, 0.6) !important;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-text-primary {
+        color: #5aa9f5 !important;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor a:not(.uk-button):not(.uk-accordion-title):not(.uk-icon-button) {
+        color: #6bb3f7;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-accordion-title::before {
+        filter: invert(1) brightness(0.85);
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-accordion > :nth-child(n+2) {
+        border-top: 1px solid #2f3c4a;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor :is(.uk-input, .uk-select, .uk-textarea, input[type="text"], input[type="number"], input[type="url"], select, textarea) {
+        background-color: rgba(27, 35, 44, 0.8);
+        color: rgba(255, 255, 255, 0.85);
+        border-color: #3a4756;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor :is(.uk-input, .uk-select, .uk-textarea):focus {
+        background-color: #1b232c;
+        border-color: #1e87f0;
+        color: #fff;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor :is(.uk-input, .uk-textarea)::placeholder {
+        color: rgba(255, 255, 255, 0.4);
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-select:not([multiple]):not([size]) {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2224%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2016%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpolygon%20fill%3D%22%23aab4be%22%20points%3D%2212%201%209%206%2015%206%22%20%2F%3E%3Cpolygon%20fill%3D%22%23aab4be%22%20points%3D%2212%2013%209%208%2015%208%22%20%2F%3E%3C%2Fsvg%3E%0A");
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-select option {
+        background: #1b232c;
+        color: #e0e0e0;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .utb-editor-meta {
+        background: #1b232c;
+        border-color: #2f3c4a;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .utb-editor-meta .uk-input[readonly] {
+        background: #26313d;
+        color: rgba(255, 255, 255, 0.7);
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor :is(.uk-checkbox, .uk-radio):not(:checked):not(:indeterminate) {
+        background-color: transparent;
+        border-color: #6b7886;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-range::-webkit-slider-runnable-track {
+        background: #3a4756;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-range::-moz-range-track {
+        background: #3a4756;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-button-default {
+        background: #2e3b4a;
+        color: rgba(255, 255, 255, 0.85);
+        border-color: #3a4756;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-button-default:hover,
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-button-default:focus {
+        background: #364556;
+        color: #fff;
+        border-color: #4a5a6c;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-button-text {
+        color: rgba(255, 255, 255, 0.8);
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-background-muted {
+        background-color: #1b232c !important;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-background-default {
+        background-color: #202a35 !important;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-table th {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-table td {
+        color: rgba(255, 255, 255, 0.75);
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor :is(.uk-table-divider > tr:not(:first-child), .uk-table-divider > :not(:first-child) > tr, .uk-table-divider > :first-child > tr:not(:first-child)) {
+        border-top-color: #2f3c4a;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-table-striped > tr:nth-of-type(odd),
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-table-striped tbody tr:nth-of-type(odd) {
+        background: #1b232c;
+        border-color: #2f3c4a;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-table-hover > tr:hover,
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-table-hover tbody tr:hover {
+        background: #26313d;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor :is(.uk-tab > * > a, .uk-subnav > * > a) {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor :is(.uk-tab > .uk-active > a, .uk-subnav > .uk-active > a, .uk-tab > * > a:hover, .uk-subnav > * > a:hover) {
+        color: #fff;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-tab::before {
+        border-color: #2f3c4a;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-subnav-pill > .uk-active > a {
+        background: #1e87f0;
+        color: #fff;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor :not(pre) > code,
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor pre {
+        background: #151c22;
+        color: #f08ba0;
+        border-color: #2f3c4a;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor pre {
+        color: #d6dde4;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor hr,
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-divider-icon,
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-hr {
+        border-top-color: #2f3c4a;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-alert {
+        background: #26313d;
+        color: rgba(255, 255, 255, 0.8);
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-alert-primary {
+        background: #1d3550;
+        color: #9ccaf8;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-alert-success {
+        background: #173b30;
+        color: #8be0bd;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-alert-warning {
+        background: #45351a;
+        color: #f8c98a;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-alert-danger {
+        background: #4a2028;
+        color: #f7a1b0;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-placeholder {
+        border-color: #3a4756;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-label:not([class*="uk-label-"]) {
+        background: #1e6fc2;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-badge {
+        background: #1e6fc2;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-tile-muted,
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor .uk-section-muted {
+        background: #1b232c;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions {
+        background: #26313d;
+        border-top-color: #151c22;
+        box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.4);
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions .utb-save-status {
+        color: #e0e0e0;
+    }
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions .utb-save-hint {
+        color: rgba(255, 255, 255, 0.65);
+    }
     body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions .utb-btn-save {
-        background: linear-gradient(135deg, #1fa889 0%, #1a7fa5 100%);
+        background: linear-gradient(135deg, #17866e 0%, #146a8a 100%);
         border-color: #1a7fa5;
         color: #fff;
         box-shadow: 0 4px 12px rgba(26, 127, 165, 0.35);
     }
-
     body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions .utb-btn-save:hover,
     body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions .utb-btn-save:focus {
         background: linear-gradient(135deg, #1a9579 0%, #147a93 100%);
         color: #fff;
     }
-
+    body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions .utb-btn-preview {
+        background: #2e3b4a;
+        color: rgba(255, 255, 255, 0.85);
+        border-color: #3a4756;
+    }
     body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions .utb-btn-cancel {
         border-color: #c75555;
-        color: #ff8b8b;
-        background: #1a1a1a;
+        color: #ff9b9b;
+        background: #1b232c;
     }
-
     body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions .utb-btn-cancel:hover,
     body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions .utb-btn-cancel:focus {
         border-color: #d66b6b;
-        color: #ffa3a3;
-        background: #2a1a1a;
-    }
-
-    body.rex-has-theme:not(.rex-theme-light) .utb-editor-actions .utb-save-status {
-        color: #c0cdd4;
-    }
-}
-
-@media (max-width: 959px) {
-    .utb-editor-actions .uk-grid {
-        gap: 12px;
-    }
-
-    .utb-editor-actions .utb-action-group {
-        display: grid;
-        grid-template-columns: 1fr;
-        width: 100%;
-    }
-
-    .utb-editor-actions .utb-action-group .uk-button,
-    .utb-editor-actions .utb-action-group .uk-button + .uk-button {
-        margin-left: 0;
+        color: #ffb3b3;
+        background: #2a1d22;
     }
 }

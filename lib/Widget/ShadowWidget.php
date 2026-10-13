@@ -6,7 +6,7 @@ class ShadowWidget extends AbstractWidget
 {
     public function getName(): string
     {
-        return 'Shadows';
+        return 'Schatten';
     }
 
     public function getKey(): string
@@ -206,7 +206,7 @@ class ShadowWidget extends AbstractWidget
         
         // Modal Header
         $modal .= '<div class="uk-modal-header">';
-        $modal .= '<h2 class="uk-modal-title">Shadow Designer</h2>';
+        $modal .= '<h2 class="uk-modal-title">Schatten-Designer</h2>';
         $modal .= '<div class="uk-flex uk-flex-middle">';
         $modal .= '<button class="uk-button uk-button-primary uk-button-small uk-margin-small-right uk-modal-close" type="button">Fertig</button>';
         $modal .= '<button class="uk-modal-close-default" type="button" uk-close></button>';
@@ -358,7 +358,7 @@ class ShadowWidget extends AbstractWidget
         
         // Rechte Spalte: Preview
         $modal .= '<div class="uk-width-1-2@m">';
-        $modal .= '<h3 class="uk-heading-bullet uk-margin-small-bottom">Live Preview</h3>';
+        $modal .= '<h3 class="uk-heading-bullet uk-margin-small-bottom">Live-Vorschau</h3>';
         
         // Live Preview Bereich
         $modal .= '<div class="uk-card uk-card-muted uk-card-body uk-text-center uk-padding-small">';
@@ -379,7 +379,7 @@ class ShadowWidget extends AbstractWidget
         if (!$isDropShadow) {
             $modal .= '<div class="uk-margin-small">';
             $modal .= '<div class="uk-text-small uk-text-muted uk-text-center">';
-            $modal .= '💡 <strong>Tipp:</strong> Kombinieren Sie helle + dunkle Schatten für Neumorphismus';
+            $modal .= '💡 <strong>Tipp:</strong> Kombiniere helle + dunkle Schatten für Neumorphismus';
             $modal .= '</div>';
             $modal .= '</div>';
         }

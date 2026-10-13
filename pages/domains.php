@@ -1,7 +1,7 @@
 <?php
 
 /**
- * UIKit Theme Builder - Domain-Theme-Zuordnung
+ * UIkit Theme Builder - Domain-Theme-Zuordnung
  */
 
 use UikitThemeBuilder\UikitThemeBuilderManager;
@@ -133,12 +133,13 @@ foreach ($sql as $row) {
 // Formular erstellen
 $content = '<form action="' . rex_url::currentBackendPage() . '" method="post">';
 
+$content .= '<div class="table-responsive">';
 $content .= '<table class="table table-striped table-hover">';
 $content .= '<thead><tr>';
 $content .= '<th>' . $addon->i18n('domains_domain') . '</th>';
 $content .= '<th>' . $addon->i18n('domains_url') . '</th>';
 $content .= '<th>' . $addon->i18n('domains_theme') . '</th>';
-$content .= '<th class="text-center">' . $addon->i18n('domains_utilities') . '</th>';
+$content .= '<th>' . $addon->i18n('domains_utilities') . '</th>';
 $content .= '</tr></thead>';
 $content .= '<tbody>';
 
@@ -151,37 +152,50 @@ foreach ($domains as $domain) {
     $enableTransparent = $mapping['enable_transparent'] ?? 0;
     $enableLightDark = $mapping['enable_light_dark'] ?? 0;
     $enableBgUtilities = $mapping['enable_bg_utilities'] ?? 0;
-    
+    $selectId = 'utb-domain-theme-' . $domainId;
+
     $content .= '<tr>';
     $content .= '<td><strong>' . rex_escape($domainName) . '</strong></td>';
     $content .= '<td><small class="text-muted">' . rex_escape($domainUrl) . '</small></td>';
     $content .= '<td>';
+    $content .= '<label class="sr-only" for="' . $selectId . '">' . rex_escape($addon->i18n('domains_theme_for', $domainName)) . '</label>';
     $content .= '<div class="rex-select-style">';
-    $content .= '<select class="form-control" name="domain_' . $domainId . '">';
+    $content .= '<select class="form-control" id="' . $selectId . '" name="domain_' . $domainId . '">';
     $content .= '<option value=""' . (empty($currentTheme) ? ' selected' : '') . '>-- ' . $addon->i18n('domains_no_theme') . ' --</option>';
-    
+
     foreach ($themes as $themeName => $themeInfo) {
         $selected = ($currentTheme === $themeName) ? ' selected' : '';
         $content .= '<option value="' . rex_escape($themeName) . '"' . $selected . '>' . rex_escape($themeName) . '</option>';
     }
-    
+
     $content .= '</select>';
     $content .= '</div>';
     $content .= '</td>';
     $content .= '<td>';
-    $content .= '<div class="rex-select-style">';
-    $content .= '<select class="form-control" name="utilities_' . $domainId . '[]" multiple size="3">';
-    $content .= '<option value="transparent"' . ($enableTransparent ? ' selected' : '') . ' title="' . $addon->i18n('domains_utility_transparent_desc') . '">' . $addon->i18n('domains_utility_transparent') . '</option>';
-    $content .= '<option value="lightdark"' . ($enableLightDark ? ' selected' : '') . ' title="' . $addon->i18n('domains_utility_lightdark_desc') . '">' . $addon->i18n('domains_utility_lightdark') . '</option>';
-    $content .= '<option value="bgutil"' . ($enableBgUtilities ? ' selected' : '') . ' title="' . $addon->i18n('domains_utility_bgutil_desc') . '">' . $addon->i18n('domains_utility_bgutil') . '</option>';
-    $content .= '</select>';
-    $content .= '</div>';
-    $content .= '<small class="help-block text-muted">' . $addon->i18n('domains_utility_help') . '</small>';
+    // Checkboxen statt Mehrfachauswahl: gleiches Feld (utilities_{id}[]) und gleiche Werte wie bisher
+    $utilityOptions = [
+        'transparent' => ['enabled' => $enableTransparent, 'label' => 'domains_utility_transparent', 'desc' => 'domains_utility_transparent_desc'],
+        'lightdark' => ['enabled' => $enableLightDark, 'label' => 'domains_utility_lightdark', 'desc' => 'domains_utility_lightdark_desc'],
+        'bgutil' => ['enabled' => $enableBgUtilities, 'label' => 'domains_utility_bgutil', 'desc' => 'domains_utility_bgutil_desc'],
+    ];
+    $content .= '<fieldset>';
+    $content .= '<legend class="sr-only">' . rex_escape($addon->i18n('domains_utilities_for', $domainName)) . '</legend>';
+    foreach ($utilityOptions as $utilityValue => $utility) {
+        $content .= '<div class="checkbox" style="margin-top:0">';
+        $content .= '<label title="' . rex_escape($addon->i18n($utility['desc'])) . '">';
+        $content .= '<input type="checkbox" name="utilities_' . $domainId . '[]" value="' . $utilityValue . '"' . ($utility['enabled'] ? ' checked' : '') . '> ';
+        $content .= rex_escape($addon->i18n($utility['label']));
+        $content .= '</label>';
+        $content .= '</div>';
+    }
+    $content .= '</fieldset>';
+    $content .= '<small class="help-block text-muted" style="white-space: normal;">' . $addon->i18n('domains_utility_help') . '</small>';
     $content .= '</td>';
     $content .= '</tr>';
 }
 
 $content .= '</tbody></table>';
+$content .= '</div>';
 
 $content .= '<div class="form-group">';
 $content .= '<button class="btn btn-save rex-primary-action" type="submit" name="save" value="1">';
@@ -190,29 +204,31 @@ $content .= '</button>';
 $content .= '</div>';
 $content .= '</form>';
 
-// Hinweis zur Domain-Konfiguration
+// Hinweis für Redakteure
 $notice = '<div class="alert alert-info">';
 $notice .= '<h4><i class="rex-icon fa-info-circle"></i> ' . $addon->i18n('domains_info_title') . '</h4>';
 $notice .= '<p>' . $addon->i18n('domains_info_text') . '</p>';
-$notice .= '<ul>';
-$notice .= '<li>' . $addon->i18n('domains_info_module') . '</li>';
-$notice .= '<li>' . $addon->i18n('domains_info_css') . '</li>';
-$notice .= '<li>' . $addon->i18n('domains_info_colors') . '</li>';
-$notice .= '</ul>';
 $notice .= '</div>';
 
-// Debug-Info wenn Debug-Modus aktiv
+// Debug-Info und Entwicklerhinweise nur im Debug-Modus
 $debugInfo = '';
 if (rex::isDebugMode()) {
     $context = DomainContext::getContext();
-    $debugInfo = '<div class="alert alert-warning">';
+    $debugInfo = '<style>.utb-domains-debug code { white-space: normal; overflow-wrap: anywhere; }</style>';
+    $debugInfo .= '<div class="alert alert-warning utb-domains-debug" style="overflow-wrap: anywhere;">';
     $debugInfo .= '<h5><i class="rex-icon fa-bug"></i> Debug Information</h5>';
     $debugInfo .= '<dl class="dl-horizontal">';
-    $debugInfo .= '<dt>Aktuelle Domain:</dt><dd>' . ($context['domain_name'] ?? 'Keine') . '</dd>';
-    $debugInfo .= '<dt>Domain ID:</dt><dd>' . ($context['domain_id'] ?? 'Keine') . '</dd>';
-    $debugInfo .= '<dt>Zugeordnetes Theme:</dt><dd>' . ($context['theme'] ?? 'Kein Theme') . '</dd>';
-    $debugInfo .= '<dt>Theme CSS URL:</dt><dd><code>' . ($context['theme_css_url'] ?? 'Keine') . '</code></dd>';
+    $debugInfo .= '<dt>Aktuelle Domain:</dt><dd>' . rex_escape($context['domain_name'] ?? 'Keine') . '</dd>';
+    $debugInfo .= '<dt>Domain ID:</dt><dd>' . rex_escape($context['domain_id'] ?? 'Keine') . '</dd>';
+    $debugInfo .= '<dt>Zugeordnetes Theme:</dt><dd>' . rex_escape($context['theme'] ?? 'Kein Theme') . '</dd>';
+    $debugInfo .= '<dt>Theme CSS URL:</dt><dd><code>' . rex_escape($context['theme_css_url'] ?? 'Keine') . '</code></dd>';
     $debugInfo .= '</dl>';
+    $debugInfo .= '<h5>' . $addon->i18n('domains_dev_title') . '</h5>';
+    $debugInfo .= '<ul>';
+    $debugInfo .= '<li>' . $addon->i18n('domains_info_module') . '</li>';
+    $debugInfo .= '<li>' . $addon->i18n('domains_info_css') . '</li>';
+    $debugInfo .= '<li>' . $addon->i18n('domains_info_colors') . '</li>';
+    $debugInfo .= '</ul>';
     $debugInfo .= '</div>';
 }
 

@@ -6,7 +6,7 @@ class BorderWidget extends AbstractWidget
 {
     public function getName(): string
     {
-        return 'Borders';
+        return 'Rahmen';
     }
 
     public function getKey(): string
@@ -38,7 +38,7 @@ class BorderWidget extends AbstractWidget
                 'min' => 0,
                 'max' => 10,
                 'step' => 1,
-                'help' => 'Globale Breite für Rahmen (UIKit Standard)'
+                'help' => 'Globale Breite für Rahmen (UIkit Standard)'
             ],
             'border-rounded' => [
                 'label' => 'Border Radius',
@@ -48,7 +48,7 @@ class BorderWidget extends AbstractWidget
                 'min' => 0,
                 'max' => 50,
                 'step' => 1,
-                'help' => 'Standard Radius für abgerundete Ecken (UIKit Standard)'
+                'help' => 'Standard Radius für abgerundete Ecken (UIkit Standard)'
             ]
         ];
     }

@@ -1,21 +1,41 @@
 /**
- * Backend-Overrides für individuelle Backend-Themes.
+ * Backend-Overrides für den Modus „Theme fürs ganze Backend“ (Einstellungen → Backend).
  *
- * Ein eigenes Theme fürs REDAXO-Backend übernimmt zwangsläufig auch UIkit-Basisstile,
- * die eigentlich Teil des REDAXO-Kerndesigns sind (u.a. Code-Auszeichnungen,
- * Body-/Grundhintergrund). Diese Datei setzt genau diese Basisstile wieder zurück und wird
- * deshalb nach dem kompilierten Theme geladen (boot.php), damit sie in der Kaskade gewinnt.
+ * Ein Theme im ganzen Backend bringt Basisstile mit, die REDAXOs Oberfläche verändern (Hintergrund, Überschriften,
+ * Links, Abstände). Diese Datei lädt nach dem Theme und stellt REDAXOs eigenes Aussehen wieder her – außerhalb der
+ * Vorschau-Bereiche (Inhalt der Blöcke, Builder-Vorschau, .uk-theme-scope), wo das Theme gelten soll.
  *
- * html: background: none (statt hartem #fff) lässt REDAXOs eigene uikit.styles.css
- * bzw. den Browser-Standard durchscheinen, statt selbst eine Farbe zu erzwingen –
- * im Live-Test bestätigt als ausreichend.
+ * Empfehlung: Modus „Nur in Vorschauen“ – dann bleibt REDAXO ganz unberührt und diese Datei wird nicht gebraucht.
  */
-html, body {
-    height: auto !important;
-    min-height: 100% !important;
-    background-color: #1b232c !important; /* Farbe deines Dark-Theme-Body */
+
+/* Hintergrund wie REDAXO: hell (Standard) bzw. dunkel (Einstellung des Nutzers oder Systemmodus) */
+html { background-color: #fff !important; }
+body { background-color: #f3f6fb !important; height: auto !important; min-height: 100% !important; }
+html:has(> body.rex-theme-dark), body.rex-theme-dark { background-color: #1b232c !important; }
+@media (prefers-color-scheme: dark) {
+    html:has(> body.rex-has-theme:not(.rex-theme-light)), body.rex-has-theme:not(.rex-theme-light) { background-color: #1b232c !important; }
 }
 
+/* Überschriften im Inhaltsbereich (Seitenkopf, Panels): Farbe, Ausrichtung, Schrift wie REDAXO */
+#rex-js-page-main :where(h1, h2, h3, h4, h5, h6, .uk-h1, .uk-h2, .uk-h3):not(:is(.rex-slice-output .panel-body, .slice-rendered, .uk-theme-scope) *) {
+    color: inherit;
+    text-align: inherit;
+    font-family: inherit;
+    hyphens: manual;
+}
+
+/* Hauptmenü links: Titel und Abstände wie REDAXO */
+#rex-js-nav-main .rex-nav-main-title { font-family: inherit; }
+#rex-js-nav-main .rex-nav-main-title + ul { margin-top: 20px; }
+
+/* Links: UIkit-Standardfarben statt Theme-Farbe, außerhalb der Vorschau-Bereiche. Gleiche Spezifität wie im Theme
+   (a bzw. .uk-link) – REDAXOs eigene Regeln (Knöpfe, Menü, Listen) gewinnen weiter. */
+a:where(:not(:is(.rex-slice-output .panel-body, .slice-rendered, .uk-theme-scope) *)),
+.uk-link:where(:not(:is(.rex-slice-output .panel-body, .slice-rendered, .uk-theme-scope) *)) { color: #1e87f0; }
+a:where(:not(:is(.rex-slice-output .panel-body, .slice-rendered, .uk-theme-scope) *)):hover,
+.uk-link:where(:not(:is(.rex-slice-output .panel-body, .slice-rendered, .uk-theme-scope) *)):hover { color: #0f6ecd; }
+
+/* Code-Auszeichnungen wie REDAXO */
 pre {
   color: #000000;
   background: #fff;

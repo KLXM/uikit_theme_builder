@@ -11,12 +11,12 @@ namespace UikitThemeBuilder\Widget;
  */
 class ComponentSelectionWidget extends AbstractWidget
 {
-    /** Immer importiert (Grundlage fuer alles andere). */
+    /** Immer importiert (Grundlage für alles andere). */
     public const REQUIRED = ['variables', 'mixin', 'base', 'utility', 'flex', 'margin', 'padding', 'width', 'height', 'visibility', 'text', 'position', 'transition', 'svg', 'print'];
 
     /**
-     * Abwaehlbare Komponenten: Name => [Label, Gruppe, Hinweis].
-     * Reihenfolge und Abhaengigkeiten stammen aus components/_import.less.
+     * Abwählbare Komponenten: Name => [Label, Gruppe, Hinweis].
+     * Reihenfolge und Abhängigkeiten stammen aus components/_import.less.
      */
     public const OPTIONAL = [
         'link' => ['Link', 'Basis', 'uk-link-*'],
@@ -47,7 +47,7 @@ class ComponentSelectionWidget extends AbstractWidget
         'comment' => ['Comment', 'Elemente', 'uk-comment'],
         'search' => ['Search', 'Formulare', 'uk-search'],
         'accordion' => ['Accordion', 'Interaktion', 'uk-accordion'],
-        'drop' => ['Drop', 'Interaktion', 'uk-drop (Basis fuer Dropdown)'],
+        'drop' => ['Drop', 'Interaktion', 'uk-drop (Basis für Dropdown)'],
         'dropbar' => ['Dropbar', 'Interaktion', 'uk-dropbar'],
         'dropnav' => ['Dropnav', 'Interaktion', 'uk-dropnav'],
         'modal' => ['Modal', 'Interaktion', 'uk-modal'],
@@ -166,8 +166,8 @@ class ComponentSelectionWidget extends AbstractWidget
     }
 
     /**
-     * Import-Zeilen fuer die LESS-Datei: alle Komponenten aus
-     * components/_import.less in Originalreihenfolge ohne die abgewaehlten,
+     * Import-Zeilen für die LESS-Datei: alle Komponenten aus
+     * components/_import.less in Originalreihenfolge ohne die abgewählten,
      * jeweils mit passender theme/-Datei.
      *
      * @param list<string> $disabled

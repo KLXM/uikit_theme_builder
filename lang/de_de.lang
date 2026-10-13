@@ -1,10 +1,10 @@
 # Haupttitel und Menü
-uikit_theme_builder_title = UIKit Theme Builder
+uikit_theme_builder_title = UIkit Theme Builder
 uikit_theme_builder_domains_title = YRewrite-Domains
 uikit_theme_builder_help_title = Hilfe
 
 # Permissions
-perm_uikit_theme_builder = UIKit Theme Builder
+perm_uikit_theme_builder = UIkit Theme Builder
 perm_uikit_theme_builder_themes = Themes verwalten
 perm_uikit_theme_builder_templates = Templates verwalten
 perm_uikit_theme_builder_editor = Theme Editor
@@ -61,14 +61,17 @@ domains_url = URL
 domains_theme = Theme
 domains_utilities = Utility-Stile
 domains_no_theme = Kein Theme
+domains_theme_for = Theme für {0}
+domains_utilities_for = Utility-Stile für {0}
+domains_dev_title = Hinweise für Entwickler
 domains_save = Speichern
 domains_settings_saved = Domain-Theme-Zuordnungen erfolgreich gespeichert
 domains_settings_error = Fehler beim Speichern der Zuordnungen
 domains_yrewrite_not_available = Das YRewrite-Addon ist nicht installiert oder nicht verfügbar. Die Domain-Theme-Zuordnung benötigt YRewrite.
 domains_info_title = Domain-basierte Themes
-domains_info_text = Ordne jedem YRewrite-Domain ein eigenes Theme zu. Module können dann automatisch die passenden Farben und Stile verwenden.
+domains_info_text = Hier legst du fest, welches Theme jede YRewrite-Domain im Frontend verwendet: Die Website unter dieser Domain erscheint dann in dessen Farben, Schriften und Stilen.
 domains_info_module = Module verwenden: <code>DomainContext::getCardStyleOptions()</code>
-domains_info_css = CSS-/JS-Einbindung im Frontend - abhängig vom verwendeten Template (muss TemplateHelper::includeAllStyles() UND TemplateHelper::includeAllJS() aufrufen, sonst passiert hier nichts automatisch)
+domains_info_css = CSS-/JS-Einbindung im Frontend – abhängig vom verwendeten Template: Es muss <code>TemplateHelper::includeAllStyles()</code> und <code>TemplateHelper::includeAllJS()</code> aufrufen, sonst wirkt die Zuordnung nicht automatisch.
 domains_info_colors = Farben aus Theme-Definitionen werden gecacht
 
 # Utility-Stile Übersetzungen
@@ -76,12 +79,12 @@ domains_utility_transparent = Transparent/None
 domains_utility_transparent_desc = Aktiviert uk-card-transparent und uk-card-none Stile
 domains_utility_lightdark = Light/Dark
 domains_utility_lightdark_desc = Aktiviert uk-light und uk-dark Text-Stile
-domains_utility_bgutil = Background-Utilities
+domains_utility_bgutil = Hintergrund-Utilities
 domains_utility_bgutil_desc = Aktiviert uk-background-transparent und uk-background-white Stile
-domains_utility_help = Strg/Cmd-Klick für Mehrfachauswahl
+domains_utility_help = Optionale Zusatzstile, die mit dem Theme geladen werden.
 
 # Template Management
-templates_management = Template Verwaltung
+templates_management = Template-Verwaltung
 available_templates = Verfügbare Templates
 template_name = Template-Name
 description = Beschreibung
@@ -93,7 +96,7 @@ template_installed_successfully = Template erfolgreich installiert
 template_installation_failed = Template-Installation fehlgeschlagen
 confirm_install = Wirklich installieren?
 no_description = Keine Beschreibung
-template_key = Template Schlüssel (Dateiname)
+template_key = Template-Schlüssel (Dateiname)
 template_key_help = Der Name der Template-Datei in redaxo/templates/
 template_display_name = Anzeigename
 template_display_name_help = Der Name, der in REDAXO angezeigt wird

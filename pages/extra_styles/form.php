@@ -49,7 +49,7 @@ if (rex_post('save', 'boolean')) {
     }
     
     if (empty($name)) {
-        echo rex_view::error('Bitte geben Sie einen Namen für das Style-Set ein.');
+        echo rex_view::error('Bitte gib einen Namen für das Style-Set ein.');
     } else {
         try {
             if ($styleSetId > 0) {
@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (formChanged) {
                 e.preventDefault();
                 e.returnValue = '';
-                return 'Sie haben ungespeicherte Änderungen. Möchten Sie die Seite wirklich verlassen?';
+                return 'Du hast ungespeicherte Änderungen. Möchtest du die Seite wirklich verlassen?';
             }
         });
         

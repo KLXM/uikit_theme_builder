@@ -1,5 +1,5 @@
 package: uikit_theme_builder
-version: '2.6.1'
+version: '2.7.0'
 author: KLXM Crossmedia GmbH
 license: MIT
 supportpage: https://github.com/klxm/
@@ -70,6 +70,8 @@ requires:
 default_config:
     google_fonts_api_key: ''
     backend_theme: ''
+    backend_mode: scoped # scoped = Theme nur in Vorschauen, full = ganzes Backend
+    backend_scope: '' # Vorschau-Bereiche (CSS-Selektoren je Zeile), leer = Standard
     debug_log: false # Debug-Meldungen ins Systemlog (nur im REDAXO-Debug-Modus)
 
 permissions:

@@ -61,16 +61,46 @@ class TemplateInstaller
         $content = rex_file::get($templatePath);
         $metadata = [];
 
-        // Extrahiere die erste Zeile: * Name des Templates
-        if (preg_match('/\/\*\*\s*\n\s*\*\s*(.+?)\n/', $content, $matches)) {
-            $metadata['name'] = trim($matches[1]);
+        // Ersten DocBlock auslesen und in Zeilen zerlegen
+        if (!preg_match('/\/\*\*(.*?)\*\//s', $content, $docMatch)) {
+            return $metadata;
         }
 
-        // Extrahiere DOMAIN_SETTINGS Beschreibung (zweite Zeile nach /**):
-        if (preg_match('/\/\*\*\s*\n\s*\*\s*.+?\n\s*\*\s*(.+?)\n/', $content, $matches)) {
-            $line = trim($matches[1]);
-            if (!str_contains($line, 'DOMAIN_SETTINGS')) {
-                $metadata['description'] = $line;
+        $lines = [];
+        foreach (preg_split('/\R/', $docMatch[1]) as $rawLine) {
+            $line = trim(preg_replace('/^\s*\*\s?/', '', $rawLine));
+            if ('' !== $line) {
+                $lines[] = $line;
+            }
+        }
+
+        // Ab DOMAIN_SETTINGS folgen nur noch Einstellungsdefinitionen
+        $docLines = [];
+        foreach ($lines as $line) {
+            if (str_starts_with($line, 'DOMAIN_SETTINGS')) {
+                break;
+            }
+            $docLines[] = $line;
+        }
+
+        // @name / @description bevorzugen
+        foreach ($docLines as $line) {
+            if (preg_match('/^@name\s+(.+)$/', $line, $m)) {
+                $metadata['name'] = trim($m[1]);
+            } elseif (preg_match('/^@description\s+(.+)$/', $line, $m)) {
+                $metadata['description'] = trim($m[1]);
+            }
+        }
+
+        // Fallbacks: erste Zeile ohne Tag = Name, zweite Zeile ohne Tag = Beschreibung
+        $plainLines = array_values(array_filter($docLines, static fn ($line) => !str_starts_with($line, '@')));
+        if (!isset($metadata['name']) && isset($plainLines[0])) {
+            $metadata['name'] = $plainLines[0];
+        }
+        if (!isset($metadata['description'])) {
+            $candidate = $plainLines[1] ?? null;
+            if (null !== $candidate && $candidate !== ($metadata['name'] ?? null)) {
+                $metadata['description'] = $candidate;
             }
         }
 
