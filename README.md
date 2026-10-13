@@ -1,10 +1,10 @@
-# UIKit Theme Builder for REDAXO
+# UIkit Theme Builder for REDAXO
 
-Ein professionelles REDAXO AddOn zur visuellen Erstellung und Verwaltung von UIKit 3 Themes mit Live-Preview, Google Fonts Integration und erweiterten Anpassungsoptionen.
+Ein professionelles REDAXO AddOn zur visuellen Erstellung und Verwaltung von UIkit 3 Themes mit Live-Preview, Google Fonts Integration und erweiterten Anpassungsoptionen.
 
-![UIKit Theme Builder](https://img.shields.io/badge/REDAXO-5.20+-blue.svg)
+![UIkit Theme Builder](https://img.shields.io/badge/REDAXO-5.20+-blue.svg)
 ![PHP](https://img.shields.io/badge/PHP-8.4+-green.svg)
-![UIKit](https://img.shields.io/badge/UIKit-3.21+-orange.svg)
+![UIkit](https://img.shields.io/badge/UIkit-3.21+-orange.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 ## 🎯 Features
@@ -16,7 +16,7 @@ Ein professionelles REDAXO AddOn zur visuellen Erstellung und Verwaltung von UIK
 - **Multi-Domain Support**: Verschiedene Themes für verschiedene Domains
 
 ### 🎭 Umfassende Design-Kontrolle
-- **Farben**: Vollständige Kontrolle über UIKit's Farbpalette
+- **Farben**: Vollständige Kontrolle über UIkit's Farbpalette
 - **Typography**: Google Fonts Integration mit lokaler DSGVO-konformer Speicherung
 - **Breakpoints**: Responsive Design-Konfiguration
 - **Schatten**: Box-Shadow und Drop-Shadow Anpassungen
@@ -40,21 +40,21 @@ Ein professionelles REDAXO AddOn zur visuellen Erstellung und Verwaltung von UIK
 
 - **REDAXO**: 5.20+
 - **PHP**: 8.4+
-- **UIKit**: 3.21+ (siehe UIKit-Versionslimitierung unten)
+- **UIkit**: 3.21+ (siehe UIkit-Versionslimitierung unten)
 - **LESS Compiler**: wikimedia/less.php 5.4+
 - **Berechtigung**: Schreibrechte in `var/data/` und `public/assets/`
 
-## ⚠️ Wichtiger Hinweis: UIKit-Versionslimitierung
+## ⚠️ Wichtiger Hinweis: UIkit-Versionslimitierung
 
-**Aktuell unterstützte UIKit-Version: 3.23.12**
+**Aktuell unterstützte UIkit-Version: 3.23.12**
 
-Das AddOn ist derzeit auf UIKit v3.23.12 beschränkt, da neuere UIKit-Versionen moderne CSS-Selektoren wie `:is()` und `:where()` verwenden, die vom PHP LESS-Compiler (wikimedia/less.php) bis auf weiteres nicht unterstützt werden.
+Das AddOn ist derzeit auf UIkit v3.23.12 beschränkt, da neuere UIkit-Versionen moderne CSS-Selektoren wie `:is()` und `:where()` verwenden, die vom PHP LESS-Compiler (wikimedia/less.php) bis auf weiteres nicht unterstützt werden.
 
 ### Hintergrund
 
-- **Problem**: UIKit ab v3.24.0 verwendet moderne CSS-Selektoren (`:is()`, `:where()`)
+- **Problem**: UIkit ab v3.24.0 verwendet moderne CSS-Selektoren (`:is()`, `:where()`)
 - **Ursache**: Der PHP LESS-Compiler kann diese Selektoren nicht parsen
-- **Lösung**: Verwendung von UIKit v3.23.12 bis zur Lösung des Kompatibilitätsproblems
+- **Lösung**: Verwendung von UIkit v3.23.12 bis zur Lösung des Kompatibilitätsproblems
 
 ### Warum nicht Node.js?
 
@@ -65,17 +65,17 @@ Der Theme Builder verwendet bewusst einen PHP-basierten Workflow, da:
 
 ### Zukunftsperspektive
 
-Sobald der PHP LESS-Compiler moderne CSS-Selektoren unterstützt oder eine alternative Lösung verfügbar ist, wird das AddOn auf neuere UIKit-Versionen aktualisiert. Bis dahin bleibt UIKit v3.23.12 die stabile, unterstützte Version.
+Sobald der PHP LESS-Compiler moderne CSS-Selektoren unterstützt oder eine alternative Lösung verfügbar ist, wird das AddOn auf neuere UIkit-Versionen aktualisiert. Bis dahin bleibt UIkit v3.23.12 die stabile, unterstützte Version.
 
 ### Aktuelle Konfiguration
 
 ```
-UIKit Version: 3.23.12 (eingefroren)
+UIkit Version: 3.23.12 (eingefroren)
 LESS.php Version: 5.4.0 (neueste kompatible Version)
 Status: Stabil, voll funktionsfähig
 ```
 
-**Für Entwickler**: Verwende keine UIKit-Versionen > 3.23.12, bis diese Limitierung aufgehoben wird.
+**Für Entwickler**: Verwende keine UIkit-Versionen > 3.23.12, bis diese Limitierung aufgehoben wird.
 
 ## 🛠️ Installation
 
@@ -83,7 +83,7 @@ Status: Stabil, voll funktionsfähig
 
 ```bash
 # Via REDAXO Backend
-System → AddOns → Installieren → UIKit Theme Builder
+System → AddOns → Installieren → UIkit Theme Builder
 
 # Oder manueller Download
 cd redaxo/src/addons/
@@ -93,22 +93,22 @@ git clone https://github.com/your-repo/uikit_theme_builder.git
 ### 2. AddOn Aktivierung
 
 1. REDAXO Backend öffnen
-2. `System → AddOns → UIKit Theme Builder`
+2. `System → AddOns → UIkit Theme Builder`
 3. "Installieren" und "Aktivieren" klicken
 
-### 3. UIKit Setup
+### 3. UIkit Setup
 
-Das AddOn erwartet UIKit 3.23.12 in folgendem Pfad:
+Das AddOn erwartet UIkit 3.23.12 in folgendem Pfad:
 ```
-public/assets/uikit/    # Kompilierte UIKit Assets v3.23.12
+public/assets/uikit/    # Kompilierte UIkit Assets v3.23.12
 ```
 
-**⚠️ Wichtig**: Verwende ausschließlich UIKit v3.23.12! Neuere Versionen sind aufgrund der LESS.php-Kompatibilität nicht unterstützt.
+**⚠️ Wichtig**: Verwende ausschließlich UIkit v3.23.12! Neuere Versionen sind aufgrund der LESS.php-Kompatibilität nicht unterstützt.
 
-Die UIKit Assets werden **automatisch** bei der AddOn-Installation bereitgestellt. Falls du UIKit manuell aktualisieren möchtest:
+Die UIkit Assets werden **automatisch** bei der AddOn-Installation bereitgestellt. Falls du UIkit manuell aktualisieren möchtest:
 
 ```bash
-# UIKit v3.23.12 manuell installieren (optional)
+# UIkit v3.23.12 manuell installieren (optional)
 cd public/assets/
 # Assets werden bereits vom AddOn bereitgestellt
 ```
@@ -132,7 +132,7 @@ src/addons/uikit_theme_builder/
 │   ├── themes.php            # Theme-Verwaltung
 │   └── domains.php           # Domain-Zuordnung (NEU)
 ├── sources/                   # Build-Quellen (NEU)
-│   ├── uikit/                # UIKit Source v3.23.12
+│   ├── uikit/                # UIkit Source v3.23.12
 │   ├── extra.less            # Custom Styles
 │   └── preview-template.html # Preview-Template
 └── assets/                    # Kompilierte Assets
@@ -148,12 +148,12 @@ var/data/addons/uikit_theme_builder/
 └── icons/                 # Custom Icons (NEU)
 
 public/assets/uikit/
-├── css/                   # UIKit Core CSS
+├── css/                   # UIkit Core CSS
 │   └── uikit.min.css
-├── js/                    # UIKit Core JavaScript
+├── js/                    # UIkit Core JavaScript
 │   ├── uikit.min.js
 │   └── uikit-icons.min.js
-└── uikit-icons-extended.min.js  # Extended Icons (UIKit + Custom)
+└── uikit-icons-extended.min.js  # Extended Icons (UIkit + Custom)
 
 public/assets/addons/uikit_theme_builder/
 ├── themes/compiled/       # Kompilierte Theme CSS (öffentlich)
@@ -166,7 +166,7 @@ public/assets/addons/uikit_theme_builder/
 
 ### Theme-Editor
 
-1. **Backend aufrufen**: `AddOns → UIKit Theme Builder → Theme Editor`
+1. **Backend aufrufen**: `AddOns → UIkit Theme Builder → Theme Editor`
 2. **Neues Theme erstellen**: "Neues Theme" Button
 3. **Widgets konfigurieren**: 
    - Farben anpassen
@@ -178,11 +178,30 @@ public/assets/addons/uikit_theme_builder/
 
 ### Domain-Theme-Zuordnung
 
-1. **Backend aufrufen**: `AddOns → UIKit Theme Builder → Domain-Theme-Zuordnung`
+1. **Backend aufrufen**: `AddOns → UIkit Theme Builder → Domain-Theme-Zuordnung`
 2. **YRewrite-Domains**: Alle verfügbaren Domains werden angezeigt
 3. **Theme zuweisen**: Für jede Domain ein Theme auswählen
 4. **Utility-Stile**: Optional Utility-Styles aktivieren (Transparent, Light/Dark, Background-Utilities)
 5. **Speichern**: Zuordnungen werden gespeichert und Theme-Farben gecacht
+
+### Theme im REDAXO-Backend
+
+Unter **Einstellungen → Theme im Backend** legst du fest, ob und wie ein Theme im Backend wirkt:
+
+- **Theme**: keins, ein bestimmtes Theme oder „Theme der Domain“ (das unter „YRewrite-Domains“ zugewiesene).
+- **Nur in Vorschauen (Standard, empfohlen)**: Das Theme wird auf Vorschau-Bereiche eingegrenzt – Inhalt der Artikel-Blöcke
+  (`.rex-slice-output .panel-body`), Builder-Vorschau (`.slice-rendered`) und alles mit der Klasse `uk-theme-scope`.
+  REDAXOs Oberfläche (Hintergrund, Menü, Überschriften, Links, Dunkelmodus) bleibt unberührt. Die eingegrenzte Fassung
+  (`themes/compiled/<theme>.backend.css`) entsteht automatisch und wird nach jedem Kompilieren erneuert.
+- **Im ganzen Backend**: bisheriges Verhalten; `backend-overrides.css` setzt Hintergrund, Überschriften, Links und Menü
+  auf REDAXO zurück.
+- **Vorschau-Bereiche**: eigene CSS-Selektoren (je Zeile einer) statt des Standards.
+
+Eigene Backend-Bereiche (z. B. in einem AddOn) bekommen das Theme einfach so:
+
+```html
+<div class="uk-theme-scope">… Vorschau im Theme …</div>
+```
 
 ### Integration als Theme-Provider für builder
 
@@ -211,7 +230,7 @@ use UikitThemeBuilder\TemplateHelper;
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- UIKit CSS -->
+    <!-- UIkit CSS -->
     <?= TemplateHelper::includeUIKitCSS() ?>
     
     <!-- Theme CSS (optional) -->
@@ -223,7 +242,7 @@ use UikitThemeBuilder\TemplateHelper;
 <body>
     <!-- Template Content -->
     
-    <!-- UIKit JavaScript + Extended Icons -->
+    <!-- UIkit JavaScript + Extended Icons -->
     <?= TemplateHelper::includeAllJS() ?>
 </body>
 </html>
@@ -238,7 +257,7 @@ use UikitThemeBuilder\TemplateHelper;
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- Alle Styles (UIKit + Theme + Fonts) -->
+    <!-- Alle Styles (UIkit + Theme + Fonts) -->
     <?= TemplateHelper::includeAllStyles('mein-theme') ?>
 </head>
 <body>
@@ -256,7 +275,7 @@ use UikitThemeBuilder\TemplateHelper;
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- UIKit CSS -->
+    <!-- UIkit CSS -->
     <link rel="stylesheet" href="<?= rex_url::assets('uikit/css/uikit.min.css') ?>">
     
     <!-- Theme CSS -->
@@ -265,7 +284,7 @@ use UikitThemeBuilder\TemplateHelper;
 <body>
     <!-- Template Content -->
     
-    <!-- UIKit JavaScript -->
+    <!-- UIkit JavaScript -->
     <script src="<?= rex_url::assets('uikit/js/uikit.min.js') ?>"></script>
     <script src="<?= rex_url::assets('uikit/uikit-icons-extended.min.js') ?>"></script>
 </body>
@@ -286,7 +305,7 @@ $themeName = $context['theme'] ?? 'default-theme';
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- UIKit + Theme -->
+    <!-- UIkit + Theme -->
     <?= TemplateHelper::includeAllStyles($themeName) ?>
 </head>
 <body>
@@ -302,7 +321,7 @@ $themeName = $context['theme'] ?? 'default-theme';
 
 ### ThemeHelper Klasse
 
-Gemeinsame Utilities für Theme-Verwaltung und UIKit-Integration.
+Gemeinsame Utilities für Theme-Verwaltung und UIkit-Integration.
 
 ```php
 // Automatische Textfarbe für Hintergrund berechnen
@@ -337,20 +356,20 @@ Vereinfacht die Asset-Integration in REDAXO Templates.
 #### Komplette Integration
 
 ```php
-// Alle Styles einbinden (UIKit + Theme + Fonts)
+// Alle Styles einbinden (UIkit + Theme + Fonts)
 UikitThemeBuilder\TemplateHelper::includeAllStyles(?string $themeName = null, bool $minified = true): string
 
-// Alle JavaScript einbinden (UIKit + Icons)
+// Alle JavaScript einbinden (UIkit + Icons)
 UikitThemeBuilder\TemplateHelper::includeAllJS(bool $minified = true): string
 ```
 
 #### Einzelne Assets
 
 ```php
-// UIKit CSS einbinden
+// UIkit CSS einbinden
 UikitThemeBuilder\TemplateHelper::includeUIKitCSS(bool $minified = true): string
 
-// UIKit JavaScript einbinden
+// UIkit JavaScript einbinden
 UikitThemeBuilder\TemplateHelper::includeUIKitJS(bool $minified = true, bool $includeIcons = true): string
 
 // Extended Icons einbinden
@@ -426,7 +445,7 @@ Das AddOn verwendet ein modulares Widget-System für verschiedene Design-Bereich
 ### Verfügbare Widgets
 
 #### ColorsWidget
-- **Zweck**: UIKit Farbpalette verwalten
+- **Zweck**: UIkit Farbpalette verwalten
 - **Konfiguration**: Primary, Secondary, Success, Warning, Danger, etc.
 - **Ausgabe**: LESS Variablen für globale Farben
 
@@ -443,7 +462,7 @@ Das AddOn verwendet ein modulares Widget-System für verschiedene Design-Bereich
 #### ShadowWidget
 - **Zweck**: Box-Shadow und Drop-Shadow Definitionen
 - **Konfiguration**: Small, Medium, Large, XLarge Schatten
-- **Ausgabe**: UIKit-kompatible Shadow-Variablen
+- **Ausgabe**: UIkit-kompatible Shadow-Variablen
 
 #### ContainerWidget
 - **Zweck**: Container-Größen für verschiedene Breakpoints
@@ -458,7 +477,7 @@ Das AddOn verwendet ein modulares Widget-System für verschiedene Design-Bereich
 #### BorderWidget
 - **Zweck**: Border-Radius und Border-Width
 - **Konfiguration**: Globale Border-Einstellungen
-- **Ausgabe**: UIKit Border-Variablen
+- **Ausgabe**: UIkit Border-Variablen
 
 ### Eigene Widgets erstellen
 
@@ -598,7 +617,7 @@ $manager->compileTheme('theme-name', $themeData);
 **Lösung**:
 1. Theme-Daten validieren
 2. LESS Debug-Output prüfen
-3. UIKit-Variable Namen überprüfen (Hyphens statt Underscores)
+3. UIkit-Variable Namen überprüfen (Hyphens statt Underscores)
 
 #### Performance-Probleme
 
@@ -617,6 +636,14 @@ if (\rex::isDebugMode()) {
     print_r($themeData);
     echo '</pre>';
 }
+```
+
+Die Seite **YRewrite-Domains** zeigt den aktuellen Domain-Kontext und die Entwicklerhinweise (`DomainContext`, `TemplateHelper`) nur im REDAXO-Debug-Modus an.
+
+Konsolen-Ausgaben des Icon-Pickers und der Widget-Demo-Seite lassen sich im Browser einschalten:
+
+```js
+window.UIKIT_THEME_BUILDER_DEBUG = true;
 ```
 
 ### Log-Dateien
@@ -786,7 +813,7 @@ $siteConfig = match($themeName) {
 
 Neue Widgets sollten:
 - Von `AbstractWidget` erben
-- UIKit-kompatible Variablen generieren
+- UIkit-kompatible Variablen generieren
 - Vollständige Validierung implementieren
 - Benutzerfreundliche Konfiguration bieten
 
@@ -796,7 +823,7 @@ Dieses Projekt steht unter der MIT-Lizenz. Siehe [LICENSE](LICENSE) für Details
 
 ## 🙏 Danksagungen
 
-- [UIKit Team](https://getuikit.com) für das großartige CSS-Framework
+- [UIkit Team](https://getuikit.com) für das großartige CSS-Framework
 - [REDAXO Community](https://redaxo.org) für das robuste CMS
 - [Google Fonts](https://fonts.google.com) für die umfangreiche Font-Bibliothek
 

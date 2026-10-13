@@ -1,0 +1,106 @@
+# Main title and menu
+uikit_theme_builder_title = UIkit Theme Builder
+uikit_theme_builder_domains_title = YRewrite domains
+uikit_theme_builder_help_title = Help
+
+# Permissions
+perm_uikit_theme_builder = UIkit Theme Builder
+perm_uikit_theme_builder_themes = Manage themes
+perm_uikit_theme_builder_templates = Manage templates
+perm_uikit_theme_builder_editor = Theme editor
+perm_uikit_theme_builder_extra_styles = Extra styles
+perm_uikit_theme_builder_domains = YRewrite domains
+perm_uikit_theme_builder_fonts = Google Fonts
+perm_uikit_theme_builder_icons = Custom icons
+perm_uikit_theme_builder_custom_widgets = Custom widgets
+perm_uikit_theme_builder_settings = Settings
+perm_uikit_theme_builder_debug = Debug
+
+# Extra Styles
+extra_styles_caption = Extra styles
+extra_styles_add = Add extra style
+extra_styles_edit_title = Edit extra style
+extra_styles_add_title = Add extra style
+extra_styles_deleted = Extra style deleted
+extra_styles_copied = Extra style copied
+extra_styles_no_rows = No extra styles available
+extra_styles_name = Name
+extra_styles_slug = Slug
+extra_styles_type = Type
+extra_styles_type_card = Card
+extra_styles_type_section = Section
+extra_styles_type_background = Background
+extra_styles_type_border = Border
+extra_styles_color = Background color
+extra_styles_backdrop_blur = Backdrop blur
+extra_styles_text_color = Text color
+extra_styles_link_color = Link color
+extra_styles_border_color = Border color
+extra_styles_border_width = Border width
+extra_styles_border_radius = Border radius
+extra_styles_is_light = Light theme
+extra_styles_priority = Priority
+extra_styles_status = Status
+extra_styles_active = Active
+extra_styles_inactive = Inactive
+extra_styles_description = Description
+extra_styles_module = Module/usage
+extra_styles_css_styles = Generated CSS
+extra_styles_compile_themes = Compile into themes
+extra_styles_preview = Preview
+extra_styles_functions = Functions
+extra_styles_edit = Edit
+extra_styles_copy = Copy
+extra_styles_delete = Delete
+extra_styles_confirm_delete = Really delete?
+
+# Domain theme assignment
+domains_page_title = YRewrite domains
+domains_domain = Domain
+domains_url = URL
+domains_theme = Theme
+domains_utilities = Utility styles
+domains_no_theme = No theme
+domains_theme_for = Theme for {0}
+domains_utilities_for = Utility styles for {0}
+domains_dev_title = Notes for developers
+domains_save = Save
+domains_settings_saved = Domain theme assignments saved successfully
+domains_settings_error = Error while saving the assignments
+domains_yrewrite_not_available = The YRewrite addon is not installed or not available. The domain theme assignment requires YRewrite.
+domains_info_title = Domain-based themes
+domains_info_text = Choose which theme each YRewrite domain uses in the frontend: the website on that domain is then shown with the theme's colors, fonts and styles.
+domains_info_module = Modules use: <code>DomainContext::getCardStyleOptions()</code>
+domains_info_css = CSS/JS inclusion in the frontend depends on the template in use: it must call <code>TemplateHelper::includeAllStyles()</code> and <code>TemplateHelper::includeAllJS()</code>, otherwise the assignment has no automatic effect.
+domains_info_colors = Colors from theme definitions are cached
+
+# Utility styles
+domains_utility_transparent = Transparent/None
+domains_utility_transparent_desc = Enables uk-card-transparent and uk-card-none styles
+domains_utility_lightdark = Light/Dark
+domains_utility_lightdark_desc = Enables uk-light and uk-dark text styles
+domains_utility_bgutil = Background utilities
+domains_utility_bgutil_desc = Enables uk-background-transparent and uk-background-white styles
+domains_utility_help = Optional additional styles loaded together with the theme.
+
+# Template management
+templates_management = Template management
+available_templates = Available templates
+template_name = Template name
+description = Description
+actions = Actions
+install = Install
+install_template = Install template
+no_templates_available = No templates available
+template_installed_successfully = Template installed successfully
+template_installation_failed = Template installation failed
+confirm_install = Really install?
+no_description = No description
+template_key = Template key (file name)
+template_key_help = The name of the template file in redaxo/templates/
+template_display_name = Display name
+template_display_name_help = The name shown in REDAXO
+cancel = Cancel
+template_manager_integration = Template Manager integration
+template_manager_integration_help = Installed templates can now be configured in the Template Manager.
+configure_templates = Go to template settings

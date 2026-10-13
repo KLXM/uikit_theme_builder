@@ -3,7 +3,7 @@
 use UikitThemeBuilder\TemplateInstaller;
 
 /**
- * UIKit Theme Builder - Template Management.
+ * UIkit Theme Builder - Template Management.
  */
 
 $addon = rex_addon::get('uikit_theme_builder');

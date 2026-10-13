@@ -1,8 +1,15 @@
 <?php
 
 /**
- * UIKit Theme Builder - Themes Overview
+ * UIkit Theme Builder - Themes Overview
  */
+
+// Seiten-Stile (hell/dunkel, mobil) – direkt eingebunden, da der Seitenkopf bereits ausgegeben ist
+$utbPageCss = rex_path::addonAssets('uikit_theme_builder', 'css/backend-pages.css');
+echo '<link rel="stylesheet" href="' . rex_url::addonAssets('uikit_theme_builder', 'css/backend-pages.css') . (is_file($utbPageCss) ? '?v=' . filemtime($utbPageCss) : '') . '">';
+
+// CSRF-Schutz für Löschen und Kompilieren (Links tragen den Token)
+$themeActionToken = rex_csrf_token::factory('uikit-theme-actions');
 
 $func = rex_request('func', 'string');
 $themeManager = new UikitThemeBuilder\UikitThemeBuilderManager();
@@ -205,9 +212,9 @@ if ($func === 'quickstart' && rex_request::post('quickstart_create', 'bool') && 
     $themeKey = trim((string) $themeKey, '_');
 
     if ('' === $themeKey) {
-        echo rex_view::error('Bitte gib einen gueltigen Theme-Key an (nur Kleinbuchstaben, Zahlen, Unterstriche).');
+        echo rex_view::error('Bitte gib einen gültigen Theme-Key an (nur Kleinbuchstaben, Zahlen, Unterstriche).');
     } elseif ('new_theme' === $themeKey) {
-        echo rex_view::error('Der Theme-Key "new_theme" ist reserviert. Bitte waehle einen anderen Namen.');
+        echo rex_view::error('Der Theme-Key "new_theme" ist reserviert. Bitte wähle einen anderen Namen.');
     } elseif (null !== $themeManager->loadTheme($themeKey)) {
         echo rex_view::error('Ein Theme mit dem Key "' . rex_escape($themeKey) . '" existiert bereits.');
     } else {
@@ -300,7 +307,9 @@ if ($func === 'quickstart' && rex_request::post('quickstart_create', 'bool') && 
 }
 
 // Theme löschen
-if ($func === 'delete') {
+if ($func === 'delete' && !$themeActionToken->isValid()) {
+    echo rex_view::error('Die Aktion konnte nicht ausgeführt werden: Sicherheitstoken ungültig oder abgelaufen. Bitte lade die Seite neu und versuche es noch einmal.');
+} elseif ($func === 'delete') {
     $themeName = rex_request('theme', 'string');
     if ($themeName) {
         $result = $themeManager->deleteTheme($themeName);
@@ -352,7 +361,9 @@ if ($func === 'import' && isset($_FILES['theme_file'])) {
 }
 
 // Theme kompilieren
-if ($func === 'compile') {
+if ($func === 'compile' && !$themeActionToken->isValid()) {
+    echo rex_view::error('Die Aktion konnte nicht ausgeführt werden: Sicherheitstoken ungültig oder abgelaufen. Bitte lade die Seite neu und versuche es noch einmal.');
+} elseif ($func === 'compile') {
     $themeName = rex_request('theme', 'string');
     if ($themeName) {
         $themeData = $themeManager->loadTheme($themeName);
@@ -372,6 +383,8 @@ if ($func === 'compile') {
             } catch (Exception $e) {
                 echo rex_view::error('Fehler beim Kompilieren: ' . rex_escape($e->getMessage()));
             }
+        } else {
+            echo rex_view::error('Theme "' . rex_escape($themeName) . '" wurde nicht gefunden.');
         }
     }
 }
@@ -379,159 +392,207 @@ if ($func === 'compile') {
 // Themes laden
 $themes = $themeManager->listThemes();
 
+// Verwendung der Themes: Backend (Einstellungen) und YRewrite-Domains
+$backendThemeSetting = (string) rex_config::get('uikit_theme_builder', 'backend_theme', '');
+$themeDomains = [];
+try {
+    if (rex_sql_table::get(rex::getTable('uikit_theme_domains'))->exists()) {
+        $hasYrewrite = rex_addon::get('yrewrite')->isAvailable()
+            && rex_sql_table::get(rex::getTable('yrewrite_domain'))->exists();
+        $domainSql = rex_sql::factory();
+        if ($hasYrewrite) {
+            $domainRows = $domainSql->getArray('SELECT t.domain_id, t.theme_name, d.domain FROM ' . rex::getTable('uikit_theme_domains') . ' t LEFT JOIN ' . rex::getTable('yrewrite_domain') . ' d ON d.id = t.domain_id ORDER BY d.domain');
+        } else {
+            $domainRows = $domainSql->getArray('SELECT domain_id, theme_name FROM ' . rex::getTable('uikit_theme_domains') . ' ORDER BY domain_id');
+        }
+        foreach ($domainRows as $domainRow) {
+            $domainThemeName = (string) ($domainRow['theme_name'] ?? '');
+            if ('' === $domainThemeName) {
+                continue;
+            }
+            $domainLabel = trim((string) ($domainRow['domain'] ?? ''));
+            $themeDomains[$domainThemeName][] = '' !== $domainLabel ? $domainLabel : '#' . (int) $domainRow['domain_id'];
+        }
+    }
+} catch (rex_sql_exception $e) {
+    $themeDomains = [];
+}
+
+// Datum einheitlich als d.m.Y H:i
+$formatThemeDate = static function ($value): string {
+    if (is_int($value) || (is_string($value) && ctype_digit($value))) {
+        return date('d.m.Y H:i', (int) $value);
+    }
+    $timestamp = is_string($value) ? strtotime($value) : false;
+
+    return false !== $timestamp ? date('d.m.Y H:i', $timestamp) : (string) $value;
+};
+
 $content = '';
 
-$content .= '<div class="uk-container uk-container-large uk-margin-top">';
+$content .= '<div class="utb-page uk-container uk-container-large uk-margin-top">';
 
 // Header mit Hero-Bereich (vereinfacht)
-$content .= '<div class="uk-card uk-card-default uk-card-body uk-margin-bottom" style="background: linear-gradient(135deg, #324050 0%, #1e2832 100%); color: white;">';
-$content .= '<div class="uk-grid-small uk-flex-middle" uk-grid>';
-$content .= '<div class="uk-width-auto">';
-$content .= '<span uk-icon="icon: paint-bucket; ratio: 2.5" style="color: white;"></span>';
+$content .= '<div class="utb-hero uk-card uk-card-body uk-margin-bottom">';
+$content .= '<div class="utb-hero-inner">';
+$content .= '<span class="utb-hero-icon" uk-icon="icon: paint-bucket; ratio: 2.5" aria-hidden="true"></span>';
+$content .= '<div class="utb-hero-text">';
+$content .= '<h1 class="utb-hero-title">UIkit Theme Builder</h1>';
+$content .= '<p class="utb-hero-lead">Erstelle und verwalte deine individuellen UIkit Themes</p>';
 $content .= '</div>';
-$content .= '<div class="uk-width-expand">';
-$content .= '<h1 class="uk-card-title uk-margin-remove" style="color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">UIKit Theme Builder</h1>';
-$content .= '<p class="uk-text-large uk-margin-remove-top" style="color: rgba(255,255,255,0.95); text-shadow: 0 1px 3px rgba(0,0,0,0.3);">Erstelle und verwalte deine individuellen UIKit Themes</p>';
-$content .= '</div>';
-$content .= '<div class="uk-width-auto">';
-$content .= '<div class="uk-button-group">';
-    $content .= '<button type="button" class="uk-button uk-button-primary uk-button-large" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; backdrop-filter: blur(10px);" onclick="UIkit.modal(\'#quickstart-modal\').show()">';
-$content .= '<span uk-icon="icon: plus; ratio: 0.9" class="uk-margin-small-right"></span>Neues Theme';
-    $content .= '</button>';
-$content .= '<button class="uk-button uk-button-primary uk-button-large" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; backdrop-filter: blur(10px);" onclick="UIkit.modal(\'#import-modal\').show()">';
-$content .= '<span uk-icon="icon: cloud-upload; ratio: 0.9" class="uk-margin-small-right"></span>Theme importieren';
+$content .= '<div class="utb-hero-actions">';
+$content .= '<button type="button" class="utb-hero-button" onclick="UIkit.modal(\'#quickstart-modal\').show()">';
+$content .= '<span uk-icon="icon: plus; ratio: 0.9" aria-hidden="true"></span>Neues Theme erstellen';
 $content .= '</button>';
-$content .= '</div>';
+$content .= '<button type="button" class="utb-hero-button" onclick="UIkit.modal(\'#import-modal\').show()">';
+$content .= '<span uk-icon="icon: cloud-upload; ratio: 0.9" aria-hidden="true"></span>Theme importieren';
+$content .= '</button>';
 $content .= '</div>';
 $content .= '</div>';
 $content .= '</div>';
 
 if (empty($themes)) {
     // Empty State
-    $content .= '<div class="uk-card uk-card-default uk-card-large uk-text-center">';
+    $content .= '<div class="utb-card uk-card uk-card-default uk-card-large uk-text-center">';
     $content .= '<div class="uk-card-body">';
-    $content .= '<span uk-icon="icon: image; ratio: 4" class="uk-text-muted uk-margin-bottom"></span>';
-    $content .= '<h3 class="uk-text-muted">Noch keine Themes vorhanden</h3>';
-    $content .= '<p class="uk-text-large uk-text-muted">Erstelle dein erstes UIKit Theme um loszulegen.</p>';
-    $content .= '<button type="button" class="uk-button uk-button-primary uk-button-large uk-margin-top" onclick="UIkit.modal(\'#quickstart-modal\').show()">';
-    $content .= '<span uk-icon="icon: plus; ratio: 0.9" class="uk-margin-small-right"></span>Erstes Theme erstellen';
+    $content .= '<span uk-icon="icon: image; ratio: 4" class="utb-muted uk-margin-bottom" aria-hidden="true"></span>';
+    $content .= '<h3 class="utb-muted">Noch keine Themes vorhanden</h3>';
+    $content .= '<p class="uk-text-large utb-muted">Erstelle dein erstes UIkit Theme, um loszulegen.</p>';
+    $content .= '<button type="button" class="utb-btn-primary uk-button uk-button-primary uk-button-large uk-margin-top" onclick="UIkit.modal(\'#quickstart-modal\').show()">';
+    $content .= '<span uk-icon="icon: plus; ratio: 0.9" class="uk-margin-small-right" aria-hidden="true"></span>Erstes Theme erstellen';
     $content .= '</button>';
     $content .= '</div>';
     $content .= '</div>';
 } else {
     // Themes Grid
-    $content .= '<div class="uk-grid-match uk-child-width-1-1@s uk-child-width-1-2@m uk-child-width-1-3@l" uk-grid>';
-    
+    $content .= '<div class="uk-grid-match uk-child-width-1-1 uk-child-width-1-2@m uk-child-width-1-3@l" uk-grid>';
+
     foreach ($themes as $themeName => $themeInfo) {
+        $themeName = (string) $themeName;
         // Theme-Farben laden
         $themeColors = UikitThemeBuilder\ThemeHelper::getThemeColors($themeManager, $themeName);
-        
+
         // Theme-Titel extrahieren (falls vorhanden)
         $themeTitle = $themeInfo['data']['_meta']['title'] ?? '';
         $displayName = !empty($themeTitle) ? $themeTitle : $themeName;
-        
-        $content .= '<div>';
-        $content .= '<div class="uk-card uk-card-default uk-card-hover uk-height-1-1">';
-        
+
         // Hauptfarbe des Themes laden
         $primaryColor = $themeColors['primary'] ?? '#1e87f0';
-        
+
+        // Verwendung des Themes
+        $usageBadges = '';
+        $isDomainTheme = isset($themeDomains[$themeName]);
+        if ($backendThemeSetting === $themeName) {
+            $usageBadges .= '<span class="utb-badge utb-badge-backend" uk-tooltip="title: Wird im REDAXO-Backend verwendet (Einstellungen)"><span uk-icon="icon: cog; ratio: 0.7" aria-hidden="true"></span> Backend</span>';
+        } elseif ('__domain__' === $backendThemeSetting && $isDomainTheme) {
+            $usageBadges .= '<span class="utb-badge utb-badge-backend" uk-tooltip="title: Wird im REDAXO-Backend als Theme der jeweiligen Domain verwendet"><span uk-icon="icon: cog; ratio: 0.7" aria-hidden="true"></span> Backend</span>';
+        }
+        foreach ($themeDomains[$themeName] ?? [] as $domainLabel) {
+            $usageBadges .= '<span class="utb-badge utb-badge-domain"><span uk-icon="icon: world; ratio: 0.7" aria-hidden="true"></span> Domain: ' . rex_escape($domainLabel) . '</span>';
+        }
+
+        $editLabel = 'Bearbeiten';
+        $previewLabel = 'Vorschau';
+        $compileLabel = 'Kompilieren';
+        $menuLabel = 'Weitere Aktionen';
+
+        $compileUrl = rex_url::currentBackendPage(['func' => 'compile', 'theme' => $themeName] + $themeActionToken->getUrlParams());
+        $deleteUrl = rex_url::currentBackendPage(['func' => 'delete', 'theme' => $themeName] + $themeActionToken->getUrlParams());
+
+        $content .= '<div>';
+        $content .= '<div class="utb-card uk-card uk-card-default uk-card-hover uk-height-1-1">';
+
         // Card Header mit Werkzeugleiste (Theme-Hauptfarbe als Hintergrund)
-        $content .= '<div class="uk-card-header uk-padding-small" style="background: ' . rex_escape($primaryColor) . '; border-bottom: 1px solid rgba(0,0,0,0.1);">';
+        $content .= '<div class="utb-card-header uk-card-header uk-padding-small" style="background: ' . rex_escape($primaryColor) . ';">';
         $content .= '<div class="uk-flex uk-flex-between uk-flex-middle">';
-        
+
         // Icon links
-        $content .= '<div>';
-        $content .= '<span uk-icon="icon: palette; ratio: 1.2" style="color: rgba(255,255,255,0.9);"></span>';
-        $content .= '</div>';
-        
+        $content .= '<span class="utb-card-header-icon" uk-icon="icon: palette; ratio: 1.2" aria-hidden="true"></span>';
+
         // Quick-Actions und Menü rechts
-        $content .= '<div>';
-        $content .= '<div class="uk-button-group">';
-        $content .= '<a href="' . rex_url::currentBackendPage(['page' => 'uikit_theme_builder/editor', 'theme' => $themeName]) . '" class="uk-button uk-button-default uk-button-small" uk-tooltip="title: Bearbeiten" style="background: rgba(255,255,255,0.9); border: none;">';
-        $content .= '<span uk-icon="icon: pencil; ratio: 0.8"></span>';
+        $content .= '<div class="utb-card-tools">';
+        $content .= '<a href="' . rex_url::currentBackendPage(['page' => 'uikit_theme_builder/editor', 'theme' => $themeName]) . '" class="utb-tool" uk-tooltip="title: ' . $editLabel . '" aria-label="' . $editLabel . '">';
+        $content .= '<span uk-icon="icon: pencil; ratio: 0.8" aria-hidden="true"></span>';
         $content .= '</a>';
-        $content .= '<button class="uk-button uk-button-default uk-button-small" type="button" uk-tooltip="title: Vorschau" onclick="openPreviewModal(' . htmlspecialchars(json_encode($themeName), ENT_QUOTES) . ')" style="background: rgba(255,255,255,0.9); border: none;">';
-        $content .= '<span uk-icon="icon: desktop; ratio: 0.8"></span>';
+        $content .= '<button class="utb-tool" type="button" uk-tooltip="title: ' . $previewLabel . '" aria-label="' . $previewLabel . '" onclick="openPreviewModal(' . htmlspecialchars(json_encode($themeName), ENT_QUOTES) . ')">';
+        $content .= '<span uk-icon="icon: desktop; ratio: 0.8" aria-hidden="true"></span>';
         $content .= '</button>';
-        $content .= '<a href="' . rex_url::currentBackendPage(['func' => 'compile', 'theme' => $themeName]) . '" class="uk-button uk-button-default uk-button-small" uk-tooltip="title: Kompilieren" style="background: rgba(255,255,255,0.9); border: none;">';
-        $content .= '<span uk-icon="icon: refresh; ratio: 0.8"></span>';
+        $content .= '<a href="' . $compileUrl . '" class="utb-tool" uk-tooltip="title: ' . $compileLabel . '" aria-label="' . $compileLabel . '" onclick="return confirm(' . htmlspecialchars(json_encode('Theme "' . $displayName . '" neu erzeugen? Es ist danach sofort auf der Website aktiv.'), ENT_QUOTES) . ')">';
+        $content .= '<span uk-icon="icon: refresh; ratio: 0.8" aria-hidden="true"></span>';
         $content .= '</a>';
-        $content .= '<div>';
-        $content .= '<button class="uk-button uk-button-default uk-button-small" type="button" uk-tooltip="title: Weitere Aktionen" style="background: rgba(255,255,255,0.9); border: none;">';
-        $content .= '<span uk-icon="icon: more-vertical; ratio: 0.8"></span>';
+        $content .= '<div class="utb-tool-menu">';
+        $content .= '<button class="utb-tool" type="button" uk-tooltip="title: ' . $menuLabel . '" aria-label="' . $menuLabel . '" aria-haspopup="true">';
+        $content .= '<span uk-icon="icon: more-vertical; ratio: 0.8" aria-hidden="true"></span>';
         $content .= '</button>';
-        $content .= '<div uk-dropdown="mode: click; pos: bottom-right">';
+        $content .= '<div class="utb-dropdown" uk-dropdown="mode: click; pos: bottom-right">';
         $content .= '<ul class="uk-nav uk-dropdown-nav">';
-        
+
         // Duplizieren
         $content .= '<li><a href="#" onclick="copyTheme(' . htmlspecialchars(json_encode($themeName), ENT_QUOTES) . '); return false;">';
-        $content .= '<span uk-icon="icon: copy" class="uk-margin-small-right"></span>Duplizieren</a></li>';
-        
+        $content .= '<span uk-icon="icon: copy" class="uk-margin-small-right" aria-hidden="true"></span>Duplizieren</a></li>';
+
         // Exportieren
         $content .= '<li><a href="' . rex_url::backendController(['rex-api-call' => 'uikit_theme_export', 'theme' => $themeName]) . '">';
-        $content .= '<span uk-icon="icon: cloud-download" class="uk-margin-small-right"></span>Exportieren</a></li>';
-        
+        $content .= '<span uk-icon="icon: cloud-download" class="uk-margin-small-right" aria-hidden="true"></span>Exportieren</a></li>';
+
         $content .= '<li class="uk-nav-divider"></li>';
-        
+
         // Löschen
-        $content .= '<li><a href="' . rex_url::currentBackendPage(['func' => 'delete', 'theme' => $themeName]) . '" class="uk-text-danger" onclick="return confirm(' . htmlspecialchars(json_encode('Theme "' . $themeName . '" wirklich löschen?'), ENT_QUOTES) . ')">';
-        $content .= '<span uk-icon="icon: trash" class="uk-margin-small-right"></span>Löschen</a></li>';
-        
+        $content .= '<li><a href="' . $deleteUrl . '" class="utb-danger" onclick="return confirm(' . htmlspecialchars(json_encode('Theme "' . $themeName . '" wirklich löschen?'), ENT_QUOTES) . ')">';
+        $content .= '<span uk-icon="icon: trash" class="uk-margin-small-right" aria-hidden="true"></span>Löschen</a></li>';
+
         $content .= '</ul>';
         $content .= '</div>';
         $content .= '</div>';
         $content .= '</div>';
+
         $content .= '</div>';
-        
         $content .= '</div>';
-        $content .= '</div>';
-        
+
         // Theme-Name/Titel als separater Titel-Bereich
-        $content .= '<div class="uk-card-body uk-padding-small" style="border-bottom: 1px solid #e5e5e5;">';
+        $content .= '<div class="utb-card-title uk-card-body uk-padding-small">';
+        $content .= '<h2 class="utb-theme-name uk-margin-remove uk-text-truncate" title="' . rex_escape($displayName) . '">' . rex_escape($displayName) . '</h2>';
         if (!empty($themeTitle)) {
-            // Wenn Titel vorhanden: Titel groß, Key klein drunter
-            $content .= '<h3 class="uk-margin-remove uk-text-truncate" title="' . rex_escape($displayName) . '">' . rex_escape($displayName) . '</h3>';
-            $content .= '<p class="uk-text-meta uk-margin-remove-top uk-margin-small-top"><code>' . rex_escape($themeName) . '</code></p>';
-        } else {
-            // Wenn kein Titel: nur Key anzeigen
-            $content .= '<h3 class="uk-margin-remove uk-text-truncate" title="' . rex_escape($themeName) . '">' . rex_escape($themeName) . '</h3>';
+            // Wenn Titel vorhanden: Key klein drunter
+            $content .= '<p class="uk-margin-remove-bottom uk-margin-small-top"><code class="utb-code">' . rex_escape($themeName) . '</code></p>';
+        }
+        if ('' !== $usageBadges) {
+            $content .= '<div class="utb-badges">' . $usageBadges . '</div>';
         }
         $content .= '</div>';
-        
+
         // Card Body mit Farbvorschau und Meta-Info
         $content .= '<div class="uk-card-body">';
-        
+
         // Farbpalette
         $content .= '<div class="uk-margin-bottom">';
-        $content .= '<h4 class="uk-text-small uk-text-muted uk-margin-small-bottom">Farbpalette</h4>';
-        $content .= '<div class="uk-grid-small uk-flex-center" uk-grid>';
-        
+        $content .= '<p class="utb-label uk-margin-small-bottom">Farbpalette</p>';
+        $content .= '<div class="utb-swatches">';
+
         foreach ($themeColors as $colorName => $colorValue) {
-            $content .= '<div class="uk-width-auto">';
-            $content .= '<div class="uk-border-rounded" style="width: 28px; height: 28px; background-color: ' . rex_escape($colorValue) . '; border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.2s ease; cursor: pointer;" uk-tooltip="title: ' . ucfirst($colorName) . ': ' . rex_escape($colorValue) . '" onmouseover="this.style.transform=\'scale(1.1)\'" onmouseout="this.style.transform=\'scale(1)\'"></div>';
-            $content .= '</div>';
+            $swatchLabel = ucfirst((string) $colorName) . ': ' . rex_escape($colorValue);
+            $content .= '<span class="utb-swatch" style="background-color: ' . rex_escape($colorValue) . ';" uk-tooltip="title: ' . $swatchLabel . '" role="img" aria-label="' . $swatchLabel . '"></span>';
         }
-        
+
         $content .= '</div>';
         $content .= '</div>';
-        
-        $content .= '<div class="uk-grid-small uk-child-width-1-2" uk-grid>';
+
+        $content .= '<dl class="utb-meta">';
         $content .= '<div>';
-        $content .= '<dt class="uk-text-small uk-text-muted">Erstellt</dt>';
-        $content .= '<dd class="uk-text-meta uk-margin-remove">' . rex_escape($themeInfo['created']) . '</dd>';
+        $content .= '<dt>Erstellt</dt>';
+        $content .= '<dd>' . rex_escape($formatThemeDate($themeInfo['created'])) . '</dd>';
         $content .= '</div>';
         $content .= '<div>';
-        $content .= '<dt class="uk-text-small uk-text-muted">Bearbeitet</dt>';
-        $content .= '<dd class="uk-text-meta uk-margin-remove">' . date('d.m.Y H:i', $themeInfo['modified']) . '</dd>';
+        $content .= '<dt>Bearbeitet</dt>';
+        $content .= '<dd>' . rex_escape($formatThemeDate($themeInfo['modified'])) . '</dd>';
         $content .= '</div>';
+        $content .= '</dl>';
         $content .= '</div>';
-        $content .= '</div>';
-        
+
         $content .= '</div>'; // card
         $content .= '</div>'; // grid item
     }
-    
+
     $content .= '</div>'; // grid
 }
 
@@ -540,11 +601,13 @@ $content .= '</div>'; // container
 // JavaScript Config für Copy-Funktion
 $content .= '<script>';
 $content .= 'const BACKEND_URL = "' . rex_url::backendController() . '";';
+// Frontend-Basis für die Vorschau (funktioniert auch in Unterordner-Installationen)
+$content .= 'const UTB_FRONTEND_URL = ' . json_encode(rex_url::frontend()) . ';';
 $content .= '</script>';
 
 // Quickstart Modal
 $content .= '
-<div id="quickstart-modal" uk-modal>
+<div id="quickstart-modal" class="utb-modal" uk-modal>
     <div class="uk-modal-dialog uk-modal-body">
         <button class="uk-modal-close-default" type="button" uk-close></button>
         <h2 class="uk-modal-title">Theme Schnellstart</h2>
@@ -584,7 +647,7 @@ $content .= '
                         <label class="qs-preset-card" data-qs-group="palette-preset">
                             <input class="uk-hidden" type="radio" name="qs_palette_preset" value="forest">
                             <div class="qs-preset-title">Forest Green</div>
-                            <div class="qs-preset-meta">ruhig, natuerlich</div>
+                            <div class="qs-preset-meta">ruhig, natürlich</div>
                             <div class="qs-preset-swatches">
                                 <span style="background:#2f8f66"></span>
                                 <span style="background:#2f4a3f"></span>
@@ -635,19 +698,19 @@ $content .= '
                 <label class="uk-form-label">Grundfarben</label>
                 <div class="uk-grid-small uk-child-width-1-1 uk-child-width-1-3@s" uk-grid>
                     <div>
-                        <label class="uk-form-label" for="qs_color_primary">Primaerfarbe</label>
+                        <label class="uk-form-label" for="qs_color_primary">Primärfarbe</label>
                         <input class="uk-input tb-color-input" id="qs_color_primary" name="qs_color_primary" type="text" value="#1e87f0" autocomplete="off">
-                        <div class="uk-text-meta">Hauptfarbe fuer Buttons und Highlights.</div>
+                        <div class="uk-text-meta">Hauptfarbe für Buttons und Highlights.</div>
                     </div>
                     <div>
-                        <label class="uk-form-label" for="qs_color_secondary">Sekundaerfarbe</label>
+                        <label class="uk-form-label" for="qs_color_secondary">Sekundärfarbe</label>
                         <input class="uk-input tb-color-input" id="qs_color_secondary" name="qs_color_secondary" type="text" value="#324050" autocomplete="off">
-                        <div class="uk-text-meta">Fuer Flaechen, Header und Kontraste.</div>
+                        <div class="uk-text-meta">Für Flächen, Header und Kontraste.</div>
                     </div>
                     <div>
                         <label class="uk-form-label" for="qs_color_accent">Akzentfarbe</label>
                         <input class="uk-input tb-color-input" id="qs_color_accent" name="qs_color_accent" type="text" value="#1e87f0" autocomplete="off">
-                        <div class="uk-text-meta">Fuer Links und besondere Hinweise.</div>
+                        <div class="uk-text-meta">Für Links und besondere Hinweise.</div>
                     </div>
                 </div>
             </div>
@@ -662,7 +725,7 @@ $content .= '
                         </select>
                     </div>
                     <div>
-                        <label class="uk-form-label" for="qs_font_heading">Ueberschriften</label>
+                        <label class="uk-form-label" for="qs_font_heading">Überschriften</label>
                         <select class="uk-select" id="qs_font_heading" name="qs_font_heading">
                             ' . $quickstartHeadingFontOptionsHtml . '
                         </select>
@@ -675,7 +738,7 @@ $content .= '
                 <label class="uk-form-label" for="qs_open_mode">Nach dem Erstellen</label>
                 <select class="uk-select" id="qs_open_mode" name="qs_open_mode">
                     <option value="details" selected>In die Details springen (Editor)</option>
-                    <option value="preview">Direkt Vorschau oeffnen</option>
+                    <option value="preview">Direkt Vorschau öffnen</option>
                 </select>
             </div>
 
@@ -696,61 +759,10 @@ $content .= '
 </div>
 ';
 
-$content .= '
-<style>
-.qs-preset-card {
-    display: block;
-    border: 1px solid #d7dee8;
-    border-radius: 8px;
-    padding: 10px;
-    background: #ffffff;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.qs-preset-card:hover {
-    border-color: #6ea9df;
-    box-shadow: 0 3px 10px rgba(33, 85, 130, 0.14);
-}
-
-.qs-preset-card.is-selected {
-    border-color: #1e87f0;
-    box-shadow: 0 0 0 2px rgba(30, 135, 240, 0.2);
-    background: #f6fbff;
-}
-
-.qs-preset-title {
-    font-weight: 600;
-    line-height: 1.2;
-    margin-bottom: 4px;
-}
-
-.qs-preset-meta {
-    font-size: 12px;
-    color: #7c8694;
-    line-height: 1.3;
-}
-
-.qs-preset-swatches {
-    display: flex;
-    gap: 6px;
-    margin-top: 10px;
-}
-
-.qs-preset-swatches span {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    border: 1px solid rgba(0,0,0,0.12);
-    display: inline-block;
-}
-
-</style>
-';
 
 // Import Modal
 $content .= '
-<div id="import-modal" uk-modal>
+<div id="import-modal" class="utb-modal" uk-modal>
     <div class="uk-modal-dialog">
         <button class="uk-modal-close-default" type="button" uk-close></button>
         <div class="uk-modal-header">
@@ -798,16 +810,16 @@ $content .= '
     <div class="uk-modal-dialog uk-modal-body uk-padding-remove" style="width: 90vw; height: 90vh; max-width: none; max-height: none; margin: 5vh auto; z-index: 100000 !important;">
         
         <!-- Modal Header -->
-        <div class="uk-modal-header" style="background: linear-gradient(135deg, #324050 0%, #1e2832 100%); color: white; position: relative; z-index: 100001 !important; padding: 20px 30px;">
+        <div class="uk-modal-header utb-preview-header">
             <div class="uk-grid-small uk-flex-middle" uk-grid>
                 <div class="uk-width-auto">
-                    <h2 class="uk-modal-title uk-margin-remove" style="color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">
-                        <span uk-icon="icon: tv; ratio: 1.2" class="uk-margin-small-right" style="color: white;"></span>
-                        Theme Preview
+                    <h2 class="uk-modal-title uk-margin-remove">
+                        <span uk-icon="icon: tv; ratio: 1.2" class="uk-margin-small-right" aria-hidden="true"></span>
+                        Theme-Vorschau
                     </h2>
                 </div>
                 <div class="uk-width-expand">
-                    <span id="preview-theme-name" class="uk-text-large" style="color: rgba(255,255,255,0.9);"></span>
+                    <span id="preview-theme-name" class="uk-text-large utb-preview-name"></span>
                 </div>
             </div>
             
@@ -815,19 +827,19 @@ $content .= '
             <div class="uk-grid-small uk-flex-middle uk-flex-between uk-margin-top" uk-grid>
                 <div class="uk-width-auto">
                     <div class="uk-button-group">
-                        <button class="uk-button uk-button-small" onclick="setPreviewSize(\'desktop\')" id="btn-desktop" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;">
+                        <button type="button" class="uk-button uk-button-small utb-preview-size" onclick="setPreviewSize(\'desktop\')" id="btn-desktop">
                             <span uk-icon="icon: desktop"></span> Desktop
                         </button>
-                        <button class="uk-button uk-button-small" onclick="setPreviewSize(\'tablet\')" id="btn-tablet" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;">
+                        <button type="button" class="uk-button uk-button-small utb-preview-size" onclick="setPreviewSize(\'tablet\')" id="btn-tablet">
                             <span uk-icon="icon: tablet"></span> Tablet  
                         </button>
-                        <button class="uk-button uk-button-small" onclick="setPreviewSize(\'mobile\')" id="btn-mobile" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white;">
+                        <button type="button" class="uk-button uk-button-small utb-preview-size" onclick="setPreviewSize(\'mobile\')" id="btn-mobile">
                             <span uk-icon="icon: phone"></span> Mobile
                         </button>
                     </div>
                 </div>
                 <div class="uk-width-auto">
-                    <button class="uk-modal-close-default uk-button uk-button-small" type="button" style="background: rgba(255,255,255,0.9); color: #333; border: none;">
+                    <button class="uk-modal-close-default uk-button uk-button-small utb-preview-close" type="button">
                         <span uk-icon="icon: close"></span> Schließen
                     </button>
                 </div>
@@ -837,10 +849,10 @@ $content .= '
         <!-- Modal Body -->
         <div class="uk-modal-body uk-padding-remove uk-background-muted" style="height: calc(90vh - 80px); overflow: hidden; position: relative; z-index: 100001 !important;">
             <div id="preview-container" class="uk-width-1-1 uk-height-1-1 uk-flex uk-flex-center uk-flex-middle" style="transition: all 0.3s ease;">
-                <div id="preview-frame-container" style="background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.15); border-radius: 8px; overflow: hidden;">
+                <div id="preview-frame-container" class="utb-preview-frame">
                     <iframe id="preview-iframe" 
-                            src="" 
-                            style="border: none; background: white; display: block;">
+                            src=""
+                            title="Theme-Vorschau">
                     </iframe>
                 </div>
             </div>
@@ -910,8 +922,9 @@ function openPreviewModal(themeName) {
     document.getElementById("preview-theme-name").textContent = themeName;
     
     // iframe URL setzen - einfache URL mit Output Buffer
-    const previewUrl = "/?previewtheme=" + encodeURIComponent(themeName);
-    document.getElementById("preview-iframe").src = previewUrl;
+    const previewUrl = new URL(UTB_FRONTEND_URL || "./", window.location.href);
+    previewUrl.searchParams.set("previewtheme", themeName);
+    document.getElementById("preview-iframe").src = previewUrl.toString();
     
     // Modal öffnen
     UIkit.modal("#preview-modal").show();
@@ -1056,16 +1069,9 @@ function setPreviewSize(size) {
     // Button-States zurücksetzen
     buttons.forEach(btn => {
         const element = document.getElementById("btn-" + btn);
-        element.style.background = "rgba(255,255,255,0.2)";
-        element.style.border = "1px solid rgba(255,255,255,0.3)";
-        element.style.color = "white";
+        element.classList.toggle("is-active", btn === size);
+        element.setAttribute("aria-pressed", btn === size ? "true" : "false");
     });
-    
-    // Aktiven Button setzen
-    const activeBtn = document.getElementById("btn-" + size);
-    activeBtn.style.background = "rgba(255,255,255,0.9)";
-    activeBtn.style.border = "1px solid white";
-    activeBtn.style.color = "#333";
     
     // Container und iframe-Größe anpassen
     switch(size) {

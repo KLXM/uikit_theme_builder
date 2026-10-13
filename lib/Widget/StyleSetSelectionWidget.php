@@ -33,7 +33,7 @@ class StyleSetSelectionWidget extends AbstractWidget
 
     public function getDescription(): string
     {
-        return 'Wählen Sie die Style-Sets aus, die in diesem Theme verfügbar sein sollen.';
+        return 'Wähle die Style-Sets aus, die in diesem Theme verfügbar sein sollen.';
     }
 
     public function getFields(): array

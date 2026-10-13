@@ -3,7 +3,7 @@
 namespace UikitThemeBuilder\Widget;
 
 /**
- * Extra Styles Widget - Repeater für eigene UIKit Styles
+ * Extra Styles Widget - Repeater für eigene UIkit Styles
  * Direkt integriert in den Theme Builder
  */
 class ExtraStylesWidget extends AbstractWidget
@@ -20,7 +20,7 @@ class ExtraStylesWidget extends AbstractWidget
 
     public function getDescription(): string
     {
-        return 'Eigene CSS-Klassen für UIKit - Cards, Sections, Backgrounds etc.';
+        return 'Eigene CSS-Klassen für UIkit - Cards, Sections, Backgrounds etc.';
     }
 
     public function getDefaultValues(): array
@@ -53,12 +53,12 @@ class ExtraStylesWidget extends AbstractWidget
         // (Backend), ein zweites Include würde dessen Auto-Init doppelt laufen lassen.
         $output .= '<link rel="stylesheet" href="' . \rex_url::addonAssets('uikit_theme_builder', 'css/extra-styles-widget.css') . '">';
         
-        // Container mit UIKit
+        // Container mit UIkit
         $output .= '<div class="extra-styles-widget uk-margin-medium">';
         $output .= '<div class="uk-flex uk-flex-between uk-flex-middle uk-margin-bottom">';
         $output .= '<div>';
         $output .= '<h3 class="uk-h4 uk-margin-remove"><span uk-icon="paint-bucket"></span> Extra Styles</h3>';
-        $output .= '<p class="uk-text-meta uk-margin-remove-top">Erstelle eigene CSS-Klassen für UIKit-Komponenten</p>';
+        $output .= '<p class="uk-text-meta uk-margin-remove-top">Erstelle eigene CSS-Klassen für UIkit-Komponenten</p>';
         $output .= '</div>';
         $output .= '<button type="button" class="uk-button uk-button-primary uk-button-small" onclick="addExtraStyle()">';
         $output .= '<span uk-icon="plus"></span> Neuen Style hinzufügen';

@@ -7,6 +7,9 @@ namespace UikitThemeBuilder;
  */
 class PreviewController
 {
+    /** Debug-Infos zur Vorschau (nur im REDAXO-Debug-Modus als HTML-Kommentar ausgegeben) */
+    private array $debugInfo = [];
+
     /**
      * Clean Preview ohne Backend-Styles anzeigen
      */
@@ -54,8 +57,13 @@ class PreviewController
         $html = str_replace('{{GOOGLE_FONTS}}', $googleFontsHtml, $html);
         $html = str_replace('{{CUSTOM_ICON_NAMES}}', $customIconsJson, $html);
         
-        // Debug-URLs in HTML-Kommentar einbetten
-        $html = str_replace('<head>', '<head>' . "\n<!-- Preview URLs Debug:\n" . print_r($debugUrls, true) . "-->\n", $html);
+        // Debug-Infos nur im Debug-Modus in einen HTML-Kommentar (keine Serverpfade im Normalbetrieb)
+        if (\rex::isDebugMode()) {
+            $debugComment = "\n<!-- UIkit Theme Builder Preview Debug:\n"
+                . str_replace('--', '- -', print_r(['theme_css' => $this->debugInfo, 'urls' => $debugUrls], true))
+                . "-->\n";
+            $html = str_replace('<head>', '<head>' . $debugComment, $html);
+        }
         
         // Cache-Buster für CSS
         $cacheBuster = time();
@@ -92,8 +100,8 @@ class PreviewController
             $debugInfo['status'] = 'using_fallback_css';
         }
         
-        // Debug-Info in HTML-Kommentar einbetten (nur sichtbar im Quellcode)
-        echo "<!-- UIKit Theme Builder Debug:\n" . print_r($debugInfo, true) . "-->\n";
+        // Debug-Info merken – showPreview() gibt sie im Debug-Modus im <head> aus (vorher stand sie vor dem Doctype)
+        $this->debugInfo = $debugInfo;
         
         return $url;
     }

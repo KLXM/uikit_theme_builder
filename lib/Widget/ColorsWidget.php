@@ -3,13 +3,13 @@
 namespace UikitThemeBuilder\Widget;
 
 /**
- * Colors Widget - UIKit Standard Farben
+ * Colors Widget - UIkit Standard Farben
  */
 class ColorsWidget extends AbstractWidget
 {
     public function getName(): string
     {
-        return 'Colors';
+        return 'Farben';
     }
 
     public function getKey(): string
@@ -19,7 +19,7 @@ class ColorsWidget extends AbstractWidget
 
     public function getDescription(): string
     {
-        return 'Konfiguration der UIKit-Standard-Farbpalette';
+        return 'Konfiguration der UIkit-Standard-Farbpalette';
     }
 
     public function getFields(): array
@@ -319,7 +319,7 @@ class ColorsWidget extends AbstractWidget
             if (isset($formData[$key])) {
                 $color = trim($formData[$key]);
                 if (!$this->isValidColor($color)) {
-                    $errors[$key] = 'Ungültiges Farbformat. Verwenden Sie HEX (#RRGGBB), RGB(A) oder HSL(A).';
+                    $errors[$key] = 'Ungültiges Farbformat. Verwende HEX (#RRGGBB), RGB(A) oder HSL(A).';
                 }
             }
         }

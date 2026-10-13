@@ -95,6 +95,12 @@ if (rex::isBackend() && rex::getUser()) {
     rex_view::addCssFile(rex_url::addonAssets('uikit_theme_builder', 'pickit-color/colorpicker.min.css'));
     rex_view::addJsFile(rex_url::addonAssets('uikit_theme_builder', 'pickit-color/colorpicker.min.js'));
     
+    // Seiten des AddOns: lesbare Kontraste für UIkit-Texte im Backend (Meta, Hinweise, Links, Code) – nur auf eigenen Seiten
+    if (str_starts_with(rex_request('page', 'string', ''), 'uikit_theme_builder')) {
+        $a11y = rex_path::addonAssets('uikit_theme_builder', 'css/backend-a11y.css');
+        rex_view::addCssFile(rex_url::addonAssets('uikit_theme_builder', 'css/backend-a11y.css') . (is_file($a11y) ? '?v=' . filemtime($a11y) : ''));
+    }
+
     // UIKit Icon Picker
     rex_view::addJsFile(rex_url::addonAssets('uikit_theme_builder', 'js/uikit-icon-picker.js'));
     

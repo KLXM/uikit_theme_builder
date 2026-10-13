@@ -3,7 +3,7 @@
 namespace UikitThemeBuilder\Widget;
 
 /**
- * Navbar Widget - UIKit Navbar Styling
+ * Navbar Widget - UIkit Navbar Styling
  */
 class NavbarWidget extends AbstractWidget
 {
@@ -19,7 +19,7 @@ class NavbarWidget extends AbstractWidget
 
     public function getDescription(): string
     {
-        return 'Konfiguration der UIKit-Navbar-Styling-Optionen';
+        return 'Konfiguration der UIkit-Navbar-Styling-Optionen';
     }
 
     public function getFields(): array
@@ -350,7 +350,7 @@ class NavbarWidget extends AbstractWidget
         
         // Typography & Spacing
         $output .= '<div class="uk-width-1-2@m">';
-        $output .= '<h4><span uk-icon="icon: text; ratio: 0.8" class="uk-margin-small-right uk-text-primary"></span>Typography & Spacing</h4>';
+        $output .= '<h4><span uk-icon="icon: text; ratio: 0.8" class="uk-margin-small-right uk-text-primary"></span>Typografie & Abstände</h4>';
         
         // Font Size (freie Eingabe)
         $output .= $this->renderFormRow(
@@ -389,7 +389,7 @@ class NavbarWidget extends AbstractWidget
         // Dropdown Settings
         $output .= '<div class="uk-width-1-1">';
         $output .= '<hr class="uk-margin-medium">';
-        $output .= '<h4><span uk-icon="icon: triangle-down; ratio: 0.8" class="uk-margin-small-right uk-text-primary"></span>Dropdown Einstellungen</h4>';
+        $output .= '<h4><span uk-icon="icon: triangle-down; ratio: 0.8" class="uk-margin-small-right uk-text-primary"></span>Dropdown-Einstellungen</h4>';
         $output .= '<div class="uk-grid-small uk-child-width-1-2@m" uk-grid>';
         
         // Dropdown Background
@@ -712,7 +712,7 @@ class NavbarWidget extends AbstractWidget
             $data['navbar-dropdown-nav-sublist-item-hover-color'] = $data['navbar-dropdown-nav-item-hover-color'];
         }
 
-        // UIKit erwartet: @navbar-nav-item-height, @navbar-nav-item-color etc.
+        // UIkit erwartet: @navbar-nav-item-height, @navbar-nav-item-color etc.
         return $data;
     }
 
@@ -720,8 +720,8 @@ class NavbarWidget extends AbstractWidget
     {
         $less = '';
         
-        // Nur Custom-Variablen die UIKit nicht kennt via CSS-Regeln anwenden
-        // UIKit kennt KEINE navbar-container-* Variablen
+        // Nur Custom-Variablen die UIkit nicht kennt via CSS-Regeln anwenden
+        // UIkit kennt KEINE navbar-container-* Variablen
         if (!empty($data['navbar-container-background']) || 
             !empty($data['navbar-container-border']) || 
             !empty($data['navbar-container-box-shadow'])) {

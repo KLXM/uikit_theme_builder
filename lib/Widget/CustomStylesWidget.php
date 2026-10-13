@@ -9,7 +9,7 @@ class CustomStylesWidget extends AbstractWidget
 {
     public function getName(): string
     {
-        return 'Custom Styles';
+        return 'Eigene Styles';
     }
 
     public function getKey(): string
@@ -111,10 +111,10 @@ class CustomStylesWidget extends AbstractWidget
         $output .= '<div class="uk-alert-primary" uk-alert>';
         $output .= '<h4>💡 Tipps für Custom Styles:</h4>';
         $output .= '<ul class="uk-list">';
-        $output .= '<li><strong>Variablen nutzen:</strong> Verwende UIKit-Variablen wie <code>@global-primary-background</code></li>';
+        $output .= '<li><strong>Variablen nutzen:</strong> Verwende UIkit-Variablen wie <code>@global-primary-background</code></li>';
         $output .= '<li><strong>Namespacing:</strong> Präfixe deine Klassen (z.B. <code>.my-</code>) um Konflikte zu vermeiden</li>';
         $output .= '<li><strong>LESS-Features:</strong> Nutze Nesting, Mixins und Funktionen</li>';
-        $output .= '<li><strong>Responsive:</strong> Verwende UIKit-Breakpoints <code>@media (min-width: @breakpoint-small)</code></li>';
+        $output .= '<li><strong>Responsive:</strong> Verwende UIkit-Breakpoints <code>@media (min-width: @breakpoint-small)</code></li>';
         $output .= '</ul>';
         $output .= '</div>';
 
@@ -165,7 +165,7 @@ class CustomStylesWidget extends AbstractWidget
 
     public function generateLessVariables(array $data): array
     {
-        // Custom Styles Widget generiert keine UIKit-Variablen
+        // Custom Styles Widget generiert keine UIkit-Variablen
         // sondern fügt eigenen LESS-Code hinzu
         return [];
     }

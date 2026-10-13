@@ -1,0 +1,27 @@
+/**
+ * UIkit Theme Builder – Kontraste auf den Seiten des AddOns (nur dort geladen, boot.php).
+ * UIkits Standardfarben für Nebentexte (#999), Hinweise und Links (#1e87f0) erreichen auf REDAXOs hellen Flächen kein 4.5:1.
+ * Werte geprüft auf #fff, #f8f8f8, #f3f6fb. Nur im hellen Modus (Einstellung „hell“ oder System hell ohne „dunkel“).
+ */
+
+body.rex-theme-light #rex-js-page-main :is(.uk-text-meta, .uk-text-muted, .uk-text-lead) { color: #5f6670; }
+body.rex-theme-light #rex-js-page-main .uk-alert-primary { color: #0b5aa8; }
+body.rex-theme-light #rex-js-page-main :is(.uk-text-meta, .help-block, .uk-alert, .utb-editor-back) a, body.rex-theme-light #rex-js-page-main details > summary { color: #0b62b8; }
+body.rex-theme-light #rex-js-page-main :not(pre) > code { color: #c8254a; }
+body.rex-theme-light #rex-js-page-main .uk-badge:not([class*="uk-badge-"]), body.rex-theme-light #rex-js-page-main .uk-badge-success { background: #0f6ecd; }
+body.rex-theme-light #rex-js-page-main .uk-button-primary:not(:hover) { background-color: #0f6ecd; }
+body.rex-theme-light #rex-js-page-main .uk-alert-success { color: #1a6b4a; }
+body.rex-theme-light #rex-js-page-main :is(.uk-card-default, .uk-card-default .uk-card-header) > :is(p, .uk-text-muted) { color: #5f6670; }
+@media (prefers-color-scheme: light) {
+    body:not(.rex-theme-dark) #rex-js-page-main :is(.uk-text-meta, .uk-text-muted, .uk-text-lead) { color: #5f6670; }
+    body:not(.rex-theme-dark) #rex-js-page-main .uk-alert-primary { color: #0b5aa8; }
+    body:not(.rex-theme-dark) #rex-js-page-main :is(.uk-text-meta, .help-block, .uk-alert, .utb-editor-back) a, body:not(.rex-theme-dark) #rex-js-page-main details > summary { color: #0b62b8; }
+    body:not(.rex-theme-dark) #rex-js-page-main :not(pre) > code { color: #c8254a; }
+    body:not(.rex-theme-dark) #rex-js-page-main .uk-badge:not([class*="uk-badge-"]), body:not(.rex-theme-dark) #rex-js-page-main .uk-badge-success { background: #0f6ecd; }
+    body:not(.rex-theme-dark) #rex-js-page-main .uk-button-primary:not(:hover) { background-color: #0f6ecd; }
+    body:not(.rex-theme-dark) #rex-js-page-main .uk-alert-success { color: #1a6b4a; }
+    body:not(.rex-theme-dark) #rex-js-page-main :is(.uk-card-default, .uk-card-default .uk-card-header) > :is(p, .uk-text-muted) { color: #5f6670; }
+}
+/* Links im Fließtext von Hinweisen auch ohne Farbe erkennbar */
+#rex-js-page-main :is(.help-block, .rex-note, .uk-text-meta, .uk-alert, [id$="-help"]) a { text-decoration: underline; }
+#rex-js-page-main .help-block code, #rex-js-page-main .rex-note code { white-space: normal; overflow-wrap: anywhere; }

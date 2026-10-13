@@ -3,13 +3,13 @@
 namespace UikitThemeBuilder\Widget;
 
 /**
- * Form Widget - Einstellungen fuer Formulareingaben
+ * Form Widget - Einstellungen für Formulareingaben
  */
 class FormWidget extends AbstractWidget
 {
     public function getName(): string
     {
-        return 'Forms';
+        return 'Formulare';
     }
 
     public function getKey(): string
@@ -19,7 +19,7 @@ class FormWidget extends AbstractWidget
 
     public function getDescription(): string
     {
-        return 'Einstellungen fuer Input-Felder, Labels und Radiobuttons.';
+        return 'Einstellungen für Input-Felder, Labels und Radiobuttons.';
     }
 
     public function getDefaultValues(): array
@@ -61,7 +61,7 @@ class FormWidget extends AbstractWidget
                 'help' => 'Hintergrundfarbe, wenn das Feld aktiv ist.'
             ],
             'form-border-width' => [
-                'label' => 'Rahmenstaerke',
+                'label' => 'Rahmenstärke',
                 'type' => 'text',
                 'default' => '@global-border-width',
                 'placeholder' => 'z.B. 1px oder @global-border-width',
@@ -86,21 +86,21 @@ class FormWidget extends AbstractWidget
                 'type' => 'select',
                 'default' => '@global-border',
                 'options' => $colorOptions,
-                'help' => 'Wird fuer disabled Felder verwendet.'
+                'help' => 'Wird für disabled Felder verwendet.'
             ],
             'form-danger-border' => [
                 'label' => 'Rahmenfarbe Fehlerzustand',
                 'type' => 'select',
                 'default' => '@global-danger-background',
                 'options' => $colorOptions,
-                'help' => 'Wird fuer fehlerhafte Felder genutzt.'
+                'help' => 'Wird für fehlerhafte Felder genutzt.'
             ],
             'form-success-border' => [
                 'label' => 'Rahmenfarbe Erfolgszustand',
                 'type' => 'select',
                 'default' => '@global-success-background',
                 'options' => $colorOptions,
-                'help' => 'Wird fuer erfolgreich validierte Felder genutzt.'
+                'help' => 'Wird für erfolgreich validierte Felder genutzt.'
             ],
             'form-label-color' => [
                 'label' => 'Label-Farbe',
@@ -110,18 +110,18 @@ class FormWidget extends AbstractWidget
                 'help' => 'Textfarbe von Formular-Labels.'
             ],
             'form-label-font-size' => [
-                'label' => 'Label-Schriftgroesse',
+                'label' => 'Label-Schriftgröße',
                 'type' => 'text',
                 'default' => '@global-small-font-size',
                 'placeholder' => 'z.B. 14px oder @global-small-font-size',
-                'help' => 'Groesse der Label-Beschriftung.'
+                'help' => 'Größe der Label-Beschriftung.'
             ],
             'form-radio-border' => [
                 'label' => 'Radiobutton Rahmenfarbe',
                 'type' => 'text',
                 'default' => 'darken(@global-border, 10%)',
                 'placeholder' => 'z.B. @global-border oder darken(...)',
-                'help' => 'Rahmenfarbe fuer Checkbox/Radio.'
+                'help' => 'Rahmenfarbe für Checkbox/Radio.'
             ],
             'form-radio-focus-border' => [
                 'label' => 'Radiobutton Fokusfarbe',

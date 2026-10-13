@@ -3,13 +3,13 @@
 namespace UikitThemeBuilder\Widget;
 
 /**
- * Card Widget - Einstellungen fuer Card-Darstellung
+ * Card Widget - Einstellungen für Card-Darstellung
  */
 class CardWidget extends AbstractWidget
 {
     public function getName(): string
     {
-        return 'Cards';
+        return 'Karten';
     }
 
     public function getKey(): string
@@ -19,7 +19,7 @@ class CardWidget extends AbstractWidget
 
     public function getDescription(): string
     {
-        return 'Einstellungen fuer Karten, Header/Footer und Hover-Effekte.';
+        return 'Einstellungen für Karten, Header/Footer und Hover-Effekte.';
     }
 
     public function getDefaultValues(): array
@@ -50,7 +50,7 @@ class CardWidget extends AbstractWidget
                 'type' => 'select',
                 'default' => '@global-background',
                 'options' => $colorOptions,
-                'help' => 'Grundhintergrund fuer Standard-Cards.'
+                'help' => 'Grundhintergrund für Standard-Cards.'
             ],
             'card-default-box-shadow' => [
                 'label' => 'Card Schatten',
@@ -67,7 +67,7 @@ class CardWidget extends AbstractWidget
                 'help' => 'Trennlinie zwischen Header und Inhalt.'
             ],
             'card-default-header-border-width' => [
-                'label' => 'Header Rahmenstaerke',
+                'label' => 'Header Rahmenstärke',
                 'type' => 'text',
                 'default' => '@global-border-width',
                 'placeholder' => 'z.B. 1px',
@@ -81,7 +81,7 @@ class CardWidget extends AbstractWidget
                 'help' => 'Trennlinie zwischen Inhalt und Footer.'
             ],
             'card-default-footer-border-width' => [
-                'label' => 'Footer Rahmenstaerke',
+                'label' => 'Footer Rahmenstärke',
                 'type' => 'text',
                 'default' => '@global-border-width',
                 'placeholder' => 'z.B. 1px',
@@ -106,14 +106,14 @@ class CardWidget extends AbstractWidget
                 'type' => 'select',
                 'default' => '@global-primary-background',
                 'options' => $colorOptions,
-                'help' => 'Hover-Hintergrund fuer Primary-Karten.'
+                'help' => 'Hover-Hintergrund für Primary-Karten.'
             ],
             'card-secondary-hover-background' => [
                 'label' => 'Hover Hintergrund (Secondary Card)',
                 'type' => 'select',
                 'default' => '@global-secondary-background',
                 'options' => $colorOptions,
-                'help' => 'Hover-Hintergrund fuer Secondary-Karten.'
+                'help' => 'Hover-Hintergrund für Secondary-Karten.'
             ],
             'card-badge-border-radius' => [
                 'label' => 'Badge Rundung',
@@ -132,7 +132,7 @@ class CardWidget extends AbstractWidget
                     'lowercase' => 'Kleinbuchstaben',
                     'capitalize' => 'Wortanfang gross',
                 ],
-                'help' => 'Textdarstellung fuer Badges.'
+                'help' => 'Textdarstellung für Badges.'
             ],
         ];
     }
