@@ -16,13 +16,36 @@ final class CssScoper
     /** Standard-Bereiche: Inhalt der Artikel-Blöcke, Vorschau des Builders, eigene Bereiche. */
     public const DEFAULT_SCOPE = ".rex-slice-output .panel-body\n.slice-rendered\n.uk-theme-scope";
 
-    /** Selektorliste (je Zeile oder durch Komma getrennt) → „:is(a, b, c)“; leer = Standard. */
+    /**
+     * Nie vorhandene ID in der Bereichsliste: :is() nimmt die höchste Spezifität seiner Liste – so gewinnt das Theme in den
+     * Vorschauen gegen Backend-Stile (REDAXO, Dunkelmodus anderer AddOns wie „body.rex-theme-dark .slice-rendered p“).
+     */
+    public const SPECIFICITY_BOOST = '#uikit-theme-builder-scope';
+
+    /** Stand der Eingrenzung – ändert sich die Logik, werden vorhandene <theme>.backend.css neu erzeugt (Stempel). */
+    public const VERSION = '4';
+
+    /** Selektorliste (je Zeile oder durch Komma getrennt) → „:is(a, b, c, #uikit-theme-builder-scope)“; leer = Standard. */
     public static function scopeSelector(string $lines): string
     {
         $parts = preg_split('~[\r\n,]+~', '' !== trim($lines) ? $lines : self::DEFAULT_SCOPE) ?: [];
         $parts = array_values(array_unique(array_filter(array_map('trim', $parts), static fn (string $p): bool => '' !== $p && !preg_match('~[{};]~', $p))));
+        $parts = $parts ?: ['.uk-theme-scope'];
+        $parts[] = self::SPECIFICITY_BOOST;
 
-        return ':is(' . implode(', ', $parts ?: ['.uk-theme-scope']) . ')';
+        return ':is(' . implode(', ', $parts) . ')';
+    }
+
+    /**
+     * Grundregeln vor dem Theme: Textelemente erben die Farbe, Tabellen sind durchsichtig – wie auf der Website (Spezifität
+     * des Bereichs, :where = 0).
+     * Backend-Stile, die in Vorschauen Text einfärben (z. B. Dunkelmodus: „.slice-rendered p { color: #bbb }“), greifen
+     * bzw. REDAXOs „table { background-color: #202b35 }“ so nicht mehr; Regeln des Themes (gleicher Bereich + eigener Selektor) gewinnen weiterhin.
+     */
+    public static function baseReset(string $scope): string
+    {
+        return $scope . ' :where(p, li, dt, dd, h1, h2, h3, h4, h5, h6, td, th, caption, blockquote, figcaption, label){color:inherit}' . "\n"
+            . $scope . ' :where(table, thead, tbody, tfoot, tr, td, th){background-color:transparent}' . "\n";
     }
 
     public static function scope(string $css, string $scope): string
@@ -92,12 +115,12 @@ final class CssScoper
     {
         $rest = $sel;
         $replaced = false;
-        while (preg_match('~^(?:html|body|:root)(?=$|[\s.:#\[>+~])~', $rest, $m)) {
+        while (preg_match('/^(?:html|body|:root)(?=$|[\s.:#\[>+~])/', $rest, $m)) {
             $replaced = true;
             $rest = substr($rest, strlen($m[0]));
             // Klassen/Attribute direkt an html/body (z. B. body.page) gibt es im Backend so nicht
-            $rest = ltrim((string) preg_replace('~^(?:[.:#\[][^\s>+~]*)~', '', $rest));
-            $rest = (string) preg_replace('~^[>+~]\s*~', '', $rest);
+            $rest = ltrim((string) preg_replace('/^(?:[.:#\[][^\s>+~]*)/', '', $rest));
+            $rest = (string) preg_replace('/^[>+~]\s*/', '', $rest);
         }
         if ($replaced) {
             return $scope . ('' !== $rest ? ' ' . $rest : '');

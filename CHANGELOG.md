@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.7.1] – 2026-10-13
+
+### Fixed
+
+- **Vorschauen im Backend**: `html`, `body` und `:root` des Themes wurden in der eingegrenzten Fassung nicht auf den
+  Vorschau-Bereich umgesetzt (Regex-Begrenzer `~` kollidierte mit dem Geschwister-Kombinator) – Grundschrift, Farben und
+  Hintergrund des Themes fehlten in den Vorschauen.
+- **Dunkelmodus**: Backend-Stile färbten Text und Tabellen in den Vorschauen dunkel bzw. hell (z. B. Builder
+  „.slice-rendered p { color: #bbb }“, REDAXO „table { background-color: #202b35 }“) – unlesbar auf dem hellen Theme.
+  Die Vorschauen sehen jetzt in hell und dunkel aus wie auf der Website, auch im YForm-Builder.
+
+### Changed
+
+- Eingegrenzte Fassung mit höherer Spezifität (nie vorhandene ID `#uikit-theme-builder-scope` in `:is()`), damit das Theme
+  in Vorschauen gegen Backend-Stile gewinnt; Grundregeln für Textfarbe und Tabellenhintergrund (`CssScoper::baseReset`).
+- Vorhandene `<theme>.backend.css` werden nach dem Update automatisch neu erzeugt (`CssScoper::VERSION` im Stempel).
+
 ## [2.7.0] – 2026-10-13
 
 ### Added
